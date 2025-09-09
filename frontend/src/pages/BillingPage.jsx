@@ -1,0 +1,158 @@
+import { useState } from "react";
+// eslint-disable-next-line no-unused-vars
+import { motion } from "framer-motion";
+import { useCartStore } from "../stores/useCartStore";
+import { toast } from "react-hot-toast";
+import axios from "../lib/axios";
+import { useNavigate } from "react-router-dom";
+
+const baseURL = import.meta.env.VITE_API_BASE_URL;
+
+const BillingPage = () => {
+  const { cart, coupon, total } = useCartStore();
+  const navigate = useNavigate();
+
+  const [form, setForm] = useState({
+    fullName: "",
+    email: "",
+    phone: "",
+    address: "",
+    city: "",
+  });
+
+  const [paymentMethod, setPaymentMethod] = useState("Cash on Delivery");
+  const [loading, setLoading] = useState(false);
+
+  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
+
+  const handlePlaceOrder = async () => {
+    // Validation
+    for (let key of ["fullName", "email", "phone", "address", "city"]) {
+      if (!form[key]) {
+        toast.error(`Please enter your ${key}`);
+        return;
+      }
+    }
+
+    if (!cart.length) {
+      toast.error("Your cart is empty!");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const orderData = {
+        products: cart.map(p => ({
+          _id: p._id,
+          quantity: p.quantity,
+          price: p.price,
+        })),
+        couponCode: coupon?.code || null,
+        paymentMethod,
+        shippingDetails: {
+          fullName: form.fullName,
+          email: form.email,
+          phone: form.phone,
+          address: form.address,
+          city: form.city,
+        },
+        totalAmount: total,
+      };
+
+      const res = await axios.post(`${baseURL}/api/payments/orders/create`, orderData);
+
+      if (res.status === 201) {
+        toast.success("Order placed successfully!");
+        navigate("/order-success");
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error(err.response?.data?.message || "Failed to place order.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="py-4 px-4 md:px-8 lg:px-16 max-w-screen-xl mx-auto">
+      <h1 className="text-3xl font-bold text-emerald-400 mb-6">Billing & Shipping</h1>
+      <div className="lg:flex gap-8">
+        {/* Form */}
+        <motion.div
+          className="flex-1 bg-gray-900 p-6 rounded-xl shadow-md"
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <h2 className="text-xl font-semibold text-white mb-4">Your Details</h2>
+          <div className="space-y-4">
+            {[
+              { label: "Full Name", name: "fullName", type: "text" },
+              { label: "Email", name: "email", type: "email" },
+              { label: "Phone", name: "phone", type: "tel" },
+              { label: "Address", name: "address", type: "text" },
+              { label: "City", name: "city", type: "text" },
+            ].map((field) => (
+              <div key={field.name} className="flex flex-col">
+                <label className="text-gray-300 mb-1">
+                  {field.label} <span className="text-rose-500">*</span>
+                </label>
+                <input
+                  type={field.type}
+                  name={field.name}
+                  value={form[field.name]}
+                  onChange={handleChange}
+                  className="rounded-md border border-gray-700 bg-gray-800 p-2 text-white focus:outline-none focus:ring-2 focus:ring-emerald-400"
+                />
+              </div>
+            ))}
+
+            {/* Payment Method */}
+            <div className="flex flex-col">
+              <label className="text-gray-300 mb-1">
+                Payment Method <span className="text-rose-500">*</span>
+              </label>
+              <div className="flex flex-col md:flex-row gap-4">
+                {["Cash on Delivery", "JazzCash", "Easypaisa", "Bank Transfer"].map((method) => (
+                  <label key={method} className="flex items-center gap-2 text-white">
+                    <input
+                      type="radio"
+                      value={method}
+                      checked={paymentMethod === method}
+                      onChange={(e) => setPaymentMethod(e.target.value)}
+                      className="accent-emerald-500"
+                    />
+                    {method}
+                  </label>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <button
+            onClick={handlePlaceOrder}
+            disabled={loading}
+            className={`mt-6 w-full bg-emerald-600 text-white py-2.5 rounded-lg font-medium hover:bg-emerald-700 transition-colors ${
+              loading ? "opacity-70 cursor-not-allowed" : ""
+            }`}
+          >
+            {loading ? "Processing..." : "Place Order"}
+          </button>
+        </motion.div>
+
+        {/* Order Summary */}
+        <motion.div
+          className="lg:w-96 mt-6 lg:mt-0"
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          {/* You can reuse your existing OrderSummary component here */}
+        </motion.div>
+      </div>
+    </div>
+  );
+};
+
+export default BillingPage;
