@@ -2,6 +2,8 @@ import { create } from "zustand";
 import axios from "../lib/axios";
 import { toast } from "react-hot-toast";
 
+const baseURL = import.meta.env.VITE_API_BASE_URL; // e.g., http://localhost:5000
+
 export const useCartStore = create((set, get) => ({
   cart: [],
   coupon: null,
@@ -9,44 +11,45 @@ export const useCartStore = create((set, get) => ({
   subtotal: 0,
   isCouponApplied: false,
 
-// Fetch user's active coupon
-getMyCoupon: async () => {
-  try {
-   const res = await axios.get("/coupons");
-    if (res.data) {
+  // Fetch user's active coupon
+  getMyCoupon: async () => {
+    try {
+      const res = await axios.get(`${baseURL}/api/coupons`, { withCredentials: true });
+      if (res.data) {
+        set({ coupon: res.data, isCouponApplied: true });
+        get().calculateTotals();
+      } else {
+        set({ coupon: null, isCouponApplied: false });
+      }
+    } catch (error) {
+      set({ coupon: null, isCouponApplied: false });
+      console.error("Error fetching coupon:", error);
+    }
+  },
+
+  // Apply coupon (POST request)
+  applyCoupon: async (code) => {
+    try {
+      if (!code) return toast.error("Please enter a coupon code");
+      const res = await axios.post(`${baseURL}/api/coupons/validate`, { code }, { withCredentials: true });
       set({ coupon: res.data, isCouponApplied: true });
       get().calculateTotals();
-    } else {
+      toast.success("Coupon applied successfully!");
+    } catch (error) {
       set({ coupon: null, isCouponApplied: false });
+      toast.error(error.response?.data?.message || "Invalid or expired coupon");
+      get().calculateTotals();
     }
-  } catch (error) {
-    set({ coupon: null, isCouponApplied: false });
-    console.error("Error fetching coupon:", error);
-  }
-},
+  },
 
-// Apply coupon
-applyCoupon: async (code) => {
-  try {
-const res = await axios.post("/coupons/validate", { code });
-    set({ coupon: res.data, isCouponApplied: true });
-    get().calculateTotals();
-    toast.success("Coupon applied successfully!");
-  } catch (error) {
-    set({ coupon: null, isCouponApplied: false });
-    toast.error(error.response?.data?.message || "Invalid or expired coupon");
-    get().calculateTotals();
-  }
-},
-
-
-  // 🔹 Remove applied coupon
+  // Remove applied coupon
   removeCoupon: async () => {
     set({ coupon: null, isCouponApplied: false });
     get().calculateTotals();
     toast.success("Coupon removed");
   },
 
+  // CART OPERATIONS
   getCartItems: async () => {
     try {
       const token = localStorage.getItem("token");
@@ -57,7 +60,7 @@ const res = await axios.post("/coupons/validate", { code });
         return;
       }
 
-      const res = await axios.get("/cart");
+      const res = await axios.get(`${baseURL}/api/cart`, { withCredentials: true });
       set({ cart: res.data });
       get().calculateTotals();
     } catch (error) {
@@ -70,13 +73,10 @@ const res = await axios.post("/coupons/validate", { code });
     try {
       const token = localStorage.getItem("token");
       if (!token) {
-        // Guest mode
         set((prev) => {
           const existing = prev.cart.find((i) => i._id === product._id);
           const newCart = existing
-            ? prev.cart.map((i) =>
-                i._id === product._id ? { ...i, quantity: i.quantity + 1 } : i
-              )
+            ? prev.cart.map((i) => i._id === product._id ? { ...i, quantity: i.quantity + 1 } : i)
             : [...prev.cart, { ...product, quantity: 1 }];
           localStorage.setItem("cart", JSON.stringify(newCart));
           return { cart: newCart };
@@ -85,14 +85,12 @@ const res = await axios.post("/coupons/validate", { code });
         return;
       }
 
-      const res = await axios.post("/cart", { productId: product._id });
+      const res = await axios.post(`${baseURL}/api/cart`, { productId: product._id }, { withCredentials: true });
       set((prev) => {
         const existing = prev.cart.find((i) => i._id === product._id);
         return {
           cart: existing
-            ? prev.cart.map((i) =>
-                i._id === product._id ? { ...i, quantity: i.quantity + 1 } : i
-              )
+            ? prev.cart.map((i) => i._id === product._id ? { ...i, quantity: i.quantity + 1 } : i)
             : [...prev.cart, res.data],
         };
       });
@@ -114,7 +112,7 @@ const res = await axios.post("/coupons/validate", { code });
       return;
     }
 
-    await axios.delete("/cart", { data: { productId } });
+    await axios.delete(`${baseURL}/api/cart`, { data: { productId }, withCredentials: true });
     set((prev) => ({
       cart: prev.cart.filter((i) => i._id !== productId),
     }));
@@ -134,7 +132,7 @@ const res = await axios.post("/coupons/validate", { code });
       return;
     }
 
-    const res = await axios.put(`/cart/${productId}`, { quantity });
+    const res = await axios.put(`${baseURL}/api/cart/${productId}`, { quantity }, { withCredentials: true });
     set({ cart: res.data });
     get().calculateTotals();
   },
@@ -150,8 +148,7 @@ const res = await axios.post("/coupons/validate", { code });
     let total = subtotal;
 
     if (coupon?.discountPercentage) {
-      const discount = subtotal * (coupon.discountPercentage / 100);
-      total = subtotal - discount;
+      total = subtotal - (subtotal * coupon.discountPercentage / 100);
     }
 
     set({ subtotal, total });

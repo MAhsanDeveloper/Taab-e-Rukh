@@ -1,114 +1,131 @@
-import { Suspense, lazy } from "react";
+import { lazy, Suspense } from "react";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import MainLayout from "./layouts/MainLayout";
 import HomePage from "./pages/HomePage";
 import { Toaster } from "react-hot-toast";
 
-//  Helper HOC for Suspense
-// eslint-disable-next-line no-unused-vars
-const withSuspense = (Component) => {
-  return (props) => (
-    <Suspense fallback={<div className="text-center py-10">Loading...</div>}>
-      <Component {...props} />
-    </Suspense>
-  );
-};
+// --- Skeletons ---
+import CartPageSkeleton from "./skeletons/CartPageSkeleton";
+import BillingPageSkeleton from "./skeletons/BillingPageSkeleton";
+import ProductPageSkeleton from "./skeletons/ProductCardSkeleton";
+import LoginPageSkeleton from "./skeletons/LoginPageSkeleton";
+import ItemDetailsSkeleton from "./skeletons/ItemDetailsSkeleton";
 
-const AdminAnalytics = withSuspense(lazy(() => import("./admin/AdminAnalytics")));
-const ProductPage = withSuspense(lazy(() => import("./pages/ProductPage")));
-const AdminHome = withSuspense(lazy(() => import("./admin/AdminHome")));
-const HomePageManager = withSuspense(
-  lazy(() => import("./admin/HomePageManager"))
-);
-const ShopManager = withSuspense(lazy(() => import("./admin/ShopManager")));
-const ContactManager = withSuspense(
-  lazy(() => import("./admin/ContactManager"))
-);
-const OrderManager = withSuspense(lazy(() => import("./admin/OrderManager")));
-const CategoryManager = withSuspense(lazy(() => import("./admin/AdminCategorySection")));
-const CouponManager = withSuspense(lazy(() => import("./admin/CouponManager")));
-const AdminLogin = withSuspense(lazy(() => import("./admin/AdminLogin")));
-const AdminLayout = withSuspense(lazy(() => import("./admin/AdminLayout")));
-const CartPage = withSuspense(lazy(() => import("./pages/CartPage")));
-const PurchaseSuccessPage = withSuspense(
-  lazy(() => import("./pages/PurchaseSuccessPage"))
-);
-const PurchaseCancelPage = withSuspense(
-  lazy(() => import("./pages/PurchaseCancelPage"))
-);
-const ItemDetailsPage = withSuspense(lazy(() => import("./pages/ItemDetails")));
-const AllProductsPage = withSuspense(
-  lazy(() => import("./pages/AllProductsPage"))
-);
-const LoginPage = withSuspense(lazy(() => import("./pages/LoginPage")));
-const SignUpPage = withSuspense(lazy(() => import("./pages/SignUpPage")));
-const BillingPage = withSuspense(lazy(() => import("./pages/BillingPage")));
-const NotFound = withSuspense(lazy(() => import("./pages/NotFound")));
+// --- Page Wrapper ---
+import PageWrapper from "./skeletons/PageWrapper";
 
+// --- Lazy Pages ---
+const CartPage = lazy(() => import("./pages/CartPage"));
+const BillingPage = lazy(() => import("./pages/BillingPage"));
+const ProductPage = lazy(() => import("./pages/ProductPage"));
+const AllProductsPage = lazy(() => import("./pages/AllProductsPage"));
+const LoginPage = lazy(() => import("./pages/LoginPage"));
+const SignUpPage = lazy(() => import("./pages/SignUpPage"));
+const PurchaseSuccessPage = lazy(() => import("./pages/PurchaseSuccessPage"));
+const PurchaseCancelPage = lazy(() => import("./pages/PurchaseCancelPage"));
+const ItemDetailsPage = lazy(() => import("./pages/ItemDetails"));
+const NotFound = lazy(() => import("./pages/NotFound"));
 
-const ShippingPolicy  = withSuspense(lazy(() => import("./pages/policies/ShippingPolicy")));
-const PrivacyPolicy  = withSuspense(lazy(() => import("./pages/policies/PrivacyPolicy")));
-const ReturnRefundPolicy  = withSuspense(lazy(() => import("./pages/policies/ReturnRefundPolicy")));
-const TermsOfService  = withSuspense(lazy(() => import("./pages/policies/TermsOfService")));
+const ShippingPolicy = lazy(() => import("./pages/policies/ShippingPolicy"));
+const PrivacyPolicy = lazy(() => import("./pages/policies/PrivacyPolicy"));
+const ReturnRefundPolicy = lazy(() => import("./pages/policies/ReturnRefundPolicy"));
+const TermsOfService = lazy(() => import("./pages/policies/TermsOfService"));
 
-// ❌ DO NOT wrap this one — it's a guard/wrapper, not a standalone page
-const ProtectedAdminRoute = lazy(() =>
-  import("./components/ProtectedAdminRoute")
-);
+// --- Admin ---
+const ProtectedAdminRoute = lazy(() => import("./components/ProtectedAdminRoute"));
+const AdminLayout = lazy(() => import("./admin/AdminLayout"));
+const AdminHome = lazy(() => import("./admin/AdminHome"));
+const AdminAnalytics = lazy(() => import("./admin/AdminAnalytics"));
+const HomePageManager = lazy(() => import("./admin/HomePageManager"));
+const ShopManager = lazy(() => import("./admin/ShopManager"));
+const ContactManager = lazy(() => import("./admin/ContactManager"));
+const OrderManager = lazy(() => import("./admin/OrderManager"));
+const CategoryManager = lazy(() => import("./admin/AdminCategorySection"));
+const CouponManager = lazy(() => import("./admin/CouponManager"));
+const AdminLogin = lazy(() => import("./admin/AdminLogin"));
 
-// Env variables
+// --- Env variables ---
 const adminLoginPath = import.meta.env.VITE_ADMIN_LOGIN_PATH;
 const adminPanelPath = import.meta.env.VITE_ADMIN_PANEL_PATH;
 
+// --- Wrapped Pages ---
+const WrappedCartPage = PageWrapper(CartPage, <CartPageSkeleton />);
+const WrappedBillingPage = PageWrapper(BillingPage, <BillingPageSkeleton />);
+const WrappedProductPage = PageWrapper(ProductPage, <ProductPageSkeleton />);
+const WrappedAllProductsPage = PageWrapper(AllProductsPage, <ProductPageSkeleton />);
+const WrappedLoginPage = PageWrapper(LoginPage, <LoginPageSkeleton />);
+const WrappedSignUpPage = PageWrapper(SignUpPage, <LoginPageSkeleton />);
+const WrappedPurchaseSuccessPage = PageWrapper(PurchaseSuccessPage);
+const WrappedPurchaseCancelPage = PageWrapper(PurchaseCancelPage);
+const WrappedItemDetailsPage = PageWrapper(ItemDetailsPage, <ItemDetailsSkeleton />);
+const WrappedNotFound = PageWrapper(NotFound);
+const WrappedShippingPolicy = PageWrapper(ShippingPolicy);
+const WrappedPrivacyPolicy = PageWrapper(PrivacyPolicy);
+const WrappedReturnRefundPolicy = PageWrapper(ReturnRefundPolicy);
+const WrappedTermsOfService = PageWrapper(TermsOfService);
+
+// --- Admin Wrapped Pages ---
+const WrappedAdminLayout = PageWrapper(AdminLayout);
+const WrappedAdminHome = PageWrapper(AdminHome);
+const WrappedAdminAnalytics = PageWrapper(AdminAnalytics);
+const WrappedHomePageManager = PageWrapper(HomePageManager);
+const WrappedShopManager = PageWrapper(ShopManager);
+const WrappedContactManager = PageWrapper(ContactManager);
+const WrappedOrderManager = PageWrapper(OrderManager);
+const WrappedCategoryManager = PageWrapper(CategoryManager);
+const WrappedCouponManager = PageWrapper(CouponManager);
+const WrappedAdminLogin = PageWrapper(AdminLogin);
+
+// --- Router ---
 const router = createBrowserRouter([
   // Routes WITH Navbar
   {
     element: <MainLayout />,
     children: [
-      { path: "/", element: <HomePage />, errorElement: <NotFound /> },
-      { path: "/all-products", element: <AllProductsPage /> },
-      { path: "/item/:id", element: <ItemDetailsPage /> },
-      { path: "/category/:category", element: <ProductPage /> },
-      { path: "/cart", element: <CartPage /> },
-      { path: "/order-success", element: <PurchaseSuccessPage /> },
-      { path: "/cancel", element: <PurchaseCancelPage /> },
-      { path: "/shipping-policy", element: <ShippingPolicy /> },
-      { path: "/privacy-policy", element: <PrivacyPolicy /> },
-      { path: "/refund-return-policy", element: <ReturnRefundPolicy /> },
-      { path: "/terms-of-service", element: <TermsOfService /> },
+      { path: "/", element: <HomePage />, errorElement: <WrappedNotFound /> },
+      { path: "/all-products", element: <WrappedAllProductsPage /> },
+      { path: "/item/:id", element: <WrappedItemDetailsPage /> },
+      { path: "/category/:category", element: <WrappedProductPage /> },
+      { path: "/cart", element: <WrappedCartPage /> },
+      { path: "/place-your-order", element: <WrappedBillingPage /> },
+      { path: "/order-success", element: <WrappedPurchaseSuccessPage /> },
+      { path: "/cancel", element: <WrappedPurchaseCancelPage /> },
+      { path: "/shipping-policy", element: <WrappedShippingPolicy /> },
+      { path: "/privacy-policy", element: <WrappedPrivacyPolicy /> },
+      { path: "/refund-return-policy", element: <WrappedReturnRefundPolicy /> },
+      { path: "/terms-of-service", element: <WrappedTermsOfService /> },
     ],
   },
 
-  // ❌ Routes WITHOUT Navbar
-  { path: "/login", element: <LoginPage /> },
-  { path: "/signup", element: <SignUpPage /> },
-  { path: "/place-your-order", element: <BillingPage /> },
-  { path: adminLoginPath, element: <AdminLogin /> },
+  // Routes WITHOUT Navbar
+  { path: "/login", element: <WrappedLoginPage /> },
+  { path: "/signup", element: <WrappedSignUpPage /> },
+  { path: adminLoginPath, element: <WrappedAdminLogin /> },
 
-  //  Admin Panel (guarded)
+  // Admin Panel (guarded)
   {
     path: adminPanelPath,
     element: (
-      <Suspense fallback={<div className="text-center py-10">Loading...</div>}>
+      <Suspense fallback={<div className="py-10 text-center">Loading admin...</div>}>
         <ProtectedAdminRoute>
-          <AdminLayout />
+          <WrappedAdminLayout />
         </ProtectedAdminRoute>
       </Suspense>
     ),
     children: [
-      { index: true, element: <AdminHome /> },
-      { path: "analytics", element: <AdminAnalytics /> },
-      { path: "home-images", element: <HomePageManager /> },
-      { path: "shop", element: <ShopManager /> },
-      { path: "contact", element: <ContactManager /> },
-      { path: "orders", element: <OrderManager /> },
-      {  path: "coupons", element: <CouponManager />, },
-      {  path: "categories-section", element: <CategoryManager />, },
+      { index: true, element: <WrappedAdminHome /> },
+      { path: "analytics", element: <WrappedAdminAnalytics /> },
+      { path: "home-images", element: <WrappedHomePageManager /> },
+      { path: "shop", element: <WrappedShopManager /> },
+      { path: "contact", element: <WrappedContactManager /> },
+      { path: "orders", element: <WrappedOrderManager /> },
+      { path: "coupons", element: <WrappedCouponManager /> },
+      { path: "categories-section", element: <WrappedCategoryManager /> },
     ],
   },
 
-  //  Catch-all
-  { path: "*", element: <NotFound /> },
+  // Catch-all
+  { path: "*", element: <WrappedNotFound /> },
 ]);
 
 const App = () => (

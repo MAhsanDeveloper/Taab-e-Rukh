@@ -17,10 +17,10 @@ const GiftCouponCard = () => {
     else setUserInputCode("");
   }, [coupon]);
 
-  const handleApplyCoupon = () => {
-    if (!userInputCode) return;
-    applyCoupon(userInputCode);
-  };
+const handleApplyCoupon = () => {
+  if (!userInputCode) return;
+  applyCoupon(userInputCode);
+};
 
   const handleRemoveCoupon = async () => {
     await removeCoupon();

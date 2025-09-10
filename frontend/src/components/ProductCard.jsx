@@ -18,9 +18,9 @@ const ProductCard = ({ product, index }) => {
   return (
     <motion.div
       {...animationProps}
-      className="inline-block w-72 overflow-hidden rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 group mr-4"
+      className="relative inline-block w-72 overflow-hidden rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 group mr-4"
     >
-      {/* Wrap the clickable part in a Link */}
+      {/* Image + text clickable */}
       <Link to={`/item/${product._id}`} className="block">
         <div className="relative h-64 w-full overflow-hidden rounded-t-xl">
           <img
@@ -29,6 +29,7 @@ const ProductCard = ({ product, index }) => {
             loading="lazy"
             className="w-full h-full object-fill transition-transform duration-300 group-hover:scale-105"
           />
+
           {product.hasDiscount && (
             <span className="absolute top-3 left-3 rounded bg-red-500 px-2 py-1 text-xs font-bold text-white shadow-lg">
               {product.discountRate}% OFF
@@ -40,7 +41,7 @@ const ProductCard = ({ product, index }) => {
           TAAB e RUKH — By S&GR Pvt Ltd
         </p>
 
-        <div className="pt-3 px-4 pb-4">
+        <div className="pt-3 px-4">
           <h3 className="text-lg font-bold text-black line-clamp-2">
             {product.name}
           </h3>
@@ -67,12 +68,14 @@ const ProductCard = ({ product, index }) => {
         </div>
       </Link>
 
-      {/* Keep Add to Cart visible only on hover */}
-      <div className="absolute bottom-3 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 group-hover:translate-y-0 translate-y-6 transition-all duration-700 ease-out">
-        <AddToCartButton
-          product={product}
-          className="bg-black text-white hover:bg-white hover:text-black"
-        />
+      {/* Add to Cart Button (outside Link, locked to bottom of image) */}
+      <div className="absolute top-0 left-0 w-full h-64 flex justify-center items-end pointer-events-none">
+        <div className="opacity-0 group-hover:opacity-100 translate-y-3 group-hover:translate-y-0 transition-all duration-500 ease-out pointer-events-auto mb-3">
+          <AddToCartButton
+            product={product}
+            className="bg-black text-white hover:bg-white hover:text-black px-4 py-2 rounded-lg shadow-md"
+          />
+        </div>
       </div>
     </motion.div>
   );

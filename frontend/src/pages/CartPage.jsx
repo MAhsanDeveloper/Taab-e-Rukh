@@ -3,7 +3,7 @@ import { Minus, Plus, Trash } from "lucide-react";
 import { motion } from "framer-motion";
 import { useCartStore } from "../stores/useCartStore";
 import { Link, useNavigate } from "react-router-dom";
-import GiftCouponCard from "../components/GiftCouponCard"
+import GiftCouponCard from "../components/GiftCouponCard";
 
 const CartPage = () => {
   const {
@@ -13,6 +13,7 @@ const CartPage = () => {
     coupon,
     isCouponApplied,
   } = useCartStore();
+
   const navigate = useNavigate();
 
   // --- Calculate Subtotal (without discounts) ---
@@ -229,7 +230,7 @@ const CartPage = () => {
               </div>
             </div>
 
-			<GiftCouponCard />
+            <GiftCouponCard />
           </motion.div>
         </div>
       )}

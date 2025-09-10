@@ -2,7 +2,7 @@ import { ShoppingCart, User, Search } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useUserStore } from "../stores/useUserStore";
 import { useCartStore } from "../stores/useCartStore";
-import logo from "../assets/logo.png";
+import logo from "../assets/logo.webp";
 
 const Navbar = () => {
   const { user } = useUserStore();
@@ -26,8 +26,8 @@ const categories = [
       <div className="container mx-auto px-3 py-3 flex justify-between items-center">
         
         {/* Logo */}
-        <Link to="/" className="flex items-center space-x-2 border rounded-2xl border-black">
-          <img src={logo} alt="Taab e Rukh" className="h-10 w-auto" />
+        <Link to="/" className="flex items-center space-x-2">
+          <img src={logo} alt="Taab e Rukh" className="h-11 w-auto" />
         </Link>
 
         {/* Center Categories */}

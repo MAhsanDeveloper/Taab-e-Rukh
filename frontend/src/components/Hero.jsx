@@ -34,14 +34,6 @@ const Hero = () => {
   const prevSlide = () =>
     setCurrentIndex((prev) => (prev - 1 + images.length) % images.length);
 
-  if (!Array.isArray(images) || images.length === 0) {
-    return (
-      <div className="w-full h-[70vh] bg-gray-100 flex items-center justify-center">
-        <p className="text-gray-600">Loading hero...</p>
-      </div>
-    );
-  }
-
   return (
     <div className="relative w-full h-[90vh] overflow-hidden px-4 md:px-8 lg:px-12">
       <div className="relative w-full h-full">

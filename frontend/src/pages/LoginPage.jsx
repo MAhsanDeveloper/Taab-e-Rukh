@@ -17,120 +17,90 @@ const LoginPage = () => {
     setError("");
 
     try {
-      // Attempt login
       const user = await login(email, password);
 
-      // Block admin users from logging in here
       if (user?.role === "admin") {
         setError("Admin users cannot log in from this page.");
         return;
       }
-
-      // Proceed to redirect or homepage (if any)
-      // e.g., navigate("/dashboard") -- handled elsewhere
     } catch (err) {
       setError(err.message || "Login failed. Please check your credentials.");
     }
   };
 
   return (
-    <div className='flex flex-col justify-center py-12 sm:px-6 lg:px-8'>
+    <div className="py-10 px-4 md:px-8 lg:px-16 max-w-screen-md mx-auto">
       <motion.div
-        className='sm:mx-auto sm:w-full sm:max-w-md'
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
-      >
-        <h2 className='mt-6 text-center text-3xl font-extrabold text-emerald-400'>
-          Login to your account
-        </h2>
-      </motion.div>
-
-      <motion.div
-        className='mt-8 sm:mx-auto sm:w-full sm:max-w-md'
+        className="bg-white p-8 lg:p-12 rounded-2xl shadow-md border border-gray-100"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, delay: 0.2 }}
+        transition={{ duration: 0.6 }}
       >
-        <div className='bg-gray-800 py-8 px-4 shadow sm:rounded-lg sm:px-10'>
-          <form onSubmit={handleSubmit} className='space-y-6'>
-            {error && <p className="text-red-500 text-sm">{error}</p>}
+        <h2 className="text-3xl font-bold text-gray-800 text-center mb-8">
+          Login to Your Account
+        </h2>
 
-            {/* Email */}
-            <div>
-              <label htmlFor='email' className='block text-sm font-medium text-gray-300'>
-                Email address
-              </label>
-              <div className='mt-1 relative rounded-md shadow-sm'>
-                <div className='absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none'>
-                  <Mail className='h-5 w-5 text-gray-400' aria-hidden='true' />
-                </div>
-                <input
-                  id='email'
-                  type='email'
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className='block w-full px-3 py-2 pl-10 bg-gray-700 border border-gray-600 
-                    rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-emerald-500 
-                    focus:border-emerald-500 sm:text-sm'
-                  placeholder='you@example.com'
-                />
-              </div>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {error && <p className="text-red-500 text-sm">{error}</p>}
+
+          {/* Email */}
+          <div className="flex flex-col">
+            <label className="text-gray-600 mb-2 font-medium">Email Address</label>
+            <div className="relative">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+                <Mail className="h-5 w-5" />
+              </span>
+              <input
+                type="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="you@example.com"
+                className="w-full pl-10 p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition"
+              />
             </div>
+          </div>
 
-            {/* Password */}
-            <div>
-              <label htmlFor='password' className='block text-sm font-medium text-gray-300'>
-                Password
-              </label>
-              <div className='mt-1 relative rounded-md shadow-sm'>
-                <div className='absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none'>
-                  <Lock className='h-5 w-5 text-gray-400' aria-hidden='true' />
-                </div>
-                <input
-                  id='password'
-                  type='password'
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className='block w-full px-3 py-2 pl-10 bg-gray-700 border border-gray-600 
-                    rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm'
-                  placeholder='••••••••'
-                />
-              </div>
+          {/* Password */}
+          <div className="flex flex-col">
+            <label className="text-gray-600 mb-2 font-medium">Password</label>
+            <div className="relative">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+                <Lock className="h-5 w-5" />
+              </span>
+              <input
+                type="password"
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••"
+                className="w-full pl-10 p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition"
+              />
             </div>
+          </div>
 
-            {/* Submit */}
-            <button
-              type='submit'
-              className='w-full flex justify-center py-2 px-4 border border-transparent 
-                rounded-md shadow-sm text-sm font-medium text-white bg-emerald-600
-                hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2
-                focus:ring-emerald-500 transition duration-150 ease-in-out disabled:opacity-50'
-              disabled={loading}
-            >
-              {loading ? (
-                <>
-                  <Loader className='mr-2 h-5 w-5 animate-spin' aria-hidden='true' />
-                  Loading...
-                </>
-              ) : (
-                <>
-                  <LogIn className='mr-2 h-5 w-5' aria-hidden='true' />
-                  Login
-                </>
-              )}
-            </button>
-          </form>
+          {/* Submit */}
+          <button
+            type="submit"
+            disabled={loading}
+            className={`w-full flex justify-center items-center gap-2 py-3 px-4 bg-emerald-600 text-white rounded-lg font-medium hover:bg-emerald-700 transition ${
+              loading ? "opacity-70 cursor-not-allowed" : ""
+            }`}
+          >
+            {loading ? <Loader className="animate-spin h-5 w-5" /> : <LogIn className="h-5 w-5" />}
+            {loading ? "Loading..." : "Login"}
+          </button>
+        </form>
 
-          <p className='mt-8 text-center text-sm text-gray-400'>
-            Not a member?{" "}
-            <Link to='/signup' className='font-medium text-emerald-400 hover:text-emerald-300'>
-              Sign up now <ArrowRight className='inline h-4 w-4' />
-            </Link>
-          </p>
-        </div>
+        <p className="mt-6 text-center text-gray-500 text-sm">
+          Not a member?{" "}
+          <Link
+            to="/signup"
+            className="font-medium text-emerald-600 hover:text-emerald-500 flex items-center justify-center gap-1"
+          >
+            Sign up now <ArrowRight className="h-4 w-4" />
+          </Link>
+        </p>
       </motion.div>
     </div>
   );

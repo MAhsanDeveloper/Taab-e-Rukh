@@ -1,4 +1,5 @@
 import { Outlet } from "react-router-dom";
+import ScrollToTop from "../components/scrollToTop";
 import Navbar from "../components/Navbar";
 import { Suspense, lazy } from "react";
 const Footer = lazy(() => import("../components/Footer"));
@@ -8,6 +9,9 @@ const MainLayout = () => {
     <div className="w-full flex flex-col bg-white">
       {/* Navbar */}
       <Navbar />
+
+       {/* Scroll to top on route change */}
+      <ScrollToTop />
 
       {/* Push content below fixed navbar */}
       <div className="pt-[72px]">
