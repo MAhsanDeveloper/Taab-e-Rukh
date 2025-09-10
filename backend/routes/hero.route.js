@@ -1,10 +1,13 @@
 import express from "express";
 import HeroImage from "../models/HeroImage.js";
-import uploadOnCloudinary from "../utils/cloudinary.js";
+import {
+  uploadHeroImage,
+  deleteImageByUrl,
+} from "../lib/cloudinaryUpload.js";
 
 const router = express.Router();
 
-// ✅ Get all hero images
+// Get hero images
 router.get("/", async (req, res) => {
   try {
     const images = await HeroImage.find().sort({ createdAt: -1 });
@@ -14,7 +17,7 @@ router.get("/", async (req, res) => {
   }
 });
 
-// ✅ Add hero image (limit 3)
+// Upload hero image (limit 3)
 router.post("/", async (req, res) => {
   try {
     const count = await HeroImage.countDocuments();
@@ -22,20 +25,21 @@ router.post("/", async (req, res) => {
       return res.status(400).json({ message: "Maximum of 3 hero images allowed" });
     }
 
-    const { image } = req.body; // Base64 or image URL
+    const { image } = req.body; // Base64 or remote URL
     if (!image) return res.status(400).json({ message: "Image required" });
 
-    // Upload to Cloudinary
-    const upload = await uploadOnCloudinary(image);
+    // 🔹 Optimized hero upload (1920px wide, webp, auto quality)
+    const upload = await uploadHeroImage(image);
 
     const newImage = await HeroImage.create({ url: upload.secure_url });
     res.status(201).json(newImage);
   } catch (err) {
+    console.error("Error uploading hero image:", err.message);
     res.status(500).json({ message: "Error uploading image" });
   }
 });
 
-// ✅ Delete hero image
+// Delete hero image
 router.delete("/:id", async (req, res) => {
   try {
     const { id } = req.params;
@@ -45,8 +49,10 @@ router.delete("/:id", async (req, res) => {
       return res.status(404).json({ message: "Image not found" });
     }
 
+    await deleteImageByUrl(deleted.url);
     res.json({ message: "Image deleted", deleted });
   } catch (err) {
+    console.error("Error deleting hero image:", err.message);
     res.status(500).json({ message: "Error deleting image" });
   }
 });

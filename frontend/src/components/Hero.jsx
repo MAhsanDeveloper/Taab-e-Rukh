@@ -29,8 +29,7 @@ const Hero = () => {
     return () => clearInterval(interval);
   }, [images]);
 
-  const nextSlide = () =>
-    setCurrentIndex((prev) => (prev + 1) % images.length);
+  const nextSlide = () => setCurrentIndex((prev) => (prev + 1) % images.length);
 
   const prevSlide = () =>
     setCurrentIndex((prev) => (prev - 1 + images.length) % images.length);
@@ -54,10 +53,14 @@ const Hero = () => {
             }`}
           >
             <img
-              src={img.url}
+              src={`${img.url.replace(
+                "/upload/",
+                "/upload/f_auto,q_auto:best/"
+              )}`}
               alt="Hero"
               className="w-full h-full object-fill rounded-xl"
             />
+
             <div className="absolute inset-0 bg-gradient-to-r from-black/30 via-black/10 to-transparent rounded-xl"></div>
           </div>
         ))}
