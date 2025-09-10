@@ -8,6 +8,7 @@ import {
   getRecommendedProducts,
   toggleFeaturedProduct,
   updateProduct,
+    getProductById, 
 } from "../controllers/product.controller.js";
 import { adminRoute, protectRoute } from "../middleware/auth.middleware.js";
 import { uploadProductImages } from "../middleware/multer.js";
@@ -15,6 +16,7 @@ import { uploadProductImages } from "../middleware/multer.js";
 const router = express.Router();
 
 router.get("/", getAllProducts);
+router.get("/:id", getProductById); 
 router.get("/featured", getFeaturedProducts);
 router.get("/category/:category", getProductsByCategory);
 router.get("/recommendations", getRecommendedProducts);

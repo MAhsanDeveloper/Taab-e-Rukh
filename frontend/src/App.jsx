@@ -36,7 +36,7 @@ const PurchaseSuccessPage = withSuspense(
 const PurchaseCancelPage = withSuspense(
   lazy(() => import("./pages/PurchaseCancelPage"))
 );
-// const ItemDetailsPage = withSuspense(lazy(() => import("./pages/ItemDetails")));
+const ItemDetailsPage = withSuspense(lazy(() => import("./pages/ItemDetails")));
 const AllProductsPage = withSuspense(
   lazy(() => import("./pages/AllProductsPage"))
 );
@@ -67,7 +67,7 @@ const router = createBrowserRouter([
     children: [
       { path: "/", element: <HomePage />, errorElement: <NotFound /> },
       { path: "/all-products", element: <AllProductsPage /> },
-      // { path: "/product/:id", element: <ItemDetailsPage /> },
+      { path: "/item/:id", element: <ItemDetailsPage /> },
       { path: "/category/:category", element: <ProductPage /> },
       { path: "/cart", element: <CartPage /> },
       { path: "/order-success", element: <PurchaseSuccessPage /> },

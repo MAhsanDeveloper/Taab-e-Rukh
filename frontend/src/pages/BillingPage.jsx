@@ -26,7 +26,6 @@ const BillingPage = () => {
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
   const handlePlaceOrder = async () => {
-    // Validation
     for (let key of ["fullName", "email", "phone", "address", "city"]) {
       if (!form[key]) {
         toast.error(`Please enter your ${key}`);
@@ -43,20 +42,14 @@ const BillingPage = () => {
 
     try {
       const orderData = {
-        products: cart.map(p => ({
+        products: cart.map((p) => ({
           _id: p._id,
           quantity: p.quantity,
           price: p.price,
         })),
         couponCode: coupon?.code || null,
         paymentMethod,
-        shippingDetails: {
-          fullName: form.fullName,
-          email: form.email,
-          phone: form.phone,
-          address: form.address,
-          city: form.city,
-        },
+        shippingDetails: { ...form },
         totalAmount: total,
       };
 
@@ -74,18 +67,29 @@ const BillingPage = () => {
     }
   };
 
+  const paymentMethods = [
+    { name: "Cash on Delivery", disabled: false },
+    { name: "JazzCash", disabled: true },
+    { name: "Easypaisa", disabled: true },
+    { name: "Bank Transfer", disabled: true },
+  ];
+
   return (
-    <div className="py-4 px-4 md:px-8 lg:px-16 max-w-screen-xl mx-auto">
-      <h1 className="text-3xl font-bold text-emerald-400 mb-6">Billing & Shipping</h1>
+    <div className="py-6 px-4 md:px-8 lg:px-16 max-w-screen-xl mx-auto">
+      <h1 className="text-3xl font-bold text-emerald-400 mb-6 text-center lg:text-left">
+        Billing & Shipping
+      </h1>
+
       <div className="lg:flex gap-8">
-        {/* Form */}
+        {/* Billing Form */}
         <motion.div
-          className="flex-1 bg-gray-900 p-6 rounded-xl shadow-md"
+          className="flex-1 bg-gray-800 p-6 rounded-xl shadow-lg"
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.5 }}
         >
-          <h2 className="text-xl font-semibold text-white mb-4">Your Details</h2>
+          <h2 className="text-xl font-semibold text-white mb-5">Your Details</h2>
+
           <div className="space-y-4">
             {[
               { label: "Full Name", name: "fullName", type: "text" },
@@ -103,27 +107,40 @@ const BillingPage = () => {
                   name={field.name}
                   value={form[field.name]}
                   onChange={handleChange}
-                  className="rounded-md border border-gray-700 bg-gray-800 p-2 text-white focus:outline-none focus:ring-2 focus:ring-emerald-400"
+                  className="rounded-lg border border-gray-600 bg-gray-700 p-3 text-white focus:outline-none focus:ring-2 focus:ring-emerald-400 transition"
                 />
               </div>
             ))}
 
             {/* Payment Method */}
-            <div className="flex flex-col">
-              <label className="text-gray-300 mb-1">
+            <div className="flex flex-col mt-4">
+              <label className="text-gray-300 mb-2">
                 Payment Method <span className="text-rose-500">*</span>
               </label>
               <div className="flex flex-col md:flex-row gap-4">
-                {["Cash on Delivery", "JazzCash", "Easypaisa", "Bank Transfer"].map((method) => (
-                  <label key={method} className="flex items-center gap-2 text-white">
+                {paymentMethods.map((method) => (
+                  <label
+                    key={method.name}
+                    className={`flex items-center gap-2 p-2 rounded-md cursor-pointer transition ${
+                      method.disabled
+                        ? "text-gray-400 cursor-not-allowed"
+                        : "text-white hover:bg-gray-700"
+                    }`}
+                  >
                     <input
                       type="radio"
-                      value={method}
-                      checked={paymentMethod === method}
+                      value={method.name}
+                      checked={paymentMethod === method.name}
                       onChange={(e) => setPaymentMethod(e.target.value)}
                       className="accent-emerald-500"
+                      disabled={method.disabled}
                     />
-                    {method}
+                    {method.name}
+                    {method.disabled && (
+                      <span className="ml-1 text-sm text-yellow-400 italic">
+                        (Will be added soon)
+                      </span>
+                    )}
                   </label>
                 ))}
               </div>
@@ -133,7 +150,7 @@ const BillingPage = () => {
           <button
             onClick={handlePlaceOrder}
             disabled={loading}
-            className={`mt-6 w-full bg-emerald-600 text-white py-2.5 rounded-lg font-medium hover:bg-emerald-700 transition-colors ${
+            className={`mt-6 w-full bg-emerald-600 text-white py-3 rounded-lg font-medium hover:bg-emerald-700 transition-colors ${
               loading ? "opacity-70 cursor-not-allowed" : ""
             }`}
           >
@@ -148,7 +165,13 @@ const BillingPage = () => {
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.5 }}
         >
-          {/* You can reuse your existing OrderSummary component here */}
+          {/* Replace this with your OrderSummary component */}
+          <div className="bg-gray-800 p-6 rounded-xl shadow-lg text-white">
+            <h3 className="text-xl font-semibold mb-4">Order Summary</h3>
+            <p>Total Items: {cart.length}</p>
+            <p>Total Amount: PKR {total}</p>
+            {coupon && <p>Coupon Applied: {coupon.code}</p>}
+          </div>
         </motion.div>
       </div>
     </div>
