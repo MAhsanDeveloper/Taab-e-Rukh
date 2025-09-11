@@ -13,8 +13,6 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-const baseURL = import.meta.env.VITE_API_BASE_URL;
-
 const AdminAnalytics = () => {
   const [analytics, setAnalytics] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -22,9 +20,7 @@ const AdminAnalytics = () => {
   useEffect(() => {
     const fetchAnalytics = async () => {
       try {
-        const { data } = await axios.get(`${baseURL}/api/analytics`, {
-          withCredentials: true,
-        });
+     const { data } = await axios.get("/analytics");
         setAnalytics(data);
       } catch (err) {
         console.error("Failed to fetch analytics:", err);

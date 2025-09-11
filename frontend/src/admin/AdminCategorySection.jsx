@@ -3,8 +3,6 @@ import { useEffect, useState } from "react";
 import axios from "../lib/axios";
 import toast from "react-hot-toast";
 
-const baseURL = import.meta.env.VITE_API_BASE_URL;
-
 const hardcodedCategories = [
    { name: "All Products", slug: "all-products" },
   { name: "Hair Care", slug: "hair-care" },
@@ -19,9 +17,7 @@ const AdminCategorySection = () => {
   // Fetch category images
   const fetchCategories = async () => {
     try {
-      const res = await axios.get(`${baseURL}/api/category-images`, {
-        withCredentials: true,
-      });
+    const res = await axios.get("/category-images");
 
       const imageMap = res.data.images.reduce((acc, img) => {
         acc[img.slug] = img.image;
@@ -53,11 +49,8 @@ const AdminCategorySection = () => {
     reader.readAsDataURL(file);
 
     reader.onloadend = async () => {
-      await axios.post(
-        `${baseURL}/api/category-images`,
-        { slug, image: reader.result },
-        { withCredentials: true }
-      );
+    const { data } = await axios.post("/category-images", { slug, image: reader.result },
+    );
 
       toast.success("Image updated successfully");
       fetchCategories();

@@ -73,7 +73,7 @@ const Footer = () => {
           whileInView={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.6 }}
         >
-          <img src="/logo.png" alt="Taab e Rukh" className="h-28 mb-6" />
+          <img src="/logo.webp" alt="Taab e Rukh" className="h-28 mb-6 bg-white rounded-full" />
           {!loading && (
             <div className="mt-6 text-gray-300 space-y-3 text-base">
               {contact.phone && (

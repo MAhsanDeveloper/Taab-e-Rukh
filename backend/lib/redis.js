@@ -2,7 +2,7 @@
 import dotenv from "dotenv";
 dotenv.config();
 
-const disableRedis = true; // toggle to true to disable
+const disableRedis = true;
 
 export const redis = disableRedis
   ? {

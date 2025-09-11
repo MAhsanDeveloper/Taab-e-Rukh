@@ -12,8 +12,24 @@ const AdminLogin = () => {
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
+  const [csrfToken, setCsrfToken] = useState("");
 
   const navigate = useNavigate();
+
+  // fetch CSRF token from backend
+  const getCsrfToken = async () => {
+    try {
+    const res = await axios.get(`${baseURL}/api/csrf-token`,  {
+        withCredentials: true,
+      });
+      setCsrfToken(res.data.csrfToken);
+      return res.data.csrfToken;
+    } catch (err) {
+      console.error("Failed to fetch CSRF token:", err);
+      toast.error("Could not connect to server");
+      return null;
+    }
+  };
 
   const handleLogin = async () => {
     if (!email && !mobileNumber) return toast.error("Please enter email or mobile number");
@@ -22,21 +38,26 @@ const AdminLogin = () => {
     setLoading(true);
 
     try {
-   
+      // always fetch CSRF token before POST
+      const token = csrfToken || (await getCsrfToken());
+      if (!token) return;
+
       await axios.post(
-        `${baseURL}/api/auth/login`,
+        `${baseURL}/api/auth/admin-login`,
         { email, mobileNumber, password },
-        { withCredentials: true }
+        {
+          withCredentials: true,
+          headers: { "X-CSRF-Token": token },
+        }
       );
 
-     
-      const check = await axios.get(`${baseURL}/api/auth/check-admin`, { withCredentials: true });
+      const check = await axios.get(`${baseURL}/api/auth/check-admin`, {
+        withCredentials: true,
+      });
 
       if (check.data.isAdmin) {
         toast.success("Login successful");
-
-       navigate(adminPanelPath);
-
+        navigate(adminPanelPath);
       } else {
         toast.error("Access denied. Not an admin.");
       }

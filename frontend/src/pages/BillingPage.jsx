@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 // eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from "framer-motion";
 import { useCartStore } from "../stores/useCartStore";
@@ -26,6 +26,19 @@ const BillingPage = () => {
   const [loading, setLoading] = useState(false);
   const [showSummary, setShowSummary] = useState(false);
 
+  useEffect(() => {
+    (async () => {
+      try {
+           // FIXED: ensure CSRF cookie/token is requested on mount.
+     // axios here is your axiosInstance (withCredentials:true)
+        const res = await axios.get("/csrf-token");
+        console.log("✅ CSRF cookie set", res.data?.csrfToken ? "token received" : "no token in response");
+      } catch (err) {
+        console.error("❌ Failed to set CSRF cookie", err);
+      }
+    })();
+  }, []);
+
   const handleChange = (e) =>
     setForm({ ...form, [e.target.name]: e.target.value });
 
@@ -50,8 +63,7 @@ const BillingPage = () => {
 
   let finalTotal = cartTotal;
   if (isCouponApplied && coupon?.discountPercentage) {
-    finalTotal =
-      finalTotal - (finalTotal * coupon.discountPercentage) / 100;
+    finalTotal = finalTotal - (finalTotal * coupon.discountPercentage) / 100;
   }
 
   const formattedSubtotal = cartSubtotal.toFixed(2);
@@ -59,6 +71,14 @@ const BillingPage = () => {
   const formattedSavings = savings.toFixed(2);
 
   const handlePlaceOrder = async () => {
+    // FIXED: ensure CSRF token exists before POST — request again if interceptor hasn't fetched one.
+    try {
+      await axios.get("/csrf-token"); // safe no-op if token already set; ensures cookie present
+    } catch (e) {
+      // continue; interceptor will attempt to fetch before POST too
+      console.warn("Could not refresh CSRF token before POST:", e?.message || e);
+    }
+
     for (let key of ["fullName", "phone", "address", "city"]) {
       if (!form[key]) {
         toast.error(`Please enter your ${key}`);
@@ -86,11 +106,7 @@ const BillingPage = () => {
         totalAmount: finalTotal,
       };
 
-      const res = await axios.post(
-        `${baseURL}/api/payments/orders/create`,
-        orderData
-      );
-
+  const res = await axios.post("/payments/orders/create", orderData);
       if (res.status === 201) {
         toast.success("Order placed successfully!");
         navigate("/order-success");
@@ -135,52 +151,51 @@ const BillingPage = () => {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.4 }}
           >
-      {/* Mobile Collapsible (sticky) */}
-<div className="lg:hidden mb-4 sticky top-4 z-20">
-  <button
-    onClick={() => setShowSummary(!showSummary)}
-    className="flex items-center justify-between w-full bg-[#FFF8F0] px-4 py-3 rounded-lg border border-gray-200 font-medium text-gray-800 shadow-md"
-  >
-    <span>Order Summary</span>
-    {showSummary ? <ChevronUp /> : <ChevronDown />}
-  </button>
+            {/* Mobile Collapsible (sticky) */}
+            <div className="lg:hidden mb-4 sticky top-4 z-20">
+              <button
+                onClick={() => setShowSummary(!showSummary)}
+                className="flex items-center justify-between w-full bg-[#FFF8F0] px-4 py-3 rounded-lg border border-gray-200 font-medium text-gray-800 shadow-md"
+              >
+                <span>Order Summary</span>
+                {showSummary ? <ChevronUp /> : <ChevronDown />}
+              </button>
 
-  <AnimatePresence>
-    {showSummary && (
-      <motion.div
-        initial={{ height: 0, opacity: 0 }}
-        animate={{ height: "auto", opacity: 1 }}
-        exit={{ height: 0, opacity: 0 }}
-        transition={{ duration: 0.3 }}
-        className="overflow-hidden mt-3"
-      >
-        <SummaryContent
-          cart={cart}
-          formattedSubtotal={formattedSubtotal}
-          formattedSavings={formattedSavings}
-          formattedTotal={formattedTotal}
-          savings={savings}
-          isCouponApplied={isCouponApplied}
-          coupon={coupon}
-        />
-      </motion.div>
-    )}
-  </AnimatePresence>
-</div>
+              <AnimatePresence>
+                {showSummary && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="overflow-hidden mt-3"
+                  >
+                    <SummaryContent
+                      cart={cart}
+                      formattedSubtotal={formattedSubtotal}
+                      formattedSavings={formattedSavings}
+                      formattedTotal={formattedTotal}
+                      savings={savings}
+                      isCouponApplied={isCouponApplied}
+                      coupon={coupon}
+                    />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
 
-{/* Desktop Fixed Sticky Summary */}
-<div className="hidden lg:block sticky top-4 self-start bg-[#FFF8F0] border border-gray-200 p-6 rounded-2xl shadow-md max-h-[90vh] overflow-y-auto">
-  <SummaryContent
-    cart={cart}
-    formattedSubtotal={formattedSubtotal}
-    formattedSavings={formattedSavings}
-    formattedTotal={formattedTotal}
-    savings={savings}
-    isCouponApplied={isCouponApplied}
-    coupon={coupon}
-  />
-</div>
-
+            {/* Desktop Fixed Sticky Summary */}
+            <div className="hidden lg:block sticky top-4 self-start bg-[#FFF8F0] border border-gray-200 p-6 rounded-2xl shadow-md max-h-[90vh] overflow-y-auto">
+              <SummaryContent
+                cart={cart}
+                formattedSubtotal={formattedSubtotal}
+                formattedSavings={formattedSavings}
+                formattedTotal={formattedTotal}
+                savings={savings}
+                isCouponApplied={isCouponApplied}
+                coupon={coupon}
+              />
+            </div>
           </motion.div>
 
           {/* Billing Form */}
@@ -196,16 +211,37 @@ const BillingPage = () => {
 
             <div className="space-y-5">
               {[
-                { label: "Full Name", name: "fullName", type: "text", required: true },
+                {
+                  label: "Full Name",
+                  name: "fullName",
+                  type: "text",
+                  required: true,
+                },
                 { label: "Phone", name: "phone", type: "tel", required: true },
-                { label: "Email (optional)", name: "email", type: "email", required: false },
-                { label: "Address", name: "address", type: "text", required: true },
+                {
+                  label: "Email (optional)",
+                  name: "email",
+                  type: "email",
+                  required: false,
+                },
+                {
+                  label: "Address",
+                  name: "address",
+                  type: "text",
+                  required: true,
+                },
                 { label: "City", name: "city", type: "text", required: true },
-                { label: "Order Notes (optional)", name: "note", type: "text", required: false },
+                {
+                  label: "Order Notes (optional)",
+                  name: "note",
+                  type: "text",
+                  required: false,
+                },
               ].map((field) => (
                 <div key={field.name} className="flex flex-col">
                   <label className="text-gray-600 mb-1 font-medium">
-                    {field.label} {field.required && <span className="text-red-500">*</span>}
+                    {field.label}{" "}
+                    {field.required && <span className="text-red-500">*</span>}
                   </label>
                   <input
                     type={field.type}

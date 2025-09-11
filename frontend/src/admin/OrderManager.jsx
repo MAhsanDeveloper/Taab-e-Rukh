@@ -1,29 +1,31 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import axios from "../lib/axios";
+import toast from "react-hot-toast";
 
-const baseURL = import.meta.env.VITE_API_BASE_URL;
 
 const OrderManager = () => {
   const [orders, setOrders] = useState([]);
 
+  const fetchOrders = async () => {
+    try {
+      const res = await axios.get("/payments/orders");
+      setOrders(res.data.orders || []);
+    } catch (err) {
+      console.error("Failed to fetch orders:", err);
+      toast.error("Failed to fetch orders");
+    }
+  };
+
   useEffect(() => {
-    const fetchOrders = async () => {
-      try {
-        const res = await axios.get(`${baseURL}/api/payments/orders`);
-        setOrders(res.data.orders || []);
-      } catch (err) {
-        console.error("Failed to fetch orders:", err);
-      }
-    };
     fetchOrders();
   }, []);
 
   const handleDownloadInvoice = (orderId) => {
-    window.open(`${baseURL}/api/orders/${orderId}/invoice`, "_blank");
+    window.open(`/orders/${orderId}/invoice`, "_blank");
   };
 
-  const handleDownloadPackSlip = (orderId) => {
-    window.open(`${baseURL}/api/orders/${orderId}/pack-slip`, "_blank");
+   const handleDownloadPackSlip = (orderId) => {
+    window.open(`/orders/${orderId}/pack-slip`, "_blank");
   };
 
   return (

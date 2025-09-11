@@ -1,8 +1,6 @@
 /* eslint-disable no-unused-vars */
 import { useEffect, useState } from "react";
-import axios from "axios";
-
-const baseURL = import.meta.env.VITE_API_BASE_URL;
+import axios from "../lib/axios";
 
 const HomePageManager = () => {
   const [images, setImages] = useState([]);
@@ -16,9 +14,7 @@ const HomePageManager = () => {
 
   const fetchImages = async () => {
     try {
-      const { data } = await axios.get(`${baseURL}/api/hero-images`, {
-        withCredentials: true, 
-      });
+   const { data } = await axios.get("/hero-images");
       setImages(Array.isArray(data) ? data : []);
     } catch (err) {
       setError("Failed to fetch images");
@@ -35,11 +31,9 @@ const HomePageManager = () => {
     reader.readAsDataURL(file);
     reader.onloadend = async () => {
       try {
-        const { data } = await axios.post(
-          `${baseURL}/api/hero-images`,
-          { image: reader.result },
-          { withCredentials: true }
-        );
+      const { data } = await axios.post("/hero-images", {
+      image: reader.result,
+     });
         setImages((prev) => [data, ...prev]);
         setFile(null);
       } catch (err) {
@@ -52,9 +46,7 @@ const HomePageManager = () => {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`${baseURL}/api/hero-images/${id}`, {
-        withCredentials: true, 
-      });
+    await axios.delete(`/hero-images/${id}`);
       setImages((prev) => prev.filter((img) => img._id !== id));
     } catch (err) {
       setError("Delete failed");

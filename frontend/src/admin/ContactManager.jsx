@@ -1,8 +1,7 @@
 /* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import axios from "../lib/axios";
 import toast from "react-hot-toast";
-const baseURL = import.meta.env.VITE_API_BASE_URL;
 
 const ContactManager = () => {
   const [loading, setLoading] = useState(true);
@@ -16,19 +15,16 @@ const ContactManager = () => {
     whatsapp: "",
   });
 
-
-const fetchContact = async () => {
-  try {
-    const res = await axios.get(`${baseURL}/api/contact`, {
-      withCredentials: true,
-    });
-    setContact(res.data || {}); // fallback to empty object
-  } catch (err) {
-    toast.error("Failed to fetch contact");
-  } finally {
-    setLoading(false); // Always stop loading
-  }
-};
+  const fetchContact = async () => {
+    try {
+      const res = await axios.get("/contact");
+      setContact(res.data || {});
+    } catch (err) {
+      toast.error("Failed to fetch contact");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleChange = (e) => {
     setContact({ ...contact, [e.target.name]: e.target.value });
@@ -36,11 +32,7 @@ const fetchContact = async () => {
 
   const handleUpdate = async () => {
     try {
-      await axios.put(`${baseURL}/api/contact`, contact, 
-        {
-          withCredentials: true
-        }
-      );
+      await axios.put("/contact", contact);
       toast.success("Contact updated successfully");
     } catch (err) {
       toast.error("Update failed");
@@ -52,7 +44,6 @@ const fetchContact = async () => {
   }, []);
 
   if (loading) return <p>Loading contact info...</p>;
-
 
   return (
     <div className="bg-amber-600 p-4 sm:p-6 rounded-xl max-w-xl mx-auto text-white">

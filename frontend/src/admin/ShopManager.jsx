@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 import { useEffect, useState } from "react";
-import axios from "axios";
+import axios from "../lib/axios";
 import toast from "react-hot-toast";
 
 const baseURL = import.meta.env.VITE_API_BASE_URL;
@@ -29,19 +29,15 @@ const ShopManager = () => {
   const [editingId, setEditingId] = useState(null);
   const [editForm, setEditForm] = useState({});
 
-  // Fetch products
   const fetchProducts = async () => {
     try {
-      const res = await axios.get(`${baseURL}/api/shop`, {
-        withCredentials: true,
-      });
+     const res = await axios.get("/shop");
       setProducts(res.data.products || []);
     } catch (err) {
       toast.error("Failed to fetch products");
     }
   };
 
-  // Add product
   const addProduct = async () => {
     try {
       const formData = new FormData();
@@ -55,10 +51,9 @@ const ShopManager = () => {
         }
       });
 
-      await axios.post(`${baseURL}/api/shop`, formData, {
+      await axios.post("/shop"), formData, {
         headers: { "Content-Type": "multipart/form-data" },
-        withCredentials: true,
-      });
+      };
 
       toast.success("Product added");
       resetNewProduct();
@@ -86,12 +81,9 @@ const ShopManager = () => {
     });
   };
 
-  // Delete product
   const deleteProduct = async (id) => {
     try {
-      await axios.delete(`${baseURL}/api/shop/${id}`, {
-        withCredentials: true,
-      });
+      await axios.delete(`/shop/${id}`)
       toast.success("Deleted");
       fetchProducts();
     } catch {
@@ -99,12 +91,9 @@ const ShopManager = () => {
     }
   };
 
-  // Update product
   const updateProduct = async (id) => {
     try {
-      await axios.put(`${baseURL}/api/shop/${id}`, editForm, {
-        withCredentials: true,
-      });
+    await axios.put(`/shop/${id}`), editForm
       toast.success("Updated");
       setEditingId(null);
       setEditForm({});
@@ -114,32 +103,36 @@ const ShopManager = () => {
     }
   };
 
-const fetchSpotlight = async () => {
-  try {
-    const res = await axios.get(`${baseURL}/api/spotlight`);
-    setSpotlightCategories(res.data.categories || []);
-  } catch {
-    toast.error("Failed to load spotlight categories");
-  }
-};
+  const fetchSpotlight = async () => {
+    try {
+     const res = await axios.get("/spotlight");
+      setSpotlightCategories(res.data.categories || []);
+    } catch {
+      toast.error("Failed to load spotlight categories");
+    }
+  };
 
-const updateSpotlight = async () => {
-  try {
-    await axios.put(
-      `${baseURL}/api/spotlight`,
-      { categories: spotlightCategories },
-      { withCredentials: true }
-    );
-    toast.success("Spotlight updated");
-  } catch {
-    toast.error("Failed to update spotlight");
-  }
-};
+  const updateSpotlight = async () => {
+    try {
+     await axios.put("/spotlight"),
+        { categories: spotlightCategories },
+      toast.success("Spotlight updated");
+    } catch {
+      toast.error("Failed to update spotlight");
+    }
+  };
 
-useEffect(() => {
-  fetchSpotlight();
-}, []);
+     const slugify = (str) =>
+  str
+    .toLowerCase()
+    .replace(/&/g, "")        
+    .replace(/\s+/g, "-")      
+    .replace(/-+/g, "-")
+    .trim();
 
+  useEffect(() => {
+    fetchSpotlight();
+  }, []);
 
   // Image handlers
   const handleMainImage = (e) => {
@@ -192,23 +185,23 @@ useEffect(() => {
             }
             className="p-2 rounded border"
           />
+      
           <select
             value={newProduct.category}
             onChange={(e) =>
               setNewProduct({
                 ...newProduct,
-                category: e.target.value.toLowerCase().replace(/\s+/g, "-"),
+                category: slugify(e.target.value),
               })
             }
           >
             <option value="">Select Category</option>
             {categories.map((cat) => (
-              <option key={cat} value={cat.toLowerCase().replace(/\s+/g, "-")}>
+              <option key={cat} value={slugify(cat)}>
                 {cat}
               </option>
             ))}
           </select>
-
           <textarea
             placeholder="Description"
             value={newProduct.description}
@@ -217,7 +210,6 @@ useEffect(() => {
             }
             className="p-2 rounded border col-span-full"
           />
-
           <label className="bg-amber-700 text-white px-3 py-1 rounded cursor-pointer">
             Main Image
             <input type="file" onChange={handleMainImage} className="hidden" />
@@ -228,7 +220,6 @@ useEffect(() => {
               className="w-24 h-24 object-cover rounded"
             />
           )}
-
           <label className="bg-amber-700 text-white px-3 py-1 rounded cursor-pointer">
             Preview Images (max 3)
             <input
@@ -247,7 +238,6 @@ useEffect(() => {
               />
             ))}
           </div>
-
           <label className="flex items-center gap-2">
             <input
               type="checkbox"
@@ -268,7 +258,6 @@ useEffect(() => {
             }
             className="p-2 rounded border"
           />
-
           <input
             type="number"
             placeholder="Available Stock"
@@ -287,7 +276,6 @@ useEffect(() => {
             }
             className="p-2 rounded border"
           />
-
           <button
             onClick={addProduct}
             className="bg-amber-800 hover:bg-amber-900 cursor-pointer text-white py-2 px-4 rounded font-bold"
@@ -413,51 +401,53 @@ useEffect(() => {
                   </button>
                 </div>
               </>
-              
             )}
           </div>
         ))}
       </div>
 
       <div className="bg-white text-black p-6 rounded-xl shadow mt-10 mx-1">
-  <h3 className="text-xl font-semibold mb-4">Spotlight Categories</h3>
-  <p className="text-sm mb-2">Choose up to 4 categories to spotlight on homepage</p>
+        <h3 className="text-xl font-semibold mb-4">Spotlight Categories</h3>
+        <p className="text-sm mb-2">
+          Choose up to 4 categories to spotlight on homepage
+        </p>
 
-  <div className="flex flex-wrap gap-3">
-    {categories.map((cat) => {
-      const slug = cat.toLowerCase().replace(/\s+/g, "-");
-      const selected = spotlightCategories.includes(slug);
+        <div className="flex flex-wrap gap-3">
+          {categories.map((cat) => {
+            const slug = cat.toLowerCase().replace(/\s+/g, "-");
+            const selected = spotlightCategories.includes(slug);
 
-      return (
+            return (
+              <button
+                key={slug}
+                onClick={() => {
+                  if (selected) {
+                    setSpotlightCategories(
+                      spotlightCategories.filter((c) => c !== slug)
+                    );
+                  } else if (spotlightCategories.length < 4) {
+                    setSpotlightCategories([...spotlightCategories, slug]);
+                  } else {
+                    toast.error("Maximum 4 spotlight categories allowed");
+                  }
+                }}
+                className={`px-4 py-2 rounded ${
+                  selected ? "bg-amber-600 text-white" : "bg-gray-200"
+                }`}
+              >
+                {cat}
+              </button>
+            );
+          })}
+        </div>
+
         <button
-          key={slug}
-          onClick={() => {
-            if (selected) {
-              setSpotlightCategories(spotlightCategories.filter((c) => c !== slug));
-            } else if (spotlightCategories.length < 4) {
-              setSpotlightCategories([...spotlightCategories, slug]);
-            } else {
-              toast.error("Maximum 4 spotlight categories allowed");
-            }
-          }}
-          className={`px-4 py-2 rounded ${
-            selected ? "bg-amber-600 text-white" : "bg-gray-200"
-          }`}
+          onClick={updateSpotlight}
+          className="mt-4 bg-amber-800 text-white px-4 py-2 rounded"
         >
-          {cat}
+          Save Spotlight
         </button>
-      );
-    })}
-  </div>
-
-  <button
-    onClick={updateSpotlight}
-    className="mt-4 bg-amber-800 text-white px-4 py-2 rounded"
-  >
-    Save Spotlight
-  </button>
-</div>
-
+      </div>
     </div>
   );
 };

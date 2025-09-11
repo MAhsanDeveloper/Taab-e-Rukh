@@ -2,7 +2,7 @@ import { create } from "zustand";
 import axios from "../lib/axios";
 import { toast } from "react-hot-toast";
 
-const baseURL = import.meta.env.VITE_API_BASE_URL; // e.g., http://localhost:5000
+const baseURL = import.meta.env.VITE_API_BASE_URL;
 
 export const useCartStore = create((set, get) => ({
   cart: [],

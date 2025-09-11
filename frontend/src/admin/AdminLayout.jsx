@@ -1,8 +1,6 @@
 import React, { useState } from "react";
 import { Outlet, Link, useNavigate } from "react-router-dom";
-import axios from "axios";
-
-const baseURL = import.meta.env.VITE_API_BASE_URL;
+import axios from "../lib/axios";
 
 const AdminLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -10,7 +8,7 @@ const AdminLayout = () => {
 
   const handleLogout = async () => {
     try {
-      await axios.post(`${baseURL}/api/auth/logout`, {}, { withCredentials: true });
+    await axios.post("/auth/logout", {});
       navigate("/");
     } catch (err) {
       console.error("Logout failed", err);

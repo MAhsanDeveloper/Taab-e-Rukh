@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import axios from "../lib/axios";
 import { toast } from "react-hot-toast";
-
-const baseURL = import.meta.env.VITE_API_BASE_URL;
 
 const CouponManager = () => {
   const [coupons, setCoupons] = useState([]);
@@ -14,9 +12,7 @@ const CouponManager = () => {
 
 const fetchCoupons = async () => {
   try {
-    const res = await axios.get(`${baseURL}/api/coupons/all`, {
-      withCredentials: true,
-    });
+   const res = await axios.get("/coupons/all");
     setCoupons(res.data);
   } catch {
     toast.error("Failed to fetch coupons");
@@ -26,14 +22,10 @@ const fetchCoupons = async () => {
 const handleSubmit = async (e) => {
   e.preventDefault();
   try {
-    await axios.post(
-      `${baseURL}/api/coupons`,     
-      {
-        ...form,
-        discountPercentage: Number(form.discountPercentage),
-      },
-      { withCredentials: true }
-    );
+  await axios.post("/coupons", {
+     ...form,
+     discountPercentage: Number(form.discountPercentage),
+   });
     toast.success("Coupon created");
     setForm({ code: "", discountPercentage: "", expirationDate: "" });
     fetchCoupons();
@@ -44,7 +36,7 @@ const handleSubmit = async (e) => {
 
 const handleDelete = async (id) => {
   try {
-    await axios.delete(`${baseURL}/api/coupons/${id}`, { withCredentials: true });
+     await axios.delete(`/coupons/${id}`);
     toast.success("Coupon deleted");
     fetchCoupons();
   } catch {
