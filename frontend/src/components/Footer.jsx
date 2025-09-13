@@ -3,17 +3,8 @@ import { Link } from "react-router-dom";
 import axios from "axios";
 // eslint-disable-next-line no-unused-vars
 import { motion } from "framer-motion";
-import {
-  Facebook,
-  Instagram,
-  Youtube,
-  MessageCircle,
-  MapPin,
-  Phone,
-  Mail,
-  Send,
-  CheckCircle,
-} from "lucide-react";
+import { MessageCircle, MapPin, Phone, Mail, Send, CheckCircle } from "lucide-react";
+import { FaFacebook, FaInstagram, FaYoutube, FaTiktok } from "react-icons/fa";
 
 const baseURL = import.meta.env.VITE_API_BASE_URL;
 
@@ -73,7 +64,11 @@ const Footer = () => {
           whileInView={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.6 }}
         >
-          <img src="/logo.webp" alt="Taab e Rukh" className="h-28 mb-6 bg-white rounded-full" />
+          <img
+            src="/logo.webp"
+            alt="Taab e Rukh"
+            className="h-28 mb-6 bg-white rounded-full"
+          />
           {!loading && (
             <div className="mt-6 text-gray-300 space-y-3 text-base">
               {contact.phone && (
@@ -170,7 +165,7 @@ const Footer = () => {
             </li>
             <li>
               <Link
-                to="/contact"
+                to="/contact-us"
                 className="hover:text-white hover:underline underline-offset-4 cursor-pointer transition"
               >
                 Contact Us
@@ -234,7 +229,7 @@ const Footer = () => {
                 rel="noreferrer"
                 className="hover:scale-110 transition cursor-pointer"
               >
-                <Facebook className="hover:text-blue-500 transition" />
+                <FaFacebook className="hover:text-blue-500 transition" />
               </a>
             )}
             {contact.instagram && (
@@ -244,7 +239,7 @@ const Footer = () => {
                 rel="noreferrer"
                 className="hover:scale-110 transition cursor-pointer"
               >
-                <Instagram className="hover:text-pink-500 transition" />
+                <FaInstagram className="hover:text-pink-500 transition" />
               </a>
             )}
             {contact.youtube && (
@@ -254,7 +249,17 @@ const Footer = () => {
                 rel="noreferrer"
                 className="hover:scale-110 transition cursor-pointer"
               >
-                <Youtube className="hover:text-red-500 transition" />
+                <FaYoutube className="hover:text-red-500 transition" />
+              </a>
+            )}
+            {contact.tiktok && (
+              <a
+                href={contact.tiktok}
+                target="_blank"
+                rel="noreferrer"
+                className="hover:scale-110 transition cursor-pointer"
+              >
+                <FaTiktok className="hover:text-gray-300 transition" />
               </a>
             )}
             {contact.whatsapp && (

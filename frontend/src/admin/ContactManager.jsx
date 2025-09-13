@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "../lib/axios";
 import toast from "react-hot-toast";
 
@@ -10,6 +10,7 @@ const ContactManager = () => {
     email: "",
     address: "",
     facebook: "",
+    tiktok: "",
     instagram: "",
     youtube: "",
     whatsapp: "",
@@ -71,6 +72,13 @@ const ContactManager = () => {
           placeholder="Address"
           className="w-full p-2 rounded text-black min-w-0"
         />
+         <input
+          name="whatsapp"
+          value={contact.whatsapp}
+          onChange={handleChange}
+          placeholder="WhatsApp Number (e.g. 923001234567)"
+          className="w-full p-2 rounded text-black min-w-0"
+        />
         <input
           name="facebook"
           value={contact.facebook}
@@ -79,10 +87,10 @@ const ContactManager = () => {
           className="w-full p-2 rounded text-black min-w-0"
         />
         <input
-          name="whatsapp"
-          value={contact.whatsapp}
+          name="tiktok"
+          value={contact.tiktok}
           onChange={handleChange}
-          placeholder="WhatsApp Number (e.g. 923001234567)"
+          placeholder="TikTok URL"
           className="w-full p-2 rounded text-black min-w-0"
         />
         <input

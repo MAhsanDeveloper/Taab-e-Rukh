@@ -14,6 +14,7 @@ import productRoutes from "./routes/product.route.js";
 import cartRoutes from "./routes/cart.route.js";
 import couponRoutes from "./routes/coupon.route.js";
 import paymentRoutes from "./routes/payment.route.js";
+import contactRoutes from "./routes/contact.route.js";
 import analyticsRoutes from "./routes/analytics.route.js";
 import heroRoutes from "./routes/hero.route.js";
 import spotlightRoutes from "./routes/spotlight.route.js";
@@ -89,17 +90,13 @@ if (isProduction) {
 const csrfProtection = csurf({
 
   cookie: {
-    httpOnly: false,              // allow browser JS to read the token cookie we set (double-submit)
-    secure: isProduction,         // only secure in production
+    httpOnly: false,
+    secure: isProduction,
     sameSite: isProduction ? "Strict" : "Lax",
-    // path: "/"                  // optional explicit path
+    // path: "/" 
   },
 });
 
-
-/* FIXED: Keep the existing behavior of applying csurf to state-changing routes,
-   but we MUST also run csurf for the CSRF-token issuing GET route below so
-   req.csrfToken() exists and a secret cookie is set. */
 app.use((req, res, next) => {
   const method = req.method.toUpperCase();
   if (["POST", "PUT", "PATCH", "DELETE"].includes(method)) {
@@ -108,20 +105,14 @@ app.use((req, res, next) => {
   return next();
 });
 
-// FIXED: ensure csurf middleware runs for this GET so req.csrfToken() is defined.
-// This creates the _csrf secret cookie (by csurf) and allows us to send the token
-// as a non-httpOnly cookie 'XSRF-TOKEN' for double-submit.
 app.get("/api/csrf-token", csrfProtection, (req, res) => {
   try {
-    // req.csrfToken is guaranteed by csrfProtection middleware
     const token = req.csrfToken();
-
-    // send the token in JSON and as a cookie for double-submit on the client
     res.cookie("XSRF-TOKEN", token, {
-      httpOnly: false,             // allow frontend JS to read this cookie
+      httpOnly: false,
       secure: isProduction,
       sameSite: isProduction ? "Strict" : "Lax",
-      // path: "/"                 // optional
+      // path: "/" 
     });
 
     return res.json({ csrfToken: token });
@@ -135,6 +126,7 @@ app.use("/api/auth", apiLimiter, authRoutes);
 app.use("/api/payments", apiLimiter, paymentRoutes);
 app.use("/api/shop", productRoutes);
 app.use("/api/cart", cartRoutes);
+app.use("/api/contact", contactRoutes);
 app.use("/api/coupons", apiLimiter, couponRoutes);
 app.use("/api/analytics", analyticsRoutes);
 app.use("/api/hero-images", heroRoutes);

@@ -1,17 +1,32 @@
 /* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import axios from "../lib/axios";
 import { motion } from "framer-motion";
-import { Users, Package, ShoppingBag, DollarSign } from "lucide-react";
+import { Users, Package, ShoppingBag } from "lucide-react";
 import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
   Tooltip,
-  CartesianGrid,
-  ResponsiveContainer,
-} from "recharts";
+  Legend,
+  Filler,
+} from "chart.js";
+import { Line } from "react-chartjs-2";
+
+// Register Chart.js components
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+  Filler
+);
 
 const AdminAnalytics = () => {
   const [analytics, setAnalytics] = useState(null);
@@ -20,7 +35,8 @@ const AdminAnalytics = () => {
   useEffect(() => {
     const fetchAnalytics = async () => {
       try {
-     const { data } = await axios.get("/analytics");
+        const { data } = await axios.get("/analytics");
+        console.log("Analytics API Response:", data);
         setAnalytics(data);
       } catch (err) {
         console.error("Failed to fetch analytics:", err);
@@ -32,9 +48,13 @@ const AdminAnalytics = () => {
   }, []);
 
   if (loading)
-    return <p className="text-center text-lg animate-pulse">Loading dashboard...</p>;
+    return (
+      <p className="text-center text-lg animate-pulse">Loading dashboard...</p>
+    );
   if (!analytics)
-    return <p className="text-center text-red-500">Failed to load analytics.</p>;
+    return (
+      <p className="text-center text-red-500">Failed to load analytics.</p>
+    );
 
   const { analyticsData, dailySalesData } = analytics;
 
@@ -42,25 +62,66 @@ const AdminAnalytics = () => {
   const stats = [
     {
       title: "Total Users",
-      value: analyticsData.users,
+      value: analyticsData?.users ?? 0,
       icon: <Users className="w-6 h-6 text-blue-600" />,
     },
     {
       title: "Products",
-      value: analyticsData.products,
+      value: analyticsData?.products ?? 0,
       icon: <Package className="w-6 h-6 text-green-600" />,
     },
     {
       title: "Total Sales",
-      value: analyticsData.totalSales,
+      value: analyticsData?.totalSales ?? 0,
       icon: <ShoppingBag className="w-6 h-6 text-purple-600" />,
     },
     {
       title: "Revenue",
-      value: `Rs ${analyticsData.totalRevenue.toLocaleString()}`,
-      icon: <DollarSign className="w-6 h-6 text-amber-600" />,
+      value: `RS. ${(analyticsData?.totalRevenue ?? 0).toLocaleString()}`,
+      icon: <span className="text-yellow-600 font-bold">₨</span>,
     },
   ];
+
+  // Chart.js dataset
+  const chartData = {
+    labels: dailySalesData?.map((d) => d.date) ?? [],
+    datasets: [
+      {
+        label: "Sales",
+        data: dailySalesData?.map((d) => d.sales) ?? [],
+        borderColor: "#4F46E5",
+        backgroundColor: "rgba(79, 70, 229, 0.2)",
+        tension: 0.4,
+        fill: true,
+      },
+      {
+        label: "Revenue",
+        data: dailySalesData?.map((d) => d.revenue) ?? [],
+        borderColor: "#10B981",
+        backgroundColor: "rgba(16, 185, 129, 0.2)",
+        tension: 0.4,
+        fill: true,
+      },
+    ],
+  };
+
+  const chartOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { position: "top" },
+      tooltip: { mode: "index", intersect: false },
+    },
+    interaction: {
+      mode: "nearest",
+      axis: "x",
+      intersect: false,
+    },
+    scales: {
+      x: { grid: { display: false } },
+      y: { ticks: { beginAtZero: true } },
+    },
+  };
 
   return (
     <div className="space-y-10">
@@ -90,27 +151,12 @@ const AdminAnalytics = () => {
         transition={{ duration: 0.6 }}
         className="bg-white p-6 rounded-2xl shadow-md"
       >
-        <h2 className="text-lg font-semibold mb-4">Daily Sales (Last 7 Days)</h2>
-        <ResponsiveContainer width="100%" height={300}>
-          <LineChart data={dailySalesData}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="date" />
-            <YAxis />
-            <Tooltip />
-            <Line
-              type="monotone"
-              dataKey="sales"
-              stroke="#4F46E5"
-              strokeWidth={2}
-            />
-            <Line
-              type="monotone"
-              dataKey="revenue"
-              stroke="#10B981"
-              strokeWidth={2}
-            />
-          </LineChart>
-        </ResponsiveContainer>
+        <h2 className="text-lg font-semibold mb-4">
+          Daily Sales (Last 7 Days)
+        </h2>
+        <div className="h-[250px]">
+          <Line data={chartData} options={chartOptions} />
+        </div>
       </motion.div>
     </div>
   );

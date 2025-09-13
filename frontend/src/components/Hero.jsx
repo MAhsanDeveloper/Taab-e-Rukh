@@ -51,6 +51,8 @@ const Hero = () => {
               )}`}
               alt="Hero"
               className="w-full h-full object-fill rounded-xl"
+              fetchPriority={index === currentIndex ? "high" : "low"}
+              loading={index === currentIndex ? "eager" : "lazy"}
             />
 
             <div className="absolute inset-0 bg-gradient-to-r from-black/30 via-black/10 to-transparent rounded-xl"></div>

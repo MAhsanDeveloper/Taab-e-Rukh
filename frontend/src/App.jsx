@@ -10,6 +10,7 @@ import BillingPageSkeleton from "./skeletons/BillingPageSkeleton";
 import ProductPageSkeleton from "./skeletons/ProductCardSkeleton";
 import LoginPageSkeleton from "./skeletons/LoginPageSkeleton";
 import ItemDetailsSkeleton from "./skeletons/ItemDetailsSkeleton";
+import ContactPageSkeleton from "./skeletons/ContactPageSkeleton";
 
 // --- Page Wrapper ---
 import PageWrapper from "./skeletons/PageWrapper";
@@ -21,6 +22,7 @@ const ProductPage = lazy(() => import("./pages/ProductPage"));
 const AllProductsPage = lazy(() => import("./pages/AllProductsPage"));
 const LoginPage = lazy(() => import("./pages/LoginPage"));
 const SignUpPage = lazy(() => import("./pages/SignUpPage"));
+const ContactPage = lazy(() => import("./pages/ContactPage"));
 const PurchaseSuccessPage = lazy(() => import("./pages/PurchaseSuccessPage"));
 const PurchaseCancelPage = lazy(() => import("./pages/PurchaseCancelPage"));
 const ItemDetailsPage = lazy(() => import("./pages/ItemDetails"));
@@ -55,6 +57,7 @@ const WrappedProductPage = PageWrapper(ProductPage, <ProductPageSkeleton />);
 const WrappedAllProductsPage = PageWrapper(AllProductsPage, <ProductPageSkeleton />);
 const WrappedLoginPage = PageWrapper(LoginPage, <LoginPageSkeleton />);
 const WrappedSignUpPage = PageWrapper(SignUpPage, <LoginPageSkeleton />);
+const WrappedContactPage = PageWrapper(ContactPage, <ContactPageSkeleton />);
 const WrappedPurchaseSuccessPage = PageWrapper(PurchaseSuccessPage);
 const WrappedPurchaseCancelPage = PageWrapper(PurchaseCancelPage);
 const WrappedItemDetailsPage = PageWrapper(ItemDetailsPage, <ItemDetailsSkeleton />);
@@ -94,6 +97,7 @@ const router = createBrowserRouter([
       { path: "/privacy-policy", element: <WrappedPrivacyPolicy /> },
       { path: "/refund-return-policy", element: <WrappedReturnRefundPolicy /> },
       { path: "/terms-of-service", element: <WrappedTermsOfService /> },
+      { path: "/contact-us", element: <WrappedContactPage /> },
     ],
   },
 

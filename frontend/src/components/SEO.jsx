@@ -2,7 +2,7 @@
 
 const SEO = ({ title, description, canonical, keywords = [], schema }) => {
   return (
-    <Helmet>
+     <>
       {/* 🔑 Basic Meta */}
       <title>{title}</title>
       <meta name="description" content={description} />
@@ -27,7 +27,7 @@ const SEO = ({ title, description, canonical, keywords = [], schema }) => {
       {schema && (
         <script type="application/ld+json">{JSON.stringify(schema)}</script>
       )}
-    </Helmet>
+    </>
   );
 };
 

@@ -1,13 +1,17 @@
-import { ShoppingCart, User, Search } from "lucide-react";
+import { ShoppingCart, User, Search, Menu, X } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useUserStore } from "../stores/useUserStore";
 import { useCartStore } from "../stores/useCartStore";
 import logo from "../assets/logo.webp";
+import { useState } from "react";
+// eslint-disable-next-line no-unused-vars
+import { motion, AnimatePresence } from "framer-motion";
 
 const Navbar = () => {
   const { user } = useUserStore();
   const { cart } = useCartStore();
   const navigate = useNavigate();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const categories = [
     { name: "Hair Care", path: "/category/hair-care" },
@@ -21,7 +25,7 @@ const Navbar = () => {
   };
 
   return (
-    <header className="fixed top-0 left-0 w-full bg-black shadow-md z-40 ">
+    <header className="fixed top-0 left-0 w-full bg-black shadow-md z-40">
       <div className="container mx-auto px-3 py-3 flex justify-between items-center">
         {/* Logo */}
         <Link
@@ -31,7 +35,7 @@ const Navbar = () => {
           <img src={logo} alt="Taab e Rukh" className="h-11 w-auto" />
         </Link>
 
-        {/* Center Categories */}
+        {/* Desktop Categories */}
         <nav className="hidden md:flex gap-4">
           {categories.map((cat) => (
             <Link
@@ -46,38 +50,71 @@ const Navbar = () => {
         </nav>
 
         {/* Right Side */}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3">
           {/* Search */}
           <button
             onClick={handleSearch}
-            className="p-2 rounded-md border border-transparent text-white cursor-pointer shake-hover"
+            className="p-2 rounded-md border border-transparent text-white cursor-pointer"
           >
-            <Search size={20} className="text-white" />
+            <Search size={20} />
           </button>
 
           {/* User */}
           <Link
             to={user ? "/profile" : "/login"}
-            className="p-2 rounded-md border border-transparent cursor-pointer text-white shake-hover"
+            className="p-2 rounded-md border border-transparent cursor-pointer text-white"
           >
-            <User size={20} className="text-white" />
+            <User size={20} />
           </Link>
 
           {/* Cart */}
           <Link
             to="/cart"
-            className="relative flex items-center px-3 py-2 rounded-md cursor-pointer text-white transition-all duration-300 border border-transparent shake-hover"
+            className="relative flex items-center px-2 sm:px-3 py-2 rounded-md cursor-pointer text-white transition-all duration-300 border border-transparent"
           >
             <ShoppingCart size={20} className="mr-1" />
             <span className="hidden sm:inline">Cart</span>
             {cart.length > 0 && (
-              <span className="absolute -top-2 -left-2 bg-black text-white rounded-full px-2 py-0.5 text-xs">
+              <span className="absolute -top-2 -left-2 bg-red-600 text-white rounded-full px-2 py-0.5 text-xs">
                 {cart.length}
               </span>
             )}
           </Link>
+
+          {/* Mobile Menu Toggle */}
+          <button
+            className="md:hidden text-white p-2"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          >
+            {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
         </div>
       </div>
+
+      {/* Mobile Dropdown Menu with Animation */}
+      <AnimatePresence>
+        {mobileMenuOpen && (
+          <motion.div
+            key="mobileMenu"
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
+            className="md:hidden bg-black border-t border-gray-700 px-3 py-4 space-y-2"
+          >
+            {categories.map((cat) => (
+              <Link
+                key={cat.name}
+                to={cat.path}
+                className="block w-full px-3 py-2 text-white font-medium rounded-lg hover:bg-white hover:text-black"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                {cat.name}
+              </Link>
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </header>
   );
 };
