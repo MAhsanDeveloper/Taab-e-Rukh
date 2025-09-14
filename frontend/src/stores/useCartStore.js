@@ -14,7 +14,7 @@ export const useCartStore = create((set, get) => ({
   // Fetch user's active coupon
   getMyCoupon: async () => {
     try {
-      const res = await axios.get(`${baseURL}/api/coupons`, { withCredentials: true });
+    const res = await axios.get("/coupons", { withCredentials: true });
       if (res.data) {
         set({ coupon: res.data, isCouponApplied: true });
         get().calculateTotals();
@@ -28,19 +28,23 @@ export const useCartStore = create((set, get) => ({
   },
 
   // Apply coupon (POST request)
-  applyCoupon: async (code) => {
-    try {
-      if (!code) return toast.error("Please enter a coupon code");
-      const res = await axios.post(`${baseURL}/api/coupons/validate`, { code }, { withCredentials: true });
-      set({ coupon: res.data, isCouponApplied: true });
-      get().calculateTotals();
-      toast.success("Coupon applied successfully!");
-    } catch (error) {
-      set({ coupon: null, isCouponApplied: false });
-      toast.error(error.response?.data?.message || "Invalid or expired coupon");
-      get().calculateTotals();
-    }
-  },
+applyCoupon: async (code) => {
+  try {
+    if (!code) return toast.error("Please enter a coupon code");
+
+    const res = await axios.post(`${baseURL}/api/coupons/validate`, { code }, { withCredentials: true });
+
+    set({ coupon: res.data, isCouponApplied: true });
+    get().calculateTotals();
+    toast.success("Coupon applied successfully!");
+  } catch (error) {
+    set({ coupon: null, isCouponApplied: false });
+    get().calculateTotals();
+    toast.error(error.response?.data?.message || "Invalid or expired coupon");
+  }
+},
+
+
 
   // Remove applied coupon
   removeCoupon: async () => {

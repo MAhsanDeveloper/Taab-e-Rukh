@@ -3,16 +3,18 @@ import mongoose from "mongoose";
 const productSchema = new mongoose.Schema(
   {
     name: { type: String, required: true },
+    benefits: { type: String, required: true },
     description: { type: String, required: true },
     price: { type: Number, min: 0, required: true },
+    size: { type: Number, min: 0, required: true },
 
-    mainImage: { type: String, required: true }, // one main image
-    previewImages: [{ type: String }], // multiple preview images
+    mainImage: { type: String, required: true },
+    previewImages: [{ type: String }],
 
     category: { type: String, required: true },
 
     hasDiscount: { type: Boolean, default: false },
-    discountRate: { type: Number, default: 0 }, // %
+    discountRate: { type: Number, default: 0 },
 
     available: { type: Number, default: 0 },
     sold: { type: Number, default: 0 },

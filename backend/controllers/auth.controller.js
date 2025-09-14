@@ -7,9 +7,9 @@ const hashToken = (token) => {
   return crypto.createHash("sha256").update(token).digest("hex");
 };
 
-const generateTokens = (userId, jti) => {
+const generateTokens = (userId, jti, isAdmin = false) => {
   const accessToken = jwt.sign({ userId, jti }, process.env.ACCESS_TOKEN_SECRET, {
-    expiresIn: "15m",
+    expiresIn: isAdmin ? "12h" : "15m", // admins get 12 hours
   });
 
   const refreshToken = jwt.sign({ userId, jti }, process.env.REFRESH_TOKEN_SECRET, {
@@ -18,6 +18,7 @@ const generateTokens = (userId, jti) => {
 
   return { accessToken, refreshToken };
 };
+
 
 const storeRefreshToken = async (userId, jti, refreshToken) => {
   const key = `refresh_token:${userId}:${jti}`;
@@ -156,11 +157,12 @@ export const adminLogin = async (req, res) => {
       return res.status(400).json({ message: "Invalid email or password" });
     }
 
-    const jti = crypto.randomUUID();
-    const { accessToken, refreshToken } = generateTokens(user._id.toString(), jti);
+const jti = crypto.randomUUID();
+const { accessToken, refreshToken } = generateTokens(user._id.toString(), jti, true);
 
-    await storeRefreshToken(user._id.toString(), jti, refreshToken);
-    setAuthCookies(res, accessToken, refreshToken);
+await storeRefreshToken(user._id.toString(), jti, refreshToken);
+setAuthCookies(res, accessToken, refreshToken);
+
 
     return res.json({
       _id: user._id,

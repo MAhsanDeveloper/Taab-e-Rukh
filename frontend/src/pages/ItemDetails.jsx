@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import axios from "axios";
+import axios from "../lib/axios";
 import toast from "react-hot-toast";
 import { ArrowLeft } from "lucide-react";
 import AddToCartButton from "../components/AddToCartButton";
@@ -16,7 +16,7 @@ const ItemDetails = () => {
   useEffect(() => {
     const fetchItem = async () => {
       try {
-        const res = await axios.get(`${baseURL}/api/shop/${id}`);
+        const res = await axios.get(`/shop/${id}`);
         const product = res.data;
 
         setItem(product);
@@ -36,64 +36,83 @@ const ItemDetails = () => {
   }, [id]);
 
   if (!item) {
-    return <div className="text-white text-center mt-16">Loading...</div>;
+    return <div className="text-gray-600 text-center mt-16">Loading...</div>;
   }
 
   return (
-    <div className="min-h-screen bg-base-100 text-white px-4 sm:px-8 py-6">
+    <div className="min-h-screen bg-base-100 px-4 sm:px-8 py-6">
       {/* Back Button */}
       <div className="mb-4 sm:hidden">
         <button
           onClick={() => navigate(-1)}
-          className="flex items-center text-sm text-black hover:text-primary transition"
+          className="flex items-center text-sm text-gray-600 hover:text-primary transition"
         >
           <ArrowLeft className="w-4 h-4 mr-2" /> Back
         </button>
       </div>
 
-      <div className="max-w-6xl text-black mx-auto grid grid-cols-1 md:grid-cols-2 gap-10">
+      <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-10">
         {/* Image Section */}
-        <div>
-          <img
-            src={mainImage}
-            alt={item.name}
-            className="w-full max-h-[400px] object-fill rounded-xl shadow-md border border-gray-700"
-          />
+        <div className="flex flex-col items-center md:sticky md:top-24 self-start">
+          <div className="w-full h-[390px] flex items-center justify-center border border-gray-200 rounded-xl shadow-md bg-white">
+            <img
+              src={mainImage}
+              alt={item.name}
+              className="w-full h-full object-fill rounded-xl"
+            />
+          </div>
 
           {/* Thumbnails */}
-          {[item.mainImage, ...(item.previewImages || [])].slice(0, 3).map((img, index) => {
-            const finalUrl = img?.startsWith("http") ? img : `${baseURL}${img}`;
-            return (
-              <img
-                key={index}
-                src={finalUrl}
-                alt={`preview-${index}`}
-                onClick={() => setMainImage(finalUrl)}
-                className={`w-20 h-20 rounded-lg object-cover border-2 cursor-pointer transition-all duration-200 ${
-                  mainImage === finalUrl
-                    ? "border-primary ring-2 ring-primary"
-                    : "border-gray-600"
-                }`}
-              />
-            );
-          })}
+          <div className="flex justify-center gap-3 mt-4 flex-wrap">
+            {[item.mainImage, ...(item.previewImages || [])]
+              .slice(0, 4)
+              .map((img, index) => {
+                const finalUrl = img?.startsWith("http")
+                  ? img
+                  : `${baseURL}${img}`;
+                return (
+                  <div
+                    key={index}
+                    onClick={() => setMainImage(finalUrl)}
+                    className={`w-20 h-20 sm:w-24 sm:h-24 rounded-lg overflow-hidden border cursor-pointer transition-all duration-200 flex items-center justify-center ${
+                      mainImage === finalUrl
+                        ? "ring-2 ring-primary border-primary"
+                        : "border-gray-300"
+                    }`}
+                  >
+                    <img
+                      src={finalUrl}
+                      alt={`preview-${index}`}
+                      className="w-full h-full object-fill"
+                    />
+                  </div>
+                );
+              })}
+          </div>
         </div>
 
         {/* Info Section */}
         <div className="flex flex-col justify-between space-y-6">
-          <div className="space-y-3">
-            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">
+          <div className="space-y-4">
+            {/* Title */}
+            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-gray-900">
               {item.name}
             </h2>
 
-            <p className="text-base text-black leading-relaxed">
+            {/* Description */}
+            <p className="text-base text-gray-700 leading-relaxed whitespace-pre-line">
               {item.description}
             </p>
 
-            {/* Stock Status */}
+            {/* Size */}
+            <p className="text-base text-emerald-700 font-medium">
+              Size: {item.size} ml
+            </p>
+
+            {/* Stock */}
             <p
               className={`text-sm font-semibold ${
-                item.inStock ? "text-green-400" : "text-red-500"
+                item.inStock ? "text-green-600" : "text-red-500"
               }`}
             >
               {item.inStock
@@ -102,39 +121,53 @@ const ItemDetails = () => {
             </p>
 
             {/* Price */}
-            <div className="mt-2 space-y-1">
+            <div className="mt-3 space-y-2">
               {item.hasDiscount ? (
                 <>
-                  <p className="text-xl text-red-500 line-through">
-                    Rs {item.price.toLocaleString()}
+                  <p className="text-lg text-gray-500 relative inline-block">
+                    <span
+                      className="relative text-gray-400"
+                      style={{
+                        textDecoration: "line-through",
+                        textDecorationColor: "red",
+                        textDecorationThickness: "2px",
+                        textDecorationStyle: "solid",
+                        transform: "skewY(-5deg)",
+                        display: "inline-block",
+                      }}
+                    >
+                      Rs {item.price.toLocaleString()}
+                    </span>
                   </p>
-                  <p className="text-3xl text-green-400 font-extrabold">
+                  <p className="text-3xl text-emerald-600 font-extrabold">
                     Rs{" "}
                     {Math.round(
                       item.price - (item.price * item.discountRate) / 100
                     ).toLocaleString()}
                   </p>
-                  <p className="text-sm text-green-300">
+                  <p className="text-sm text-green-500 font-medium">
                     Save {item.discountRate}% instantly!
                   </p>
                 </>
               ) : (
-                <p className="text-3xl text-yellow-400 font-bold">
-                  Rs {item.price.toLocaleString()}
-                  <div className="text-sm w-fit rounded text-green-500 text-left font-semibold z-10">
+                <div>
+                  <p className="text-3xl text-yellow-600 font-bold">
+                    Rs {item.price.toLocaleString()}
+                  </p>
+                  <span className="inline-block text-xs px-2 py-1 mt-1 rounded bg-green-100 text-green-700 font-medium">
                     Free Delivery
-                  </div>
-                </p>
+                  </span>
+                </div>
               )}
             </div>
           </div>
 
-          {/* Buttons Section */}
+          {/* Buttons */}
           <div className="flex flex-col items-center gap-4">
             {item.inStock ? (
               <AddToCartButton
                 product={item}
-                className="bg-black hover:bg-white hover:text-black border border-black 
+                className="bg-black hover:bg-gray-800 border border-black 
                            text-white font-bold rounded-full px-10 py-4 
                            transition-all duration-300 ease-in-out 
                            shadow-md hover:shadow-lg hover:scale-105"
@@ -148,7 +181,6 @@ const ItemDetails = () => {
               </button>
             )}
 
-            {/* Go to Cart Shortcut */}
             <Link
               to="/cart"
               className="inline-block text-center bg-gradient-to-r from-blue-500 to-indigo-600 

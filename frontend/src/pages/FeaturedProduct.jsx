@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
+import { useEffect, useState } from "react";
+import axios from "../lib/axios";
 import AddToCartButton from "../components/AddToCartButton";
 
 const FeaturedProduct = () => {
@@ -8,7 +8,7 @@ const FeaturedProduct = () => {
 
   useEffect(() => {
     axios
-      .get(`${import.meta.env.VITE_API_BASE_URL}/api/shop/featured`)
+      .get(`/shop/featured`)
       .then((res) => {
         const featured = res.data || [];
         if (featured.length > 0) {

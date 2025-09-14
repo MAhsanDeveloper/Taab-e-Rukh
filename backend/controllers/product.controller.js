@@ -6,7 +6,6 @@ import {
   deleteImageByUrl,
 } from "../lib/cloudinaryUpload.js";
 
-// Get all products
 export const getAllProducts = async (req, res) => {
   try {
     const products = await Product.find({});
@@ -17,7 +16,6 @@ export const getAllProducts = async (req, res) => {
   }
 };
 
-// Get featured products (with Redis cache)
 export const getFeaturedProducts = async (req, res) => {
   try {
     let featuredProducts = await redis.get("featured_products");
@@ -38,13 +36,14 @@ export const getFeaturedProducts = async (req, res) => {
   }
 };
 
-// Create product
 export const createProduct = async (req, res) => {
   try {
     const {
       name,
+      benefits,
       description,
       price,
+      size,
       category,
       hasDiscount,
       discountRate,
@@ -86,11 +85,12 @@ export const createProduct = async (req, res) => {
       }
     }
 
-    // 🔹 Save to MongoDB
     const product = await Product.create({
       name,
+      benefits,
       description,
       price,
+      size,
       category,
       hasDiscount,
       discountRate,
@@ -108,13 +108,11 @@ export const createProduct = async (req, res) => {
   }
 };
 
-// Delete product (and images)
 export const deleteProduct = async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
     if (!product) return res.status(404).json({ message: "Product not found" });
 
-    // delete images
     await deleteImageByUrl(product.mainImage);
     for (const img of product.previewImages || []) {
       await deleteImageByUrl(img);
@@ -128,21 +126,18 @@ export const deleteProduct = async (req, res) => {
   }
 };
 
-// Update product (and replace images if uploaded)
 export const updateProduct = async (req, res) => {
   try {
     const { id } = req.params;
     const product = await Product.findById(id);
     if (!product) return res.status(404).json({ message: "Product not found" });
 
-    // mainImage
     if (req.files?.mainImage) {
       await deleteImageByUrl(product.mainImage);
       const uploadRes = await uploadOptimizedImage(req.files.mainImage[0].buffer);
       req.body.mainImage = uploadRes.secure_url;
     }
 
-    // previewImages
     if (req.files?.previewImages) {
       for (const img of product.previewImages || []) {
         await deleteImageByUrl(img);
@@ -168,7 +163,6 @@ export const updateProduct = async (req, res) => {
   }
 };
 
-// Other routes
 export const getRecommendedProducts = async (req, res) => {
   try {
     const products = await Product.aggregate([

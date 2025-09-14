@@ -10,8 +10,10 @@ const ShopManager = () => {
   const [products, setProducts] = useState([]);
   const [newProduct, setNewProduct] = useState({
     name: "",
+    benefits: "",
     description: "",
     price: "",
+    size: "",
     category: "",
     hasDiscount: false,
     discountRate: 0,
@@ -51,9 +53,10 @@ const ShopManager = () => {
         }
       });
 
-      await axios.post("/shop"), formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      };
+    await axios.post("/shop", formData, {
+  headers: { "Content-Type": "multipart/form-data" },
+});
+
 
       toast.success("Product added");
       resetNewProduct();
@@ -66,8 +69,10 @@ const ShopManager = () => {
   const resetNewProduct = () => {
     setNewProduct({
       name: "",
+      benefits: "",
       description: "",
       price: "",
+      size: "",
       category: "",
       hasDiscount: false,
       discountRate: 0,
@@ -93,8 +98,10 @@ const ShopManager = () => {
 
   const updateProduct = async (id) => {
     try {
-    await axios.put(`/shop/${id}`), editForm
-      toast.success("Updated");
+   await axios.put(`/shop/${id}`, editForm, {
+  headers: { "Content-Type": "application/json" },
+});
+toast.success("Updated");
       setEditingId(null);
       setEditForm({});
       fetchProducts();
@@ -103,24 +110,29 @@ const ShopManager = () => {
     }
   };
 
-  const fetchSpotlight = async () => {
-    try {
-     const res = await axios.get("/spotlight");
-      setSpotlightCategories(res.data.categories || []);
-    } catch {
-      toast.error("Failed to load spotlight categories");
-    }
-  };
+const fetchSpotlight = async () => {
+  try {
+    const res = await axios.get("/spotlight");
+    setSpotlightCategories(res.data.categories || []);
+  } catch {
+    toast.error("Failed to load spotlight categories");
+  }
+};
 
-  const updateSpotlight = async () => {
-    try {
-     await axios.put("/spotlight"),
-        { categories: spotlightCategories },
-      toast.success("Spotlight updated");
-    } catch {
-      toast.error("Failed to update spotlight");
-    }
-  };
+
+const updateSpotlight = async () => {
+  try {
+    await axios.put(
+      "/spotlight",
+      { categories: spotlightCategories },
+      { headers: { "Content-Type": "application/json" } }
+    );
+    toast.success("Spotlight updated");
+  } catch {
+    toast.error("Failed to update spotlight");
+  }
+};
+
 
      const slugify = (str) =>
   str
@@ -185,6 +197,15 @@ const ShopManager = () => {
             }
             className="p-2 rounded border"
           />
+          <input
+            type="number"
+            placeholder="Size"
+            value={newProduct.size}
+            onChange={(e) =>
+              setNewProduct({ ...newProduct, size: e.target.value })
+            }
+            className="p-2 rounded border"
+          />
       
           <select
             value={newProduct.category}
@@ -202,6 +223,15 @@ const ShopManager = () => {
               </option>
             ))}
           </select>
+
+          <textarea
+            placeholder="Benefits"
+            value={newProduct.benefits}
+            onChange={(e) =>
+              setNewProduct({ ...newProduct, benefits: e.target.value })
+            }
+            className="p-2 rounded border col-span-full"
+          />
           <textarea
             placeholder="Description"
             value={newProduct.description}
@@ -317,6 +347,22 @@ const ShopManager = () => {
                   }
                   className="p-2 border rounded w-full"
                 />
+                <input
+                  type="text"
+                  defaultValue={p.size}
+                  onChange={(e) =>
+                    setEditForm({ ...editForm, size: e.target.value })
+                  }
+                  className="p-2 border rounded w-full"
+                />
+                <input
+                  type="text"
+                  defaultValue={p.benefits}
+                  onChange={(e) =>
+                    setEditForm({ ...editForm, benefits: e.target.value })
+                  }
+                  className="p-2 border rounded w-full"
+                />
                 <textarea
                   defaultValue={p.description}
                   onChange={(e) =>
@@ -348,7 +394,8 @@ const ShopManager = () => {
             ) : (
               <>
                 <h3 className="font-bold mt-2">{p.name}</h3>
-                <p className="text-sm">{p.description}</p>
+                <p className="text-sm">{p.benefits}</p>
+                <p className="text-sm">{p.size}</p>
                 <p className="text-sm">Rs {p.price}</p>
                 <p className="text-xs">
                   Stock: {p.available} | Sold: {p.sold}
@@ -376,11 +423,7 @@ const ShopManager = () => {
                   <button
                     onClick={async () => {
                       try {
-                        await axios.patch(
-                          `${baseURL}/api/shop/${p._id}`,
-                          {},
-                          { withCredentials: true }
-                        );
+                        await axios.patch(`/shop/${p._id}`);
                         toast.success(
                           `Product ${
                             p.isFeatured ? "unmarked" : "marked"
