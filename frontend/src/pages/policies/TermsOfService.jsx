@@ -146,7 +146,7 @@ const TermsOfService = () => {
 
         <p className="mt-10 font-medium">
           If you have any questions about these Terms of Service, please{" "}
-          <a href="/contact" className="text-green-600 underline">
+          <a href="/contact-us" className="text-green-600 underline">
             contact us
           </a>
           .

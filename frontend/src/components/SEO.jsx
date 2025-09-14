@@ -1,8 +1,8 @@
-// import { Helmet } from "react-helmet-async";
+import { Helmet } from "react-helmet-async";
 
 const SEO = ({ title, description, canonical, keywords = [], schema }) => {
   return (
-     <>
+     <helmet>
       {/* 🔑 Basic Meta */}
       <title>{title}</title>
       <meta name="description" content={description} />
@@ -27,7 +27,7 @@ const SEO = ({ title, description, canonical, keywords = [], schema }) => {
       {schema && (
         <script type="application/ld+json">{JSON.stringify(schema)}</script>
       )}
-    </>
+    </helmet>
   );
 };
 
