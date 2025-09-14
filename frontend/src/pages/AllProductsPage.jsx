@@ -17,10 +17,11 @@ const AllProductsPage = () => {
   }));
 
   return (
-    <div className="min-h-screen bg-white py-3">
-      <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-white py-6 overflow-x-hidden">
+      {/* Page container */}
+      <div className="max-w-screen-xl mx-auto px-6 md:px-8 lg:px-10">
         <motion.h1
-          className="text-left w-fit text-xl sm:text-3xl font-bold text-black bg-white px-5 py-4 rounded-4xl mb-10 hover:bg-black hover:text-white transition-all duration-700"
+          className="inline-block text-left text-xl sm:text-3xl font-bold text-black bg-white px-6 py-3 rounded-2xl shadow-sm mb-10 hover:bg-black hover:text-white transition-all duration-700"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}

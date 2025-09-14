@@ -36,7 +36,6 @@ const AdminAnalytics = () => {
     const fetchAnalytics = async () => {
       try {
         const { data } = await axios.get("/analytics");
-        // console.log("Analytics API Response:", data);
         setAnalytics(data);
       } catch (err) {
         console.error("Failed to fetch analytics:", err);

@@ -3,7 +3,14 @@ import { Link } from "react-router-dom";
 import axios from "axios";
 // eslint-disable-next-line no-unused-vars
 import { motion } from "framer-motion";
-import { MessageCircle, MapPin, Phone, Mail, Send, CheckCircle } from "lucide-react";
+import {
+  MessageCircle,
+  MapPin,
+  Phone,
+  Mail,
+  Send,
+  CheckCircle,
+} from "lucide-react";
 import { FaFacebook, FaInstagram, FaYoutube, FaTiktok } from "react-icons/fa";
 
 const baseURL = import.meta.env.VITE_API_BASE_URL;
@@ -109,7 +116,25 @@ const Footer = () => {
           transition={{ duration: 0.6, delay: 0.2 }}
         >
           <h3 className="font-bold text-xl mb-5">Quick Links</h3>
-          <ul className="space-y-3 text-gray-300 text-base">
+          <ul className="space-y-2 text-gray-300 text-base">
+            {/* New Home link */}
+            <li>
+              <Link
+                to="/"
+                className="hover:text-white hover:underline underline-offset-4 cursor-pointer transition"
+              >
+                Home
+              </Link>
+            </li>
+            {/* New All Products link */}
+            <li>
+              <Link
+                to="/all-products"
+                className="hover:text-white hover:underline underline-offset-4 cursor-pointer transition"
+              >
+                All Products
+              </Link>
+            </li>
             {categories.map((cat) => (
               <li key={cat.name}>
                 <Link

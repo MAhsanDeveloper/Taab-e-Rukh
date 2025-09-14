@@ -4,7 +4,12 @@ import axios from "../lib/axios";
 import toast from "react-hot-toast";
 
 const baseURL = import.meta.env.VITE_API_BASE_URL;
-const categories = ["Hair Care", "Skin Care", "Face & Glow ", "Body & Baby"];
+const categories = [
+  { name: "Hair Care", slug: "hair-care" },
+  { name: "Skin Care", slug: "skin-care" },
+  { name: "Face & Glow", slug: "face-glow" },
+  { name: "Body & Baby", slug: "body-baby" },
+];
 
 const ShopManager = () => {
   const [products, setProducts] = useState([]);
@@ -33,7 +38,7 @@ const ShopManager = () => {
 
   const fetchProducts = async () => {
     try {
-     const res = await axios.get("/shop");
+      const res = await axios.get("/shop");
       setProducts(res.data.products || []);
     } catch (err) {
       toast.error("Failed to fetch products");
@@ -53,10 +58,9 @@ const ShopManager = () => {
         }
       });
 
-    await axios.post("/shop", formData, {
-  headers: { "Content-Type": "multipart/form-data" },
-});
-
+      await axios.post("/shop", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
 
       toast.success("Product added");
       resetNewProduct();
@@ -88,7 +92,7 @@ const ShopManager = () => {
 
   const deleteProduct = async (id) => {
     try {
-      await axios.delete(`/shop/${id}`)
+      await axios.delete(`/shop/${id}`);
       toast.success("Deleted");
       fetchProducts();
     } catch {
@@ -98,10 +102,10 @@ const ShopManager = () => {
 
   const updateProduct = async (id) => {
     try {
-   await axios.put(`/shop/${id}`, editForm, {
-  headers: { "Content-Type": "application/json" },
-});
-toast.success("Updated");
+      await axios.put(`/shop/${id}`, editForm, {
+        headers: { "Content-Type": "application/json" },
+      });
+      toast.success("Updated");
       setEditingId(null);
       setEditForm({});
       fetchProducts();
@@ -110,41 +114,27 @@ toast.success("Updated");
     }
   };
 
-const fetchSpotlight = async () => {
-  try {
-    const res = await axios.get("/spotlight");
-    setSpotlightCategories(res.data.categories || []);
-  } catch {
-    toast.error("Failed to load spotlight categories");
-  }
-};
+  const fetchSpotlight = async () => {
+    try {
+      const res = await axios.get("/spotlight");
+      setSpotlightCategories(res.data.categories || []);
+    } catch {
+      toast.error("Failed to load spotlight categories");
+    }
+  };
 
-
-const updateSpotlight = async () => {
-  try {
-    await axios.put(
-      "/spotlight",
-      { categories: spotlightCategories },
-      { headers: { "Content-Type": "application/json" } }
-    );
-    toast.success("Spotlight updated");
-  } catch {
-    toast.error("Failed to update spotlight");
-  }
-};
-
-
-     const slugify = (str) =>
-  str
-    .toLowerCase()
-    .replace(/&/g, "")        
-    .replace(/\s+/g, "-")      
-    .replace(/-+/g, "-")
-    .trim();
-
-  useEffect(() => {
-    fetchSpotlight();
-  }, []);
+  const updateSpotlight = async () => {
+    try {
+      await axios.put(
+        "/spotlight",
+        { categories: spotlightCategories },
+        { headers: { "Content-Type": "application/json" } }
+      );
+      toast.success("Spotlight updated");
+    } catch {
+      toast.error("Failed to update spotlight");
+    }
+  };
 
   // Image handlers
   const handleMainImage = (e) => {
@@ -206,20 +196,20 @@ const updateSpotlight = async () => {
             }
             className="p-2 rounded border"
           />
-      
+
           <select
             value={newProduct.category}
             onChange={(e) =>
               setNewProduct({
                 ...newProduct,
-                category: slugify(e.target.value),
+                category: e.target.value,
               })
             }
           >
             <option value="">Select Category</option>
             {categories.map((cat) => (
-              <option key={cat} value={slugify(cat)}>
-                {cat}
+              <option key={cat.slug} value={cat.slug}>
+                {cat.name}
               </option>
             ))}
           </select>
@@ -455,34 +445,34 @@ const updateSpotlight = async () => {
           Choose up to 4 categories to spotlight on homepage
         </p>
 
-        <div className="flex flex-wrap gap-3">
-          {categories.map((cat) => {
-            const slug = cat.toLowerCase().replace(/\s+/g, "-");
-            const selected = spotlightCategories.includes(slug);
+     <div className="flex flex-wrap gap-3">
+  {categories.map((cat) => {
+    const selected = spotlightCategories.includes(cat.slug);
 
-            return (
-              <button
-                key={slug}
-                onClick={() => {
-                  if (selected) {
-                    setSpotlightCategories(
-                      spotlightCategories.filter((c) => c !== slug)
-                    );
-                  } else if (spotlightCategories.length < 4) {
-                    setSpotlightCategories([...spotlightCategories, slug]);
-                  } else {
-                    toast.error("Maximum 4 spotlight categories allowed");
-                  }
-                }}
-                className={`px-4 py-2 rounded ${
-                  selected ? "bg-amber-600 text-white" : "bg-gray-200"
-                }`}
-              >
-                {cat}
-              </button>
+    return (
+      <button
+        key={cat.slug}
+        onClick={() => {
+          if (selected) {
+            setSpotlightCategories(
+              spotlightCategories.filter((c) => c !== cat.slug)
             );
-          })}
-        </div>
+          } else if (spotlightCategories.length < 4) {
+            setSpotlightCategories([...spotlightCategories, cat.slug]);
+          } else {
+            toast.error("Maximum 4 spotlight categories allowed");
+          }
+        }}
+        className={`px-4 py-2 rounded ${
+          selected ? "bg-amber-600 text-white" : "bg-gray-200"
+        }`}
+      >
+        {cat.name}
+      </button>
+    );
+  })}
+</div>
+
 
         <button
           onClick={updateSpotlight}

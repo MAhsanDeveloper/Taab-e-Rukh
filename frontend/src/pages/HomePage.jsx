@@ -6,7 +6,7 @@ import Hero from "../components/Hero";
 // eslint-disable-next-line no-unused-vars
 const withSuspense = (Component) => {
   return (props) => (
-    <Suspense fallback={<div className="text-center py-10">Loading...</div>}>
+    <Suspense fallback={<div className="text-center py-10"></div>}>
       <Component {...props} />
     </Suspense>
   );

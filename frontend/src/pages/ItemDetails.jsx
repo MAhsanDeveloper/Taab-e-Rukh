@@ -36,7 +36,7 @@ const ItemDetails = () => {
   }, [id]);
 
   if (!item) {
-    return <div className="text-gray-600 text-center mt-16">Loading...</div>;
+    return <div className="text-gray-600 text-center mt-16"></div>;
   }
 
   return (
