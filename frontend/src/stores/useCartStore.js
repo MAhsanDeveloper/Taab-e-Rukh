@@ -27,12 +27,12 @@ export const useCartStore = create((set, get) => ({
     }
   },
 
-  // Apply coupon (POST request)
 applyCoupon: async (code) => {
   try {
     if (!code) return toast.error("Please enter a coupon code");
+const res = await axios.post(`/coupons/validate`, { code }, { withCredentials: true });
 
-    const res = await axios.post(`${baseURL}/api/coupons/validate`, { code }, { withCredentials: true });
+
 
     set({ coupon: res.data, isCouponApplied: true });
     get().calculateTotals();

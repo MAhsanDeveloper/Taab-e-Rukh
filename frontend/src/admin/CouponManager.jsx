@@ -10,40 +10,39 @@ const CouponManager = () => {
     expirationDate: "",
   });
 
-const fetchCoupons = async () => {
-  try {
-   const res = await axios.get("/coupons/all");
-    setCoupons(res.data);
-  } catch {
-    toast.error("Failed to fetch coupons");
-  }
-};
+  const fetchCoupons = async () => {
+    try {
+      const res = await axios.get("/coupons/all");
+      setCoupons(res.data);
+    } catch {
+      toast.error("Failed to fetch coupons");
+    }
+  };
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  try {
-  await axios.post("/coupons", {
-     ...form,
-     discountPercentage: Number(form.discountPercentage),
-   });
-    toast.success("Coupon created");
-    setForm({ code: "", discountPercentage: "", expirationDate: "" });
-    fetchCoupons();
-  } catch (err) {
-    toast.error(err.response?.data?.message || "Failed to create coupon");
-  }
-};
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await axios.post("/coupons", {
+        ...form,
+        discountPercentage: Number(form.discountPercentage),
+      });
+      toast.success("Coupon created");
+      setForm({ code: "", discountPercentage: "", expirationDate: "" });
+      fetchCoupons();
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Failed to create coupon");
+    }
+  };
 
-const handleDelete = async (id) => {
-  try {
-     await axios.delete(`/coupons/${id}`);
-    toast.success("Coupon deleted");
-    fetchCoupons();
-  } catch {
-    toast.error("Failed to delete coupon");
-  }
-};
-
+  const handleDelete = async (id) => {
+    try {
+      await axios.delete(`/coupons/${id}`);
+      toast.success("Coupon deleted");
+      fetchCoupons();
+    } catch {
+      toast.error("Failed to delete coupon");
+    }
+  };
 
   useEffect(() => {
     fetchCoupons();
@@ -80,9 +79,7 @@ const handleDelete = async (id) => {
         <input
           type="date"
           value={form.expirationDate}
-          onChange={(e) =>
-            setForm({ ...form, expirationDate: e.target.value })
-          }
+          onChange={(e) => setForm({ ...form, expirationDate: e.target.value })}
           className="border p-2 w-full"
           required
         />

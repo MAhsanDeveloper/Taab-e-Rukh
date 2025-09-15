@@ -19,9 +19,7 @@ const fetchCsrfToken = async () => {
       baseURL: axiosInstance.defaults.baseURL,
       withCredentials: true,
     });
-    const res = await raw.get("/csrf-token"); // ❌ wrong
-    // FIX ✅:
-    // const res = await raw.get("/api/csrf-token");
+    const res = await raw.get("/csrf-token");
     csrfToken = res.data?.csrfToken || null;
     return csrfToken;
   } catch (err) {

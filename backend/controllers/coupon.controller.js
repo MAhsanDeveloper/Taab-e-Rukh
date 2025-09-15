@@ -21,10 +21,11 @@ export const validateCoupon = async (req, res) => {
       return res.status(400).json({ message: "Coupon code is required" });
     }
 
-    const coupon = await Coupon.findOne({
-      code: code.trim().toUpperCase(),
-      isActive: true,
-    });
+ const coupon = await Coupon.findOne({
+  code: { $regex: `^${code.trim()}$`, $options: "i" },
+  isActive: true,
+});
+
 
     if (!coupon) {
       return res.status(404).json({ message: "Invalid coupon code" });
@@ -47,7 +48,6 @@ export const validateCoupon = async (req, res) => {
   }
 };
 
-// Admin: get all coupons
 export const getAllCoupons = async (req, res) => {
   try {
     const coupons = await Coupon.find();
@@ -57,7 +57,6 @@ export const getAllCoupons = async (req, res) => {
   }
 };
 
-// Admin: create coupon
 export const createCoupon = async (req, res) => {
   try {
     const { code, discountPercentage, expirationDate } = req.body;
@@ -78,7 +77,6 @@ export const createCoupon = async (req, res) => {
   }
 };
 
-// Admin: delete coupon
 export const deleteCoupon = async (req, res) => {
   try {
     const { id } = req.params;

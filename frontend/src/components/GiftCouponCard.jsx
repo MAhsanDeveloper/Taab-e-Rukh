@@ -40,7 +40,7 @@ const handleApplyCoupon = () => {
             htmlFor="voucher"
             className="mb-2 block text-sm font-medium text-gray-300"
           >
-            Do you have a voucher or gift card?
+            Do you have any coupon code?
           </label>
           <input
             type="text"
