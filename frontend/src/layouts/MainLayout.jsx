@@ -2,30 +2,24 @@ import { Outlet } from "react-router-dom";
 import ScrollToTop from "../components/scrollToTop";
 import Navbar from "../components/Navbar";
 import Breadcrumbs from "../components/Breadcrumbs";
-import { Suspense, lazy } from "react";
-const Footer = lazy(() => import("../components/Footer"));
+import Footer from "../components/Footer";
 
 const MainLayout = () => {
   return (
     <div className="w-full flex flex-col bg-white">
-      {/* Navbar */}
+
       <Navbar />
 
-      {/* Scroll to top on route change */}
       <ScrollToTop />
 
-      {/* Breadcrumbs below navbar */}
       <div className="pt-[72px]">
         <Breadcrumbs />
 
-        {/* Page Content */}
         <Outlet />
       </div>
-
-      {/* Footer */}
-      <Suspense fallback={<div className="text-center py-10 text-gray-400"></div>}>
+      
         <Footer />
-      </Suspense>
+   
     </div>
   );
 };

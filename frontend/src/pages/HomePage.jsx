@@ -1,22 +1,10 @@
-import { useEffect, useState, lazy, Suspense } from "react";
+import { useEffect, useState } from "react";
 import axios from "../lib/axios";
 import Hero from "../components/Hero";
-
-//  Define helper BEFORE usage
-// eslint-disable-next-line no-unused-vars
-const withSuspense = (Component) => {
-  return (props) => (
-    <Suspense fallback={<div className="text-center py-10"></div>}>
-      <Component {...props} />
-    </Suspense>
-  );
-};
-
-//  Lazy imports wrapped with Suspense
-const FeaturedProduct = withSuspense(lazy(() => import("./FeaturedProduct")));
-const USPSTRIP = withSuspense(lazy(() => import("../components/USPSTRIP")));
-const SpotlightCategory = withSuspense(lazy(() => import("../components/SpotlightCategories")));
-const CategoryCarousel = withSuspense(lazy(() => import("../components/CategoryCarousel")));
+import FeaturedProduct from "./FeaturedProduct";
+import USPSTRIP from "../components/USPSTRIP";
+import SpotlightCategory from "../components/SpotlightCategories";
+import CategoryCarousel from "../components/CategoryCarousel";
 
 const HomePage = () => {
   const [spotlight, setSpotlight] = useState([]);
@@ -37,7 +25,7 @@ const HomePage = () => {
     <>
       <Hero />
 
-            <CategoryCarousel />
+      <CategoryCarousel />
 
       {spotlight.map((cat) => (
         <SpotlightCategory key={cat} categorySlug={cat} />

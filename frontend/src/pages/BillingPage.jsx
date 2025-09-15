@@ -29,12 +29,10 @@ const BillingPage = () => {
   useEffect(() => {
     (async () => {
       try {
-           // FIXED: ensure CSRF cookie/token is requested on mount.
-     // axios here is your axiosInstance (withCredentials:true)
         const res = await axios.get("/csrf-token");
-        console.log("✅ CSRF cookie set", res.data?.csrfToken ? "token received" : "no token in response");
+        res.data?.csrfToken;
       } catch (err) {
-        console.error("❌ Failed to set CSRF cookie", err);
+        console.error("Error fetching CSRF token", err);
       }
     })();
   }, []);
@@ -42,7 +40,6 @@ const BillingPage = () => {
   const handleChange = (e) =>
     setForm({ ...form, [e.target.name]: e.target.value });
 
-  // --- Cart Calculations ---
   const cartSubtotal = cart.reduce((acc, item) => {
     const price = item.price || 0;
     return acc + price * item.quantity;
@@ -71,12 +68,13 @@ const BillingPage = () => {
   const formattedSavings = savings.toFixed(2);
 
   const handlePlaceOrder = async () => {
-    // FIXED: ensure CSRF token exists before POST — request again if interceptor hasn't fetched one.
     try {
-      await axios.get("/csrf-token"); // safe no-op if token already set; ensures cookie present
+      await axios.get("/csrf-token");
     } catch (e) {
-      // continue; interceptor will attempt to fetch before POST too
-      console.warn("Could not refresh CSRF token before POST:", e?.message || e);
+      console.warn(
+        "Could not refresh CSRF token before POST:",
+        e?.message || e
+      );
     }
 
     for (let key of ["fullName", "phone", "address", "city"]) {
@@ -106,7 +104,7 @@ const BillingPage = () => {
         totalAmount: finalTotal,
       };
 
-  const res = await axios.post("/payments/orders/create", orderData);
+      const res = await axios.post("/payments/orders/create", orderData);
       if (res.status === 201) {
         toast.success("Order placed successfully!");
         navigate("/order-success");

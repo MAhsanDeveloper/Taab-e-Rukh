@@ -1,7 +1,12 @@
 import { lazy, Suspense } from "react";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
+
+// --- Normal Imports ---
 import MainLayout from "./layouts/MainLayout";
 import HomePage from "./pages/HomePage";
+import ProductPage from "./pages/ProductPage";
+import CategoryPage from "./components/CategoryCarousel";
+
 import { Toaster } from "react-hot-toast";
 
 // --- Skeletons ---
@@ -18,7 +23,6 @@ import PageWrapper from "./skeletons/PageWrapper";
 // --- Lazy Pages ---
 const CartPage = lazy(() => import("./pages/CartPage"));
 const BillingPage = lazy(() => import("./pages/BillingPage"));
-const ProductPage = lazy(() => import("./pages/ProductPage"));
 const AllProductsPage = lazy(() => import("./pages/AllProductsPage"));
 const LoginPage = lazy(() => import("./pages/LoginPage"));
 const SignUpPage = lazy(() => import("./pages/SignUpPage"));
@@ -54,6 +58,7 @@ const adminPanelPath = import.meta.env.VITE_ADMIN_PANEL_PATH;
 const WrappedCartPage = PageWrapper(CartPage, <CartPageSkeleton />);
 const WrappedBillingPage = PageWrapper(BillingPage, <BillingPageSkeleton />);
 const WrappedProductPage = PageWrapper(ProductPage, <ProductPageSkeleton />);
+const WrappedCategoryPage = PageWrapper(CategoryPage, <ProductPageSkeleton />);
 const WrappedAllProductsPage = PageWrapper(AllProductsPage, <ProductPageSkeleton />);
 const WrappedLoginPage = PageWrapper(LoginPage, <LoginPageSkeleton />);
 const WrappedSignUpPage = PageWrapper(SignUpPage, <LoginPageSkeleton />);
@@ -89,6 +94,7 @@ const router = createBrowserRouter([
       { path: "/all-products", element: <WrappedAllProductsPage /> },
       { path: "/item/:id", element: <WrappedItemDetailsPage /> },
       { path: "/category/:category", element: <WrappedProductPage /> },
+      { path: "/category/", element: <WrappedCategoryPage /> },
       { path: "/cart", element: <WrappedCartPage /> },
       { path: "/place-your-order", element: <WrappedBillingPage /> },
       { path: "/order-success", element: <WrappedPurchaseSuccessPage /> },

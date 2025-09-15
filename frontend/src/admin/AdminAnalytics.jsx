@@ -1,32 +1,50 @@
 /* eslint-disable no-unused-vars */
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, lazy, Suspense } from "react";
 import axios from "../lib/axios";
 import { motion } from "framer-motion";
-import { Users, Package, ShoppingBag } from "lucide-react";
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend,
-  Filler,
-} from "chart.js";
-import { Line } from "react-chartjs-2";
 
-// Register Chart.js components
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend,
-  Filler
-);
+const LucideIcons = {
+  Users: lazy(() =>
+    import("lucide-react").then((mod) => ({ default: mod.Users }))
+  ),
+  Package: lazy(() =>
+    import("lucide-react").then((mod) => ({ default: mod.Package }))
+  ),
+  ShoppingBag: lazy(() =>
+    import("lucide-react").then((mod) => ({ default: mod.ShoppingBag }))
+  ),
+};
+
+const LazyLineChart = lazy(async () => {
+  const [{ Line }, ChartJS] = await Promise.all([
+    import("react-chartjs-2"),
+    import("chart.js"),
+  ]);
+
+  const {
+    CategoryScale,
+    LinearScale,
+    PointElement,
+    LineElement,
+    Title,
+    Tooltip,
+    Legend,
+    Filler,
+  } = ChartJS;
+
+  ChartJS.Chart.register(
+    CategoryScale,
+    LinearScale,
+    PointElement,
+    LineElement,
+    Title,
+    Tooltip,
+    Legend,
+    Filler
+  );
+
+  return { default: Line };
+});
 
 const AdminAnalytics = () => {
   const [analytics, setAnalytics] = useState(null);
@@ -62,17 +80,17 @@ const AdminAnalytics = () => {
     {
       title: "Total Users",
       value: analyticsData?.users ?? 0,
-      icon: <Users className="w-6 h-6 text-blue-600" />,
+      icon: <LucideIcons.Users className="w-6 h-6 text-blue-600" />,
     },
     {
       title: "Products",
       value: analyticsData?.products ?? 0,
-      icon: <Package className="w-6 h-6 text-green-600" />,
+      icon: <LucideIcons.Package className="w-6 h-6 text-green-600" />,
     },
     {
       title: "Total Sales",
       value: analyticsData?.totalSales ?? 0,
-      icon: <ShoppingBag className="w-6 h-6 text-purple-600" />,
+      icon: <LucideIcons.ShoppingBag className="w-6 h-6 text-purple-600" />,
     },
     {
       title: "Revenue",
@@ -81,7 +99,6 @@ const AdminAnalytics = () => {
     },
   ];
 
-  // Chart.js dataset
   const chartData = {
     labels: dailySalesData?.map((d) => d.date) ?? [],
     datasets: [
@@ -134,7 +151,11 @@ const AdminAnalytics = () => {
             transition={{ duration: 0.5, delay: idx * 0.1 }}
             className="bg-white rounded-2xl shadow-md p-6 flex items-center gap-4 hover:shadow-lg transition"
           >
-            <div className="p-3 rounded-xl bg-gray-100">{stat.icon}</div>
+            <div className="p-3 rounded-xl bg-gray-100">
+              <Suspense fallback={<div className="w-6 h-6 bg-gray-200 rounded" />}>
+                {stat.icon}
+              </Suspense>
+            </div>
             <div>
               <h3 className="text-gray-600 text-sm">{stat.title}</h3>
               <p className="text-2xl font-bold">{stat.value}</p>
@@ -154,7 +175,9 @@ const AdminAnalytics = () => {
           Daily Sales (Last 7 Days)
         </h2>
         <div className="h-[250px]">
-          <Line data={chartData} options={chartOptions} />
+          <Suspense fallback={<p>Loading chart...</p>}>
+            <LazyLineChart data={chartData} options={chartOptions} />
+          </Suspense>
         </div>
       </motion.div>
     </div>

@@ -230,3 +230,27 @@ export const getProductById = async (req, res) => {
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
+
+export const getFeaturedByCategory = async (req, res) => {
+  try {
+    const { category: slug } = req.params;
+
+    const slugToCategory = {
+      "hair-care": "Hair Care",
+      "skin-care": "Skin Care",
+      "face-glow": "Face & Glow",
+      "body-baby": "Body & Baby",
+    };
+
+    const categoryName = slugToCategory[slug];
+    if (!categoryName) return res.status(400).json({ message: "Invalid category slug" });
+
+    // 🔹 Just get up to 4 products in the category
+    const products = await Product.find({ category: categoryName }).limit(4);
+
+    res.json(products);
+  } catch (err) {
+    console.error("❌ Error fetching featured by category:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+};

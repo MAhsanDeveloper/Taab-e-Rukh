@@ -1,9 +1,13 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
+// import { lazy, Suspense } from "react";
 import axios from "../lib/axios";
 import toast from "react-hot-toast";
 import { ArrowLeft } from "lucide-react";
 import AddToCartButton from "../components/AddToCartButton";
+// import { fetchFeaturedByCategory } from "../lib/featuredapi";
+// const FeaturedProducts = lazy(() => import("../components/FeaturedProducts"));
+import USPStrip from "../components/USPStrip";
 
 const baseURL = import.meta.env.VITE_API_BASE_URL;
 
@@ -12,7 +16,9 @@ const ItemDetails = () => {
   const navigate = useNavigate();
   const [item, setItem] = useState(null);
   const [mainImage, setMainImage] = useState("");
+  // const [featured, setFeatured] = useState([]);
 
+  // Fetch the product details
   useEffect(() => {
     const fetchItem = async () => {
       try {
@@ -35,8 +41,44 @@ const ItemDetails = () => {
     fetchItem();
   }, [id]);
 
+// useEffect(() => {
+//   if (!item?.category) return;
+
+//   // Map category name → slug for API
+//   const slugMap = {
+//     "Hair Care": "hair-care",
+//     "Skin Care": "skin-care",
+//     "Face & Glow": "face-glow",
+//     "Body & Baby": "body-baby",
+//   };
+
+//   const categorySlug = slugMap[item.category.trim()];
+//   if (!categorySlug) return; // unknown category
+
+//   fetchFeaturedByCategory(categorySlug)
+//     .then((res) => {
+//       if (!Array.isArray(res)) {
+//         console.warn("Invalid response for featured products:", res);
+//         setFeatured([]);
+//         return;
+//       }
+
+//       // Remove current product from list
+//       const filtered = res.filter((p) => p._id !== item._id);
+
+//       // If filtered empty, still show all in category
+//       setFeatured(filtered.length ? filtered : res);
+//     })
+//     .catch((err) => {
+//       console.error("❌ Failed to fetch featured:", err);
+//       setFeatured([]);
+//     });
+// }, [item]);
+
+
+
   if (!item) {
-    return <div className="text-gray-600 text-center mt-16"></div>;
+    return <div className="text-gray-600 text-center mt-16">Loading...</div>;
   }
 
   return (
@@ -94,22 +136,18 @@ const ItemDetails = () => {
         {/* Info Section */}
         <div className="flex flex-col justify-between space-y-6">
           <div className="space-y-4">
-            {/* Title */}
             <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-gray-900">
               {item.name}
             </h2>
 
-            {/* Description */}
             <p className="text-base text-gray-700 leading-relaxed whitespace-pre-line">
               {item.description}
             </p>
 
-            {/* Size */}
             <p className="text-base text-emerald-700 font-medium">
               Size: {item.size} ml
             </p>
 
-            {/* Stock */}
             <p
               className={`text-sm font-semibold ${
                 item.inStock ? "text-green-600" : "text-red-500"
@@ -120,7 +158,6 @@ const ItemDetails = () => {
                 : "Out of Stock"}
             </p>
 
-            {/* Price */}
             <div className="mt-3 space-y-2">
               {item.hasDiscount ? (
                 <>
@@ -162,7 +199,6 @@ const ItemDetails = () => {
             </div>
           </div>
 
-          {/* Buttons */}
           <div className="flex flex-col items-center gap-4">
             {item.inStock ? (
               <AddToCartButton
@@ -194,6 +230,22 @@ const ItemDetails = () => {
           </div>
         </div>
       </div>
+
+      {/* Featured Section
+      {featured.length > 0 && (
+        <Suspense fallback={<div className="py-12 text-center">Loading recommendations...</div>}>
+          <div className="mt-10 mb-3">
+            <h3 className="text-2xl font-bold mb-5">You may also like</h3>
+            <FeaturedProducts featuredProducts={featured} category={item.category} />
+          </div>
+        </Suspense>
+      )} */}
+
+      <div  className="mt-20">
+       <USPStrip />
+      </div>
+
+     
     </div>
   );
 };

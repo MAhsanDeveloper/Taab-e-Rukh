@@ -19,7 +19,6 @@ const ProductPage = () => {
     mainImage: p.mainImage || "",
   }));
 
-  // Number of skeleton cards to display while loading
   const skeletons = Array.from({ length: 5 });
 
   return (

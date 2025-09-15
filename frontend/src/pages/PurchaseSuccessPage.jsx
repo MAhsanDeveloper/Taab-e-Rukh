@@ -1,8 +1,8 @@
 import { ArrowRight, CheckCircle, HandHeart } from "lucide-react";
-import { useEffect } from "react";
+import { useEffect, lazy, Suspense } from "react";
 import { Link } from "react-router-dom";
 import { useCartStore } from "../stores/useCartStore";
-import Confetti from "react-confetti";
+const Confetti = lazy(() => import("react-confetti"));
 
 const PurchaseSuccessPage = () => {
   const { clearCart } = useCartStore();
@@ -13,14 +13,16 @@ const PurchaseSuccessPage = () => {
 
   return (
     <div className="h-screen flex items-center justify-center px-4">
-      <Confetti
-        width={window.innerWidth}
-        height={window.innerHeight}
-        gravity={0.1}
-        style={{ zIndex: 99 }}
-        numberOfPieces={700}
-        recycle={false}
-      />
+      <Suspense fallback={null}>
+        <Confetti
+          width={window.innerWidth}
+          height={window.innerHeight}
+          gravity={0.1}
+          style={{ zIndex: 99 }}
+          numberOfPieces={700}
+          recycle={false}
+        />
+      </Suspense>
 
       <div className="max-w-md w-full bg-gray-800 rounded-lg shadow-xl overflow-hidden relative z-10">
         <div className="p-6 sm:p-8">
@@ -41,11 +43,15 @@ const PurchaseSuccessPage = () => {
           <div className="bg-gray-700 rounded-lg p-4 mb-6">
             <div className="flex items-center justify-between mb-2">
               <span className="text-sm text-gray-400">Order number</span>
-              <span className="text-sm font-semibold text-emerald-400">#12345</span>
+              <span className="text-sm font-semibold text-emerald-400">
+                #12345
+              </span>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-sm text-gray-400">Estimated delivery</span>
-              <span className="text-sm font-semibold text-emerald-400">3-5 business days</span>
+              <span className="text-sm font-semibold text-emerald-400">
+                3-5 business days
+              </span>
             </div>
           </div>
 
