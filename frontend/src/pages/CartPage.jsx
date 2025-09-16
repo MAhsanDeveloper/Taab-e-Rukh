@@ -34,17 +34,14 @@ const CartPage = () => {
     return acc + discountedPrice * item.quantity;
   }, 0);
 
-  // --- Savings from product discounts ---
   const savings = cartSubtotal - cartTotal;
 
-  // --- Apply coupon (on top of discounts) ---
   let finalTotal = cartTotal;
   if (isCouponApplied && coupon?.discountPercentage) {
     finalTotal =
       finalTotal - (finalTotal * coupon.discountPercentage) / 100;
   }
 
-  // --- Formatting ---
   const formattedSubtotal = cartSubtotal.toFixed(2);
   const formattedTotal = finalTotal.toFixed(2);
   const formattedSavings = savings.toFixed(2);
@@ -148,7 +145,7 @@ const CartPage = () => {
                       <div className="flex items-center gap-3">
                         <button
                           onClick={() =>
-                            updateQuantity(item.cartItemId, item.quantity - 1)
+                          updateQuantity(item.cartItemId, item.quantity - 1)
                           }
                           className="flex h-8 w-8 items-center justify-center rounded-full border border-gray-300 text-gray-600 hover:bg-blue-500 hover:text-white transition"
                         >
@@ -161,7 +158,7 @@ const CartPage = () => {
 
                         <button
                           onClick={() =>
-                            updateQuantity(item.cartItemId, item.quantity + 1)
+                           updateQuantity(item.cartItemId, item.quantity + 1)
                           }
                           className="flex h-8 w-8 items-center justify-center rounded-full border border-gray-300 text-gray-600 hover:bg-blue-500 hover:text-white transition"
                         >

@@ -47,46 +47,21 @@ export const addToCart = async (req, res) => {
   }
 };
 
-export const removeAllFromCart = async (req, res) => {
-  try {
-    const { productId } = req.body;
-    const userId = req.user._id;
-
-    if (!productId) {
-      await Cart.deleteMany({ user: userId });
-    } else {
-      await Cart.deleteOne({ user: userId, productId });
-    }
-
-    const updated = await Cart.find({ user: userId }).populate("productId");
-    res.json(normalizeCart(updated));
-  } catch (error) {
-    console.error("removeAllFromCart error:", error.message);
-    res.status(500).json({ message: "Server error", error: error.message });
-  }
-};
-
 export const updateQuantity = async (req, res) => {
   try {
-    const { id: productId } = req.params; // productId comes from route param
-    const { quantity } = req.body;
-    const userId = req.user._id;
+    const { id: cartItemId } = req.params;
+ const { quantity } = req.body;
+ const userId = req.user._id;
 
-    if (quantity <= 0) {
-      await Cart.deleteOne({ user: userId, productId });
-    } else {
-      const cartItem = await Cart.findOneAndUpdate(
-        { user: userId, productId },
-        { $set: { quantity } },
-        { new: true }
-      ).populate("productId");
-
-      if (!cartItem) {
-        return res.status(404).json({ message: "Product not found in cart" });
-      }
-    }
-
-    const updated = await Cart.find({ user: userId }).populate("productId");
+ if (quantity <= 0) {
+   await Cart.deleteOne({ _id: cartItemId, user: userId });
+ } else {
+   const cartItem = await Cart.findOneAndUpdate(
+     { _id: cartItemId, user: userId },
+     { $set: { quantity } },
+     { new: true }
+   ).populate("productId");
+ }  const updated = await Cart.find({ user: userId }).populate("productId");
     res.json(normalizeCart(updated));
   } catch (error) {
     console.error("updateQuantity error:", error.message);
