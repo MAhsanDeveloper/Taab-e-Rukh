@@ -32,7 +32,7 @@ app.set("trust proxy", 1);
 
 const allowedOrigins = [
   "http://localhost:5173",
-  "https://your-production-domain.com",
+  "https://thesgrgroup.com",
 ];
 
 app.use(
@@ -63,10 +63,10 @@ app.use(
         defaultSrc: ["'self'"],
         connectSrc: [
           "'self'",
-          "https://hh-clocks-watches-production.up.railway.app",
+          "https://thesgrgroup.com",
           ...(isProduction ? [] : ["http://localhost:5000"]),
         ],
-        imgSrc: ["'self'", "data:", "https://hh-clocks-watches-production.up.railway.app"],
+        imgSrc: ["'self'", "data:", "https://thesgrgroup.com"],
         objectSrc: ["'none'"],
         frameSrc: ["'self'", "https://www.google.com", "https://www.google.com/maps", "https://maps.google.com"],
         fontSrc: ["'self'", "https:", "data:"],
@@ -88,12 +88,10 @@ if (isProduction) {
 }
 
 const csrfProtection = csurf({
-
   cookie: {
     httpOnly: false,
     secure: isProduction,
     sameSite: isProduction ? "Strict" : "Lax",
-    // path: "/" 
   },
 });
 
@@ -112,7 +110,6 @@ app.get("/api/csrf-token", csrfProtection, (req, res) => {
       httpOnly: false,
       secure: isProduction,
       sameSite: isProduction ? "Strict" : "Lax",
-      // path: "/" 
     });
 
     return res.json({ csrfToken: token });
