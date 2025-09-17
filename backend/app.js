@@ -7,6 +7,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import csurf from "csurf";
 import path from "path";
+import { fileURLToPath } from "url";
 
 import { apiLimiter } from "./middleware/rateLimiter.js";
 
@@ -28,6 +29,10 @@ import { protectRoute, adminRoute } from "./middleware/auth.middleware.js";
 dotenv.config();
 const app = express();
 const isProduction = process.env.NODE_ENV === "production";
+
+// --- Fix __dirname for ESM ---
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // trust proxy headers
 app.set("trust proxy", true);
@@ -61,24 +66,29 @@ app.use(hpp());
 
 app.use(
   helmet({
-  contentSecurityPolicy: {
-    directives: {
-      defaultSrc: ["'self'"],
-  connectSrc: ["'self'", "https://thesgrgroup.com", "https://api.thesgrgroup.com", "https://31.97.110.69:5000"],
-      imgSrc: ["'self'", "data:", "https://thesgrgroup.com", "https://res.cloudinary.com"],
-      objectSrc: ["'none'"],
-      frameSrc: [
-        "'self'",
-        "https://www.google.com",
-        "https://www.google.com/maps",
-        "https://maps.google.com",
-      ],
-      fontSrc: ["'self'", "https:", "data:"],
-      scriptSrc: ["'self'"],
-      styleSrc: ["'self'", "https:", "'unsafe-inline'"], // allow Tailwind inline styles
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        connectSrc: [
+          "'self'",
+          "https://thesgrgroup.com",
+          "https://api.thesgrgroup.com",
+          "https://31.97.110.69:5000",
+        ],
+        imgSrc: ["'self'", "data:", "https://thesgrgroup.com", "https://res.cloudinary.com"],
+        objectSrc: ["'none'"],
+        frameSrc: [
+          "'self'",
+          "https://www.google.com",
+          "https://www.google.com/maps",
+          "https://maps.google.com",
+        ],
+        fontSrc: ["'self'", "https:", "data:"],
+        scriptSrc: ["'self'"],
+        styleSrc: ["'self'", "https:", "'unsafe-inline'"],
+      },
     },
-  },
-  crossOriginResourcePolicy: false,
+    crossOriginResourcePolicy: false,
   })
 );
 
@@ -124,7 +134,7 @@ app.get("/api/csrf-token", csrfProtection, (req, res) => {
   }
 });
 
-// API routes
+// --- API routes ---
 app.use("/api/auth", apiLimiter, authRoutes);
 app.use("/api/payments", apiLimiter, paymentRoutes);
 app.use("/api/shop", productRoutes);
@@ -139,7 +149,7 @@ app.use("/api/orders", apiLimiter, orderRoutes);
 
 app.post("/api/admin/create-admin", protectRoute, adminRoute, createAdmin);
 
-// Error handler
+// --- Error handler ---
 app.use((err, req, res, next) => {
   const status = err.status || 500;
   const msg = status >= 500 ? "Internal server error" : err.message;
@@ -147,12 +157,12 @@ app.use((err, req, res, next) => {
   res.status(status).json({ message: msg });
 });
 
-// ✅ Catch-all frontend route (Express 6 compatible)
+// --- Serve frontend in production ---
 if (isProduction) {
-  const __dirname = path.resolve();
-  app.use(express.static(path.join(__dirname, "../frontend/dist")));
+  const frontendPath = path.join(__dirname, "../frontend/dist");
+  app.use(express.static(frontendPath));
   app.get(/.*/, (req, res) => {
-    res.sendFile(path.join(__dirname, "../frontend/dist/index.html"));
+    res.sendFile(path.join(frontendPath, "index.html"));
   });
 }
 

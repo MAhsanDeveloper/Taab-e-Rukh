@@ -1,13 +1,16 @@
 import dotenv from "dotenv";
 import path from "path";
-import express from "express";
+import { fileURLToPath } from "url";
 import { connectDB } from "./lib/db.js";
 import app from "./app.js";
 
 dotenv.config();
 
 const PORT = process.env.PORT || 5000;
-const __dirname = path.resolve();
+
+// Fix __dirname in ESM
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 await connectDB();
 
@@ -15,6 +18,7 @@ const server = app.listen(PORT, () => {
   console.log("Server running on port " + PORT);
 });
 
+// Graceful shutdown
 const graceful = async () => {
   console.log("Shutting down gracefully...");
   server.close(() => {
