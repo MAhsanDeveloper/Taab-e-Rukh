@@ -11,12 +11,6 @@ const __dirname = path.resolve();
 
 await connectDB();
 
-// Serve frontend only for non-API routes
-app.get(/^\/(?!api).*/, (req, res) => {
-  res.sendFile(path.resolve(__dirname, "../frontend/dist/index.html"));
-});
-
-
 const server = app.listen(PORT, () => {
   console.log("Server running on port " + PORT);
 });
