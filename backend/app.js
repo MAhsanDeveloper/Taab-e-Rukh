@@ -61,28 +61,28 @@ app.use(hpp());
 
 app.use(
   helmet({
-    contentSecurityPolicy: {
-      directives: {
-        defaultSrc: ["'self'"],
-        connectSrc: [
-          "'self'",
-          "https://thesgrgroup.com",
-          ...(isProduction ? ["https://api.thesgrgroup.com"] : ["http://localhost:5000"]),
-        ],
-        imgSrc: ["'self'", "data:", "https://thesgrgroup.com"],
-        objectSrc: ["'none'"],
-        frameSrc: [
-          "'self'",
-          "https://www.google.com",
-          "https://www.google.com/maps",
-          "https://maps.google.com",
-        ],
-        fontSrc: ["'self'", "https:", "data:"],
-        scriptSrc: ["'self'"],
-        styleSrc: ["'self'", "https:"],
-      },
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      connectSrc: [
+        "'self'",
+        "https://thesgrgroup.com",
+        "https://api.thesgrgroup.com",
+      ],
+      imgSrc: ["'self'", "data:", "https://thesgrgroup.com", "https://res.cloudinary.com"],
+      objectSrc: ["'none'"],
+      frameSrc: [
+        "'self'",
+        "https://www.google.com",
+        "https://www.google.com/maps",
+        "https://maps.google.com",
+      ],
+      fontSrc: ["'self'", "https:", "data:"],
+      scriptSrc: ["'self'"],
+      styleSrc: ["'self'", "https:", "'unsafe-inline'"], // allow Tailwind inline styles
     },
-    crossOriginResourcePolicy: false,
+  },
+  crossOriginResourcePolicy: false,
   })
 );
 
