@@ -27,11 +27,7 @@ const Navbar = () => {
   };
 
   useEffect(() => {
-    if (mobileMenuOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
+    document.body.style.overflow = mobileMenuOpen ? "hidden" : "";
   }, [mobileMenuOpen]);
 
   return (
@@ -64,9 +60,10 @@ const Navbar = () => {
             <Search size={20} />
           </button>
 
+          {/* Hide user icon on mobile */}
           <Link
             to={user ? "/profile" : "/login"}
-            className="p-2 rounded-md text-white"
+            className="p-2 rounded-md text-white hidden md:inline-flex"
           >
             <User size={20} />
           </Link>
@@ -103,9 +100,9 @@ const Navbar = () => {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.3 }}
-            className="md:hidden fixed top-[72px] left-0 w-full bg-black shadow-lg z-50"
+            className="md:hidden fixed top-0 left-0 w-full h-screen bg-black z-50 overflow-y-auto"
           >
-            <div className="flex flex-col px-4 py-4 gap-3">
+            <div className="pt-[72px] px-4 py-4 flex flex-col gap-3">
               {/* Categories */}
               {categories.map((cat) => (
                 <Link
@@ -129,34 +126,19 @@ const Navbar = () => {
 
               {/* Social Links */}
               <div className="flex justify-start space-x-4 mt-2">
-                <a
-                  href="#"
-                  className="text-white hover:text-blue-500 transition"
-                >
+                <a href="#" className="text-white hover:text-blue-500 transition">
                   <FaFacebook />
                 </a>
-                <a
-                  href="#"
-                  className="text-white hover:text-pink-500 transition"
-                >
+                <a href="#" className="text-white hover:text-pink-500 transition">
                   <FaInstagram />
                 </a>
-                <a
-                  href="#"
-                  className="text-white hover:text-red-500 transition"
-                >
+                <a href="#" className="text-white hover:text-red-500 transition">
                   <FaYoutube />
                 </a>
-                <a
-                  href="#"
-                  className="text-white hover:text-gray-300 transition"
-                >
+                <a href="#" className="text-white hover:text-gray-300 transition">
                   <FaTiktok />
                 </a>
-                <a
-                  href="#"
-                  className="text-white hover:text-green-500 transition"
-                >
+                <a href="#" className="text-white hover:text-green-500 transition">
                   <MessageCircle />
                 </a>
               </div>

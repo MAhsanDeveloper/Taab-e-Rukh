@@ -1,29 +1,18 @@
 import { Link } from "react-router-dom";
+import { ShoppingCart } from "lucide-react";
 import AddToCartButton from "./AddToCartButton";
-// eslint-disable-next-line no-unused-vars
-import { motion } from "framer-motion";
 
-const ProductCard = ({ product, index }) => {
+const ProductCard = ({ product }) => {
   const discountedPrice = product.hasDiscount
     ? (product.price * (100 - product.discountRate)) / 100
     : product.price;
 
-  const animationProps = {
-    initial: { opacity: 0, x: index % 2 === 0 ? -50 : 50 },
-    whileInView: { opacity: 1, x: 0 },
-    viewport: { once: false, amount: 0.2 },
-    transition: { duration: 0.8, ease: "easeOut" },
-  };
-
   return (
-    <motion.div
-      {...animationProps}
-      className="relative inline-block w-64 sm:w-68 md:w-72 lg:w-80 overflow-hidden rounded-xl shadow-md hover:shadow-xl transition-shadow duration-300 group mr-6 sm:mr-8 bg-white"
-    >
+    <div className="product-card relative inline-block w-full overflow-hidden rounded-xl shadow-md hover:shadow-xl transition-shadow duration-300 group bg-white">
       {/* Image + text clickable */}
       <Link to={`/item/${product._id}`} className="block">
         {/* Image */}
-        <div className="relative h-48 sm:h-52 md:h-60 lg:h-64 w-full overflow-hidden rounded-t-xl bg-gray-50 flex items-center justify-center">
+        <div className="relative h-36 sm:h-48 md:h-60 lg:h-64 w-full overflow-hidden rounded-t-xl bg-gray-50 flex items-center justify-center">
           <img
             src={product.mainImage}
             alt={product.name}
@@ -36,22 +25,34 @@ const ProductCard = ({ product, index }) => {
               {product.discountRate}% OFF
             </span>
           )}
+
+          {/* Mobile Add to Cart Icon */}
+          <div className="absolute bottom-2 right-2 sm:hidden">
+            <AddToCartButton
+              product={product}
+              className="bg-black text-white p-2 rounded-full shadow-md hover:bg-emerald-600 transition"
+              iconOnly={<ShoppingCart size={18} />}
+            />
+          </div>
         </div>
 
         {/* Brand */}
-        <p className="text-xs sm:text-sm uppercase tracking-wide px-3 sm:px-4 pt-1 sm:pt-2 font-semibold bg-gradient-to-r from-emerald-400 via-yellow-400 to-amber-500 bg-clip-text text-transparent">
+        <p className="text-[10px] sm:text-sm uppercase tracking-wide px-3 sm:px-4 pt-1 sm:pt-2 font-semibold bg-gradient-to-r from-emerald-400 via-yellow-400 to-amber-500 bg-clip-text text-transparent">
           TAAB e RUKH — By S&GR Pvt Ltd
         </p>
 
         {/* Details */}
         <div className="pt-2 px-3 sm:px-4 pb-4 space-y-1">
-          <h3 className="text-base sm:text-lg md:text-lg font-bold text-gray-900 line-clamp-2">
+          <h3 className="text-sm sm:text-lg font-bold text-gray-900 line-clamp-2">
             {product.name}
           </h3>
-          <p className="text-xs sm:text-sm text-gray-600 whitespace-pre-line line-clamp-3">
+
+          {/* Hide benefits on mobile */}
+          <p className="hidden sm:block text-xs sm:text-sm text-gray-600 whitespace-pre-line line-clamp-3">
             {product.benefits}
           </p>
-          <p className="text-sm sm:text-base text-emerald-600 font-medium">
+
+          <p className="text-xs sm:text-base text-emerald-600 font-medium">
             {product.size} <span className="text-gray-800">ml</span>
           </p>
 
@@ -71,12 +72,12 @@ const ProductCard = ({ product, index }) => {
                 >
                   Rs. {product.price.toLocaleString()}
                 </span>
-                <span className="text-lg sm:text-xl font-extrabold text-emerald-600">
+                <span className="text-base sm:text-xl font-extrabold text-emerald-600">
                   Rs. {discountedPrice.toFixed(0)}
                 </span>
               </>
             ) : (
-              <span className="text-lg sm:text-xl font-extrabold text-emerald-600">
+              <span className="text-base sm:text-xl font-extrabold text-emerald-600">
                 Rs. {product.price.toLocaleString()}
               </span>
             )}
@@ -84,16 +85,16 @@ const ProductCard = ({ product, index }) => {
         </div>
       </Link>
 
-      {/* Add to Cart Button (hover overlay) */}
-      <div className="absolute top-0 left-0 w-full h-48 sm:h-52 md:h-60 lg:h-64 flex justify-center items-end pointer-events-none">
+      {/* Desktop hover Add to Cart */}
+      <div className="absolute top-0 left-0 w-full h-36 sm:h-48 md:h-60 lg:h-64 hidden sm:flex justify-center items-end pointer-events-none">
         <div className="opacity-0 group-hover:opacity-100 translate-y-3 group-hover:translate-y-0 transition-all duration-500 ease-out pointer-events-auto mb-3">
           <AddToCartButton
             product={product}
-            className="bg-black text-white hover:bg-white hover:text-black px-5 py-2 rounded-full font-semibold shadow-md hover:shadow-lg transition-transform transform hover:scale-105"
+            className="bg-black text-white hover:bg-white hover:text-black px-4 sm:px-5 py-2 rounded-full font-semibold shadow-md hover:shadow-lg transition-transform transform hover:scale-105"
           />
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 };
 
