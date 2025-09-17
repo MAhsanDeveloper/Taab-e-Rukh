@@ -3,7 +3,16 @@ import { Link } from "react-router-dom";
 import axios from "axios";
 // eslint-disable-next-line no-unused-vars
 import { motion } from "framer-motion";
-import { MessageCircle, MapPin, Phone, Mail, Send, CheckCircle, ChevronDown, ChevronUp } from "lucide-react";
+import {
+  MessageCircle,
+  MapPin,
+  Phone,
+  Mail,
+  CheckCircle,
+  ChevronDown,
+  ChevronUp,
+  Send,
+} from "lucide-react";
 import { FaFacebook, FaInstagram, FaYoutube, FaTiktok } from "react-icons/fa";
 
 const baseURL = import.meta.env.VITE_API_BASE_URL;
@@ -77,7 +86,10 @@ const Footer = () => {
               {contact.phone && (
                 <p className="flex items-center gap-2">
                   <Phone size={16} />
-                  <a href={`tel:${contact.phone}`} className="hover:text-white hover:underline underline-offset-4 transition">
+                  <a
+                    href={`tel:${contact.phone}`}
+                    className="hover:text-white hover:underline underline-offset-4 transition"
+                  >
                     {contact.phone}
                   </a>
                 </p>
@@ -85,7 +97,10 @@ const Footer = () => {
               {contact.email && (
                 <p className="flex items-center gap-2">
                   <Mail size={16} />
-                  <a href={`mailto:${contact.email}`} className="hover:text-white hover:underline underline-offset-4 transition">
+                  <a
+                    href={`mailto:${contact.email}`}
+                    className="hover:text-white hover:underline underline-offset-4 transition"
+                  >
                     {contact.email}
                   </a>
                 </p>
@@ -111,15 +126,40 @@ const Footer = () => {
           >
             Quick Links
             <span className="md:hidden">
-              {quickLinksOpen ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+              {quickLinksOpen ? (
+                <ChevronUp size={20} />
+              ) : (
+                <ChevronDown size={20} />
+              )}
             </span>
           </h3>
-          <ul className={`space-y-2 text-gray-300 text-sm md:text-base md:space-y-2 ${quickLinksOpen ? "block" : "hidden md:block"}`}>
-            <li><Link to="/" className="hover:text-white hover:underline underline-offset-4 transition">Home</Link></li>
-            <li><Link to="/all-products" className="hover:text-white hover:underline underline-offset-4 transition">All Products</Link></li>
+          <ul
+            className={`overflow-hidden transition-all duration-500 ease-in-out ${
+              quickLinksOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
+            } space-y-2 text-gray-300 text-sm md:text-base md:space-y-2 md:max-h-none md:opacity-100`}
+          >
+            <li>
+              <Link
+                to="/"
+                className="hover:text-white hover:underline underline-offset-4 transition"
+              >
+                Home
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/all-products"
+                className="hover:text-white hover:underline underline-offset-4 transition"
+              >
+                All Products
+              </Link>
+            </li>
             {categories.map((cat) => (
               <li key={cat.name}>
-                <Link to={cat.path} className="hover:text-white hover:underline underline-offset-4 transition">
+                <Link
+                  to={cat.path}
+                  className="hover:text-white hover:underline underline-offset-4 transition"
+                >
                   {cat.name}
                 </Link>
               </li>
@@ -142,12 +182,51 @@ const Footer = () => {
               {infoOpen ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
             </span>
           </h3>
-          <ul className={`space-y-2 text-gray-300 text-sm md:text-base md:space-y-3 ${infoOpen ? "block" : "hidden md:block"}`}>
-            <li><Link to="/privacy-policy" className="hover:text-white hover:underline underline-offset-4 transition">Privacy Policy</Link></li>
-            <li><Link to="/terms-of-service" className="hover:text-white hover:underline underline-offset-4 transition">Terms of Service</Link></li>
-            <li><Link to="/refund-return-policy" className="hover:text-white hover:underline underline-offset-4 transition">Refund & Returns Policy</Link></li>
-            <li><Link to="/shipping-policy" className="hover:text-white hover:underline underline-offset-4 transition">Shipping Policy</Link></li>
-            <li><Link to="/contact-us" className="hover:text-white hover:underline underline-offset-4 transition">Contact Us</Link></li>
+          <ul
+            className={`overflow-hidden transition-all duration-500 ease-in-out ${
+              infoOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
+            } space-y-2 text-gray-300 text-sm md:text-base md:space-y-3 md:max-h-none md:opacity-100`}
+          >
+            <li>
+              <Link
+                to="/privacy-policy"
+                className="hover:text-white hover:underline underline-offset-4 transition"
+              >
+                Privacy Policy
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/terms-of-service"
+                className="hover:text-white hover:underline underline-offset-4 transition"
+              >
+                Terms of Service
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/refund-return-policy"
+                className="hover:text-white hover:underline underline-offset-4 transition"
+              >
+                Refund & Returns Policy
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/shipping-policy"
+                className="hover:text-white hover:underline underline-offset-4 transition"
+              >
+                Shipping Policy
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/contact-us"
+                className="hover:text-white hover:underline underline-offset-4 transition"
+              >
+                Contact Us
+              </Link>
+            </li>
           </ul>
         </motion.div>
 
@@ -160,37 +239,94 @@ const Footer = () => {
         >
           <div className="border-b border-gray-700 pb-4 mb-4">
             <h3 className="font-bold text-xl">Stay in the loop</h3>
-            <p className="text-gray-400 text-sm mt-1">Get exclusive deals & product launches.</p>
+            <p className="text-gray-400 text-sm mt-1">
+              Get exclusive deals & product launches.
+            </p>
           </div>
-          <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row items-center bg-gray-100 rounded-lg overflow-hidden shadow-md">
+          <form
+            onSubmit={handleSubscribe}
+            className="flex flex-col sm:flex-row items-stretch bg-gray-100 rounded-lg overflow-hidden shadow-md w-fit"
+          >
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter your email"
-              className="w-full px-4 py-2 text-black focus:outline-none text-sm sm:text-base"
+              className="flex-1 py-3 text-black focus:outline-none px-2 text-sm sm:text-base"
             />
             <button
               type="submit"
-              className="bg-gray-100 text-black rounded-full px-4 py-2 sm:py-2 hover:bg-green-500 flex items-center justify-center gap-2 w-full sm:w-auto transition font-semibold mt-2 sm:mt-0"
+              className="bg-green-500 text-white font-semibold cursor-pointer py-3 flex items-center justify-center gap-2 transition hover:bg-green-600 sm:min-w-[60px]"
             >
-              <Send size={14} />
+              <Send size={12} className="text-white" />
             </button>
           </form>
+
           {message && (
-            <p className={`mt-2 text-sm px-3 py-2 rounded-md transition-all ${message.includes("Thanks") ? "text-green-400 bg-white/20" : "text-red-400 bg-white/10"} flex items-center gap-2`}>
+            <p
+              className={`mt-2 text-sm px-3 py-2 rounded-md transition-all ${
+                message.includes("Thanks")
+                  ? "text-green-400 bg-white/20"
+                  : "text-red-400 bg-white/10"
+              } flex items-center gap-2`}
+            >
               {message.includes("Thanks") && <CheckCircle size={16} />}
               {message}
             </p>
           )}
 
           {/* Social Links */}
-          <div className="flex space-x-4 mt-4 text-xl sm:text-2xl">
-            {contact.facebook && <a href={contact.facebook} target="_blank" rel="noreferrer" className="hover:scale-110 transition cursor-pointer"><FaFacebook className="hover:text-blue-500 transition" /></a>}
-            {contact.instagram && <a href={contact.instagram} target="_blank" rel="noreferrer" className="hover:scale-110 transition cursor-pointer"><FaInstagram className="hover:text-pink-500 transition" /></a>}
-            {contact.youtube && <a href={contact.youtube} target="_blank" rel="noreferrer" className="hover:scale-110 transition cursor-pointer"><FaYoutube className="hover:text-red-500 transition" /></a>}
-            {contact.tiktok && <a href={contact.tiktok} target="_blank" rel="noreferrer" className="hover:scale-110 transition cursor-pointer"><FaTiktok className="hover:text-gray-300 transition" /></a>}
-            {contact.whatsapp && <a href={`https://wa.me/${contact.whatsapp}`} target="_blank" rel="noreferrer" className="hover:scale-110 transition cursor-pointer"><MessageCircle className="hover:text-green-500 transition" /></a>}
+          <div className="flex justify-around sm:justify-start sm:space-x-7 mt-4 text-xl sm:text-2xl w-full">
+            {contact.facebook && (
+              <a
+                href={contact.facebook}
+                target="_blank"
+                rel="noreferrer"
+                className="hover:scale-110 transition cursor-pointer"
+              >
+                <FaFacebook className="hover:text-blue-500 transition" />
+              </a>
+            )}
+            {contact.instagram && (
+              <a
+                href={contact.instagram}
+                target="_blank"
+                rel="noreferrer"
+                className="hover:scale-110 transition cursor-pointer"
+              >
+                <FaInstagram className="hover:text-pink-500 transition" />
+              </a>
+            )}
+            {contact.youtube && (
+              <a
+                href={contact.youtube}
+                target="_blank"
+                rel="noreferrer"
+                className="hover:scale-110 transition cursor-pointer"
+              >
+                <FaYoutube className="hover:text-red-500 transition" />
+              </a>
+            )}
+            {contact.tiktok && (
+              <a
+                href={contact.tiktok}
+                target="_blank"
+                rel="noreferrer"
+                className="hover:scale-110 transition cursor-pointer"
+              >
+                <FaTiktok className="hover:text-gray-300 transition" />
+              </a>
+            )}
+            {contact.whatsapp && (
+              <a
+                href={`https://wa.me/${contact.whatsapp}`}
+                target="_blank"
+                rel="noreferrer"
+                className="hover:scale-110 transition cursor-pointer"
+              >
+                <MessageCircle className="hover:text-green-500 transition" />
+              </a>
+            )}
           </div>
         </motion.div>
       </motion.div>

@@ -1,9 +1,14 @@
 @import "tailwindcss";
 
-body {
-  overflow-x: hidden; /* Prevent accidental horizontal scrolling */
+html, body {
+  overflow-x: hidden;
 }
 
+/* prevent overflow issues */
+.featured-badge {
+  overflow: hidden;
+  border-radius: 50%;
+}
 
 @keyframes shake {
   0%, 100% { transform: translateX(0); }

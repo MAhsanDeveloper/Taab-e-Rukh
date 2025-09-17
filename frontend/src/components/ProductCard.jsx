@@ -8,11 +8,11 @@ const ProductCard = ({ product }) => {
     : product.price;
 
   return (
-    <div className="product-card relative inline-block w-full overflow-hidden rounded-xl shadow-md hover:shadow-xl transition-shadow duration-300 group bg-white">
+    <div className="product-card relative inline-block w-full overflow-hidden rounded-xl duration-300 group bg-white">
       {/* Image + text clickable */}
       <Link to={`/item/${product._id}`} className="block">
         {/* Image */}
-        <div className="relative h-36 sm:h-48 md:h-60 lg:h-64 w-full overflow-hidden rounded-t-xl bg-gray-50 flex items-center justify-center">
+        <div className="relative h-40 sm:h-48 md:h-60 lg:h-64 w-full overflow-hidden rounded-t-xl bg-gray-50 flex items-center justify-center">
           <img
             src={product.mainImage}
             alt={product.name}
@@ -94,7 +94,9 @@ const ProductCard = ({ product }) => {
           />
         </div>
       </div>
+      
     </div>
+    
   );
 };
 

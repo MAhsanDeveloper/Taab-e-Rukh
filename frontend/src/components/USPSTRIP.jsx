@@ -58,37 +58,38 @@ const USPStrip = () => {
         ))}
       </div>
 
-      {/* Mobile carousel */}
-      <div className="md:hidden max-w-xs mx-auto relative">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={currentIndex}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.5 }}
-            className="flex flex-col items-center justify-center text-center p-6 bg-gray-50 rounded-xl shadow-sm"
-          >
-            <div className="mb-3">{usps[currentIndex].icon}</div>
-            <h3 className="text-base font-semibold text-gray-900 mb-1">
-              {usps[currentIndex].heading}
-            </h3>
-            <p className="text-sm text-gray-600">{usps[currentIndex].text}</p>
-          </motion.div>
-        </AnimatePresence>
+   {/* Mobile carousel */}
+<div className="md:hidden flex flex-col items-center justify-center text-center p-6 bg-gray-50 rounded-xl shadow-sm min-h-[180px]">
+  <AnimatePresence mode="wait">
+    <motion.div
+      key={currentIndex}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      transition={{ duration: 0.5 }}
+      className="flex flex-col items-center justify-center text-center p-6 bg-gray-50 rounded-xl shadow-sm"
+    >
+      <div className="mb-3">{usps[currentIndex].icon}</div>
+      <h3 className="text-base font-semibold text-gray-900 mb-1">
+        {usps[currentIndex].heading}
+      </h3>
+      <p className="text-sm text-gray-600">{usps[currentIndex].text}</p>
+    </motion.div>
+  </AnimatePresence>
 
-        {/* Pagination Dots */}
-        <div className="flex justify-center space-x-2 mt-4">
-          {usps.map((_, i) => (
-            <span
-              key={i}
-              className={`w-2 h-2 rounded-full transition ${
-                i === currentIndex ? "bg-gray-900" : "bg-gray-400"
-              }`}
-            ></span>
-          ))}
-        </div>
-      </div>
+  {/* Pagination Dots */}
+  <div className="flex justify-center space-x-2 mt-4">
+    {usps.map((_, i) => (
+      <span
+        key={i}
+        className={`w-2 h-2 rounded-full transition ${
+          i === currentIndex ? "bg-gray-900" : "bg-gray-400"
+        }`}
+      ></span>
+    ))}
+  </div>
+</div>
+
     </div>
   );
 };

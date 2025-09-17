@@ -56,6 +56,7 @@ const ProductCarousel = ({ products }) => {
           >
             <ProductCard product={product} />
           </div>
+          
         ))}
       </div>
 

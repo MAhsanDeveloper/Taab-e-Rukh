@@ -6,6 +6,7 @@ import MainLayout from "./layouts/MainLayout";
 import HomePage from "./pages/HomePage";
 import ProductPage from "./pages/ProductPage";
 import CategoryPage from "./components/CategoryCarousel";
+import WhatsappButton from "./components/WhatsappButton";
 
 import { Toaster } from "react-hot-toast";
 
@@ -142,6 +143,7 @@ const App = () => (
   <>
     <RouterProvider router={router} />
     <Toaster position="top-center" />
+      <WhatsappButton />
   </>
 );
 
