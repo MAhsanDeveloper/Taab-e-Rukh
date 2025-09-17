@@ -40,6 +40,7 @@ app.set("trust proxy", true);
 const allowedOrigins = [
   "http://localhost:5173",
   "https://thesgrgroup.com",
+  "http://thesgrgroup.com",
   "https://api.thesgrgroup.com",
 ];
 
