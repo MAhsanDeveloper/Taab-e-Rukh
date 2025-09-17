@@ -1,5 +1,5 @@
 import express from "express";
-import cookieParser from "cookie-parser"
+import cookieParser from "cookie-parser";
 import helmet from "helmet";
 import hpp from "hpp";
 import compression from "compression";
@@ -28,11 +28,13 @@ dotenv.config();
 const app = express();
 const isProduction = process.env.NODE_ENV === "production";
 
-app.set("trust proxy", 1);
+// trust proxy headers (X-Forwarded-Proto, X-Forwarded-For)
+app.set("trust proxy", true);
 
 const allowedOrigins = [
   "http://localhost:5173",
   "https://thesgrgroup.com",
+  "https://api.thesgrgroup.com",
 ];
 
 app.use(
@@ -64,11 +66,16 @@ app.use(
         connectSrc: [
           "'self'",
           "https://thesgrgroup.com",
-          ...(isProduction ? [] : ["http://localhost:5000"]),
+          ...(isProduction ? ["https://api.thesgrgroup.com"] : ["http://localhost:5000"]),
         ],
         imgSrc: ["'self'", "data:", "https://thesgrgroup.com"],
         objectSrc: ["'none'"],
-        frameSrc: ["'self'", "https://www.google.com", "https://www.google.com/maps", "https://maps.google.com"],
+        frameSrc: [
+          "'self'",
+          "https://www.google.com",
+          "https://www.google.com/maps",
+          "https://maps.google.com",
+        ],
         fontSrc: ["'self'", "https:", "data:"],
         scriptSrc: ["'self'"],
         styleSrc: ["'self'", "https:"],
@@ -78,15 +85,17 @@ app.use(
   })
 );
 
+// HTTPS redirect in production
 if (isProduction) {
   app.use((req, res, next) => {
     if (req.secure || req.headers["x-forwarded-proto"] === "https") {
       return next();
     }
-    return res.redirect(`https://${req.headers.host}${req.url}`);
+    return res.redirect(301, `https://${req.get("host")}${req.originalUrl}`);
   });
 }
 
+// CSRF protection
 const csrfProtection = csurf({
   cookie: {
     httpOnly: false,
@@ -111,7 +120,6 @@ app.get("/api/csrf-token", csrfProtection, (req, res) => {
       secure: isProduction,
       sameSite: isProduction ? "Strict" : "Lax",
     });
-
     return res.json({ csrfToken: token });
   } catch (err) {
     console.error("Failed to generate CSRF token:", err);
@@ -119,6 +127,7 @@ app.get("/api/csrf-token", csrfProtection, (req, res) => {
   }
 });
 
+// API routes
 app.use("/api/auth", apiLimiter, authRoutes);
 app.use("/api/payments", apiLimiter, paymentRoutes);
 app.use("/api/shop", productRoutes);
@@ -133,6 +142,7 @@ app.use("/api/orders", apiLimiter, orderRoutes);
 
 app.post("/api/admin/create-admin", protectRoute, adminRoute, createAdmin);
 
+// Error handler
 app.use((err, req, res, next) => {
   const status = err.status || 500;
   const msg = status >= 500 ? "Internal server error" : err.message;
