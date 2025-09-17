@@ -1,5 +1,10 @@
 @import "tailwindcss";
 
+body {
+  overflow-x: hidden; /* Prevent accidental horizontal scrolling */
+}
+
+
 @keyframes shake {
   0%, 100% { transform: translateX(0); }
   25% { transform: translateX(-1px); }

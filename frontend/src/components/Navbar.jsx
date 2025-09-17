@@ -1,11 +1,13 @@
+import { useState, useEffect } from "react";
 import { ShoppingCart, User, Search, Menu, X } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useUserStore } from "../stores/useUserStore";
 import { useCartStore } from "../stores/useCartStore";
-import logo from "../assets/logo.webp";
-import { useState } from "react";
 // eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from "framer-motion";
+import { FaFacebook, FaInstagram, FaYoutube, FaTiktok } from "react-icons/fa";
+import { MessageCircle } from "lucide-react";
+import logo from "../assets/logo.webp";
 
 const Navbar = () => {
   const { user } = useUserStore();
@@ -24,13 +26,21 @@ const Navbar = () => {
     navigate("/search");
   };
 
+  useEffect(() => {
+    if (mobileMenuOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+  }, [mobileMenuOpen]);
+
   return (
-    <header className="fixed top-0 left-0 w-full bg-black shadow-md z-40">
-      <div className="container mx-auto px-3 py-3 flex justify-between items-center">
+    <header className="fixed top-0 left-0 w-full bg-black shadow-md z-50">
+      <div className="flex justify-between items-center w-full px-4 sm:px-6 md:px-12 py-3">
         {/* Logo */}
         <Link
           to="/"
-          className="flex items-center space-x-2 bg-white rounded-full"
+          className="flex items-center space-x-2 bg-white rounded-full p-1"
         >
           <img src={logo} alt="Taab e Rukh" className="h-11 w-auto" />
         </Link>
@@ -41,36 +51,29 @@ const Navbar = () => {
             <Link
               key={cat.name}
               to={cat.path}
-              className="px-3 py-2 text-white font-medium transition-all duration-300 border rounded-2xl border-transparent 
-                         hover:bg-white hover:text-black hover:border-black"
+              className="px-3 py-2 text-white font-medium rounded-2xl transition-all duration-300 border border-transparent hover:bg-white hover:text-black hover:border-black"
             >
               {cat.name}
             </Link>
           ))}
         </nav>
 
-        {/* Right Side */}
+        {/* Right side */}
         <div className="flex items-center gap-3">
-          {/* Search */}
-          <button
-            onClick={handleSearch}
-            className="p-2 rounded-md border border-transparent text-white cursor-pointer"
-          >
+          <button onClick={handleSearch} className="p-2 rounded-md text-white">
             <Search size={20} />
           </button>
 
-          {/* User */}
           <Link
             to={user ? "/profile" : "/login"}
-            className="p-2 rounded-md border border-transparent cursor-pointer text-white"
+            className="p-2 rounded-md text-white"
           >
             <User size={20} />
           </Link>
 
-          {/* Cart */}
           <Link
             to="/cart"
-            className="relative flex items-center px-2 sm:px-3 py-2 rounded-md cursor-pointer text-white transition-all duration-300 border border-transparent"
+            className="relative flex items-center px-2 sm:px-3 py-2 rounded-md text-white transition-all duration-300"
           >
             <ShoppingCart size={20} className="mr-1" />
             <span className="hidden sm:inline">Cart</span>
@@ -81,7 +84,7 @@ const Navbar = () => {
             )}
           </Link>
 
-          {/* Mobile Menu Toggle */}
+          {/* Mobile Menu Button */}
           <button
             className="md:hidden text-white p-2"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -91,27 +94,73 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* Mobile Dropdown Menu with Animation */}
+      {/* Mobile Menu */}
       <AnimatePresence>
         {mobileMenuOpen && (
           <motion.div
             key="mobileMenu"
-            initial={{ opacity: 0, y: -20 }}
+            initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.3, ease: "easeInOut" }}
-            className="md:hidden bg-black border-t border-gray-700 px-3 py-4 space-y-2"
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.3 }}
+            className="md:hidden fixed top-[72px] left-0 w-full bg-black shadow-lg z-50"
           >
-            {categories.map((cat) => (
+            <div className="flex flex-col px-4 py-4 gap-3">
+              {/* Categories */}
+              {categories.map((cat) => (
+                <Link
+                  key={cat.name}
+                  to={cat.path}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="block px-3 py-2 text-white font-medium rounded-lg hover:bg-white hover:text-black transition"
+                >
+                  {cat.name}
+                </Link>
+              ))}
+
+              {/* User Account */}
               <Link
-                key={cat.name}
-                to={cat.path}
-                className="block w-full px-3 py-2 text-white font-medium rounded-lg hover:bg-white hover:text-black"
+                to={user ? "/profile" : "/login"}
                 onClick={() => setMobileMenuOpen(false)}
+                className="block px-3 py-2 text-white font-medium rounded-lg hover:bg-white hover:text-black transition"
               >
-                {cat.name}
+                {user ? "Profile" : "Login / Signup"}
               </Link>
-            ))}
+
+              {/* Social Links */}
+              <div className="flex justify-start space-x-4 mt-2">
+                <a
+                  href="#"
+                  className="text-white hover:text-blue-500 transition"
+                >
+                  <FaFacebook />
+                </a>
+                <a
+                  href="#"
+                  className="text-white hover:text-pink-500 transition"
+                >
+                  <FaInstagram />
+                </a>
+                <a
+                  href="#"
+                  className="text-white hover:text-red-500 transition"
+                >
+                  <FaYoutube />
+                </a>
+                <a
+                  href="#"
+                  className="text-white hover:text-gray-300 transition"
+                >
+                  <FaTiktok />
+                </a>
+                <a
+                  href="#"
+                  className="text-white hover:text-green-500 transition"
+                >
+                  <MessageCircle />
+                </a>
+              </div>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>

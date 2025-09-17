@@ -16,21 +16,21 @@ const ProductCarousel = ({ products }) => {
 
   const scroll = (direction) => {
     if (!scrollRef.current) return;
-    const scrollAmount = direction === "left" ? -300 : 300;
-    scrollRef.current.scrollBy({ left: scrollAmount, behavior: "smooth" });
+    const card = scrollRef.current.querySelector(".group");
+    const cardWidth = card ? card.offsetWidth + 16 : 300;
+    scrollRef.current.scrollBy({ left: direction === "left" ? -cardWidth : cardWidth, behavior: "smooth" });
   };
 
   useEffect(() => {
     const carousel = scrollRef.current;
     if (!carousel) return;
-
     carousel.addEventListener("scroll", checkScroll);
     checkScroll();
     return () => carousel.removeEventListener("scroll", checkScroll);
   }, []);
 
   return (
-    <div className="relative w-full">
+    <div className="relative w-full overflow-hidden">
       {/* Left Chevron */}
       {canScrollLeft && (
         <button
@@ -41,13 +41,15 @@ const ProductCarousel = ({ products }) => {
         </button>
       )}
 
-      {/* Horizontal Scroll Container */}
+      {/* Scrollable container */}
       <div
         ref={scrollRef}
-        className="overflow-x-auto whitespace-nowrap scroll-smooth px-10 py-4 hide-scrollbar"
+        className="flex gap-4 sm:gap-6 overflow-x-auto scroll-smooth px-2 sm:px-4 py-4 hide-scrollbar max-w-full"
       >
         {products.map((product, index) => (
-          <ProductCard key={product._id} product={product} index={index} />
+          <div key={product._id} className="flex-shrink-0 w-[70vw] sm:w-64 md:w-72 lg:w-80">
+            <ProductCard product={product} index={index} />
+          </div>
         ))}
       </div>
 

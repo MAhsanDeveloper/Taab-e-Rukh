@@ -48,10 +48,14 @@ const CategoryCarousel = () => {
     setCanScrollRight(scrollLeft + clientWidth < scrollWidth - 1);
   };
 
-  const scroll = (dir) => {
+  const scroll = (direction) => {
     if (!scrollRef.current) return;
-    const amount = dir === "left" ? -400 : 400; 
-    scrollRef.current.scrollBy({ left: amount, behavior: "smooth" });
+
+    // dynamically calculate scroll amount
+    const card = scrollRef.current.querySelector(".group");
+    const cardWidth = card ? card.offsetWidth + 16 : 300;
+
+    scrollRef.current.scrollBy({ left: direction === "left" ? -cardWidth : cardWidth, behavior: "smooth" });
   };
 
   useEffect(() => {
@@ -63,7 +67,8 @@ const CategoryCarousel = () => {
   }, []);
 
   return (
-    <div className="relative container mx-auto my-10">
+    <div className="relative container mx-auto my-10 overflow-hidden">
+      {/* Left Chevron */}
       {canScrollLeft && (
         <button
           onClick={() => scroll("left")}
@@ -73,15 +78,19 @@ const CategoryCarousel = () => {
         </button>
       )}
 
+      {/* Carousel */}
       <div
         ref={scrollRef}
-        className="flex gap-6 overflow-x-auto scroll-smooth px-6 py-3 hide-scrollbar"
+        className="flex gap-4 sm:gap-6 overflow-x-auto scroll-smooth px-2 sm:px-4 py-3 hide-scrollbar max-w-full"
       >
         {categories.map((cat) => (
-          <CategoryCard key={cat.slug} category={cat} />
+          <div key={cat.slug} className="flex-shrink-0 w-[70vw] sm:w-64 md:w-72 lg:w-80">
+            <CategoryCard category={cat} />
+          </div>
         ))}
       </div>
 
+      {/* Right Chevron */}
       {canScrollRight && (
         <button
           onClick={() => scroll("right")}
