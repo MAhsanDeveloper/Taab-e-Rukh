@@ -6,6 +6,7 @@ import compression from "compression";
 import cors from "cors";
 import dotenv from "dotenv";
 import csurf from "csurf";
+import path from "path";
 
 import { apiLimiter } from "./middleware/rateLimiter.js";
 
@@ -28,7 +29,7 @@ dotenv.config();
 const app = express();
 const isProduction = process.env.NODE_ENV === "production";
 
-// trust proxy headers (X-Forwarded-Proto, X-Forwarded-For)
+// trust proxy headers
 app.set("trust proxy", true);
 
 const allowedOrigins = [
@@ -149,5 +150,14 @@ app.use((err, req, res, next) => {
   console.error(err);
   res.status(status).json({ message: msg });
 });
+
+// ✅ Catch-all frontend route (Express 6 compatible)
+if (isProduction) {
+  const __dirname = path.resolve();
+  app.use(express.static(path.join(__dirname, "../frontend/dist")));
+  app.get(/.*/, (req, res) => {
+    res.sendFile(path.join(__dirname, "../frontend/dist/index.html"));
+  });
+}
 
 export default app;
