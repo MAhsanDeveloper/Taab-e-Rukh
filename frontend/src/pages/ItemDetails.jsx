@@ -7,7 +7,7 @@ import { ArrowLeft } from "lucide-react";
 import AddToCartButton from "../components/AddToCartButton";
 // import { fetchFeaturedByCategory } from "../lib/featuredapi";
 // const FeaturedProducts = lazy(() => import("../components/FeaturedProducts"));
-import USPStrip from "../components/USPStrip";
+import USPSTRIP from "../components/USPSTRIP";
 
 const baseURL = import.meta.env.VITE_API_BASE_URL;
 
@@ -242,7 +242,7 @@ const ItemDetails = () => {
       )} */}
 
       <div  className="mt-20">
-       <USPStrip />
+       <USPSTRIP />
       </div>
 
      

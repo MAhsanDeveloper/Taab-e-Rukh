@@ -3,7 +3,7 @@ import axios from "../lib/axios";
 import Hero from "../components/Hero";
 import FeaturedProduct from "./FeaturedProduct";
 import USPSTRIP from "../components/USPSTRIP";
-import SpotlightCategory from "../components/SpotlightCategories";
+import SpotlightCategory from "../components/SpotLightCategories";
 import CategoryCarousel from "../components/CategoryCarousel";
 
 const HomePage = () => {
