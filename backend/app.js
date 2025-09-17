@@ -64,11 +64,7 @@ app.use(
   contentSecurityPolicy: {
     directives: {
       defaultSrc: ["'self'"],
-      connectSrc: [
-        "'self'",
-        "https://thesgrgroup.com",
-        "https://api.thesgrgroup.com",
-      ],
+  connectSrc: ["'self'", "https://thesgrgroup.com", "https://api.thesgrgroup.com", "https://31.97.110.69:5000"],
       imgSrc: ["'self'", "data:", "https://thesgrgroup.com", "https://res.cloudinary.com"],
       objectSrc: ["'none'"],
       frameSrc: [
