@@ -26,16 +26,8 @@ const BillingPage = () => {
   const [loading, setLoading] = useState(false);
   const [showSummary, setShowSummary] = useState(false);
 
-  useEffect(() => {
-    (async () => {
-      try {
-        const res = await axios.get("/csrf-token");
-        res.data?.csrfToken;
-      } catch (err) {
-        console.error("Error fetching CSRF token", err);
-      }
-    })();
-  }, []);
+  const FREE_SHIPPING_THRESHOLD = 5000;
+  const SHIPPING_COST = 300;
 
   const handleChange = (e) =>
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -48,11 +40,9 @@ const BillingPage = () => {
   const cartTotal = cart.reduce((acc, item) => {
     const price = item.price || 0;
     const discountRate = item.discountRate || 0;
-
     const discountedPrice = item.hasDiscount
       ? (price * (100 - discountRate)) / 100
       : price;
-
     return acc + discountedPrice * item.quantity;
   }, 0);
 
@@ -63,20 +53,28 @@ const BillingPage = () => {
     finalTotal = finalTotal - (finalTotal * coupon.discountPercentage) / 100;
   }
 
+  const shippingCost =
+    finalTotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_COST;
+  const amountForFreeShipping =
+    finalTotal >= FREE_SHIPPING_THRESHOLD
+      ? 0
+      : FREE_SHIPPING_THRESHOLD - finalTotal;
+  const finalTotalWithShipping = finalTotal + shippingCost;
+
   const formattedSubtotal = cartSubtotal.toFixed(2);
-  const formattedTotal = finalTotal.toFixed(2);
   const formattedSavings = savings.toFixed(2);
 
-  const handlePlaceOrder = async () => {
-    try {
-      await axios.get("/csrf-token");
-    } catch (e) {
-      console.warn(
-        "Could not refresh CSRF token before POST:",
-        e?.message || e
-      );
-    }
+  useEffect(() => {
+    (async () => {
+      try {
+        await axios.get("/csrf-token");
+      } catch (err) {
+        console.error("Error fetching CSRF token", err);
+      }
+    })();
+  }, []);
 
+  const handlePlaceOrder = async () => {
     for (let key of ["fullName", "phone", "address", "city"]) {
       if (!form[key]) {
         toast.error(`Please enter your ${key}`);
@@ -101,7 +99,7 @@ const BillingPage = () => {
         couponCode: coupon?.code || null,
         paymentMethod,
         shippingDetails: { ...form },
-        totalAmount: finalTotal,
+        totalAmount: finalTotalWithShipping,
       };
 
       const res = await axios.post("/payments/orders/create", orderData);
@@ -142,60 +140,6 @@ const BillingPage = () => {
         </div>
       ) : (
         <div className="lg:flex gap-8">
-          {/* Order Summary (right on desktop) */}
-          <motion.div
-            className="lg:flex-[0.7] order-1 lg:order-2 mt-8 lg:mt-0"
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.4 }}
-          >
-            {/* Mobile Collapsible (sticky) */}
-            <div className="lg:hidden mb-4 sticky top-4 z-20">
-              <button
-                onClick={() => setShowSummary(!showSummary)}
-                className="flex items-center justify-between w-full bg-[#FFF8F0] px-4 py-3 rounded-lg border border-gray-200 font-medium text-gray-800 shadow-md"
-              >
-                <span>Order Summary</span>
-                {showSummary ? <ChevronUp /> : <ChevronDown />}
-              </button>
-
-              <AnimatePresence>
-                {showSummary && (
-                  <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: "auto", opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.3 }}
-                    className="overflow-hidden mt-3"
-                  >
-                    <SummaryContent
-                      cart={cart}
-                      formattedSubtotal={formattedSubtotal}
-                      formattedSavings={formattedSavings}
-                      formattedTotal={formattedTotal}
-                      savings={savings}
-                      isCouponApplied={isCouponApplied}
-                      coupon={coupon}
-                    />
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-
-            {/* Desktop Fixed Sticky Summary */}
-            <div className="hidden lg:block sticky top-4 self-start bg-[#FFF8F0] border border-gray-200 p-6 rounded-2xl shadow-md max-h-[90vh] overflow-y-auto">
-              <SummaryContent
-                cart={cart}
-                formattedSubtotal={formattedSubtotal}
-                formattedSavings={formattedSavings}
-                formattedTotal={formattedTotal}
-                savings={savings}
-                isCouponApplied={isCouponApplied}
-                coupon={coupon}
-              />
-            </div>
-          </motion.div>
-
           {/* Billing Form */}
           <motion.div
             className="lg:flex-[1.3] order-2 lg:order-1 bg-white p-6 rounded-2xl shadow-md border border-gray-100"
@@ -209,37 +153,16 @@ const BillingPage = () => {
 
             <div className="space-y-5">
               {[
-                {
-                  label: "Full Name",
-                  name: "fullName",
-                  type: "text",
-                  required: true,
-                },
+                { label: "Full Name", name: "fullName", type: "text", required: true },
                 { label: "Phone", name: "phone", type: "tel", required: true },
-                {
-                  label: "Email (optional)",
-                  name: "email",
-                  type: "email",
-                  required: false,
-                },
-                {
-                  label: "Address",
-                  name: "address",
-                  type: "text",
-                  required: true,
-                },
+                { label: "Email (optional)", name: "email", type: "email", required: false },
+                { label: "Address", name: "address", type: "text", required: true },
                 { label: "City", name: "city", type: "text", required: true },
-                {
-                  label: "Order Notes (optional)",
-                  name: "note",
-                  type: "text",
-                  required: false,
-                },
+                { label: "Order Notes (optional)", name: "note", type: "text", required: false },
               ].map((field) => (
                 <div key={field.name} className="flex flex-col">
                   <label className="text-gray-600 mb-1 font-medium">
-                    {field.label}{" "}
-                    {field.required && <span className="text-red-500">*</span>}
+                    {field.label} {field.required && <span className="text-red-500">*</span>}
                   </label>
                   <input
                     type={field.type}
@@ -301,6 +224,49 @@ const BillingPage = () => {
               </button>
             </div>
           </motion.div>
+
+          {/* Order Summary */}
+          <motion.div
+            className="lg:flex-[0.7] order-1 lg:order-2 mt-8 lg:mt-0 lg:sticky lg:top-4"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.4 }}
+          >
+            {/* Mobile toggle */}
+            <div className="lg:hidden mb-3">
+              <button
+                onClick={() => setShowSummary(!showSummary)}
+                className="flex items-center justify-between w-full bg-[#FFF8F0] px-4 py-3 rounded-lg border border-gray-200 font-medium text-gray-800 shadow-md"
+              >
+                <span>Order Summary</span>
+                {showSummary ? <ChevronUp /> : <ChevronDown />}
+              </button>
+            </div>
+
+            {/* Summary Content */}
+            <AnimatePresence>
+              {(showSummary || window.innerWidth >= 1024) && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 20 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <SummaryContent
+                    cart={cart}
+                    formattedSubtotal={formattedSubtotal}
+                    formattedSavings={formattedSavings}
+                    finalTotalWithShipping={finalTotalWithShipping}
+                    savings={savings}
+                    isCouponApplied={isCouponApplied}
+                    coupon={coupon}
+                    shippingCost={shippingCost}
+                    amountForFreeShipping={amountForFreeShipping}
+                  />
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </motion.div>
         </div>
       )}
     </div>
@@ -311,23 +277,22 @@ const SummaryContent = ({
   cart,
   formattedSubtotal,
   formattedSavings,
-  formattedTotal,
+  finalTotalWithShipping,
   savings,
   isCouponApplied,
   coupon,
+  shippingCost,
+  amountForFreeShipping,
 }) => {
   return (
-    <>
-      <h3 className="text-xl font-semibold text-gray-800 mb-5">
-        Order Summary
-      </h3>
+    <div className="bg-[#FFF8F0] p-6 rounded-2xl shadow-md border border-gray-200 max-h-[90vh] overflow-y-auto">
+      <h3 className="text-xl font-semibold text-gray-800 mb-5">Order Summary</h3>
 
       <div className="space-y-4 max-h-72 overflow-y-auto pr-2">
         {cart.map((item) => {
           const imageUrl = item.mainImage?.startsWith("http")
             ? item.mainImage
             : `${baseURL}${item.mainImage}`;
-
           return (
             <div
               key={item._id}
@@ -369,12 +334,25 @@ const SummaryContent = ({
             <span>-{coupon.discountPercentage}%</span>
           </p>
         )}
+        <p className="flex justify-between text-sm text-gray-800">
+          <span>Shipping</span>
+          <span>PKR {shippingCost}</span>
+        </p>
         <p className="flex justify-between font-semibold text-gray-900">
           <span>Total</span>
-          <span>PKR {formattedTotal}</span>
+          <span>PKR {finalTotalWithShipping.toFixed(2)}</span>
         </p>
+        {amountForFreeShipping > 0 ? (
+          <p className="text-sm text-orange-600 mt-2">
+            Add Rs. {amountForFreeShipping.toFixed(0)} more to get FREE shipping!
+          </p>
+        ) : (
+          <p className="text-sm text-green-600 mt-2 font-semibold">
+            🎉 You have qualified for FREE shipping!
+          </p>
+        )}
       </div>
-    </>
+    </div>
   );
 };
 

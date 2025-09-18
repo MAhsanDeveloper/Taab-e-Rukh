@@ -6,13 +6,8 @@ import { Link, useNavigate } from "react-router-dom";
 import GiftCouponCard from "../components/GiftCouponCard";
 
 const CartPage = () => {
-  const {
-    cart,
-    removeFromCart,
-    updateQuantity,
-    coupon,
-    isCouponApplied,
-  } = useCartStore();
+  const { cart, removeFromCart, updateQuantity, coupon, isCouponApplied } =
+    useCartStore();
 
   const navigate = useNavigate();
 
@@ -38,13 +33,24 @@ const CartPage = () => {
 
   let finalTotal = cartTotal;
   if (isCouponApplied && coupon?.discountPercentage) {
-    finalTotal =
-      finalTotal - (finalTotal * coupon.discountPercentage) / 100;
+    finalTotal = finalTotal - (finalTotal * coupon.discountPercentage) / 100;
   }
 
   const formattedSubtotal = cartSubtotal.toFixed(2);
+  // eslint-disable-next-line no-unused-vars
   const formattedTotal = finalTotal.toFixed(2);
   const formattedSavings = savings.toFixed(2);
+
+  const FREE_SHIPPING_THRESHOLD = 5000;
+  const SHIPPING_COST = 300;
+
+  const shippingCost = cartTotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_COST;
+  const amountForFreeShipping =
+    cartTotal >= FREE_SHIPPING_THRESHOLD
+      ? 0
+      : FREE_SHIPPING_THRESHOLD - cartTotal;
+
+  const finalTotalWithShipping = finalTotal + shippingCost;
 
   const goToBilling = () => {
     if (!cart.length) return;
@@ -145,7 +151,7 @@ const CartPage = () => {
                       <div className="flex items-center gap-3">
                         <button
                           onClick={() =>
-                          updateQuantity(item.cartItemId, item.quantity - 1)
+                            updateQuantity(item.cartItemId, item.quantity - 1)
                           }
                           className="flex h-8 w-8 items-center justify-center rounded-full border border-gray-300 text-gray-600 hover:bg-blue-500 hover:text-white transition"
                         >
@@ -158,7 +164,7 @@ const CartPage = () => {
 
                         <button
                           onClick={() =>
-                           updateQuantity(item.cartItemId, item.quantity + 1)
+                            updateQuantity(item.cartItemId, item.quantity + 1)
                           }
                           className="flex h-8 w-8 items-center justify-center rounded-full border border-gray-300 text-gray-600 hover:bg-blue-500 hover:text-white transition"
                         >
@@ -200,10 +206,29 @@ const CartPage = () => {
                     <span>-{coupon.discountPercentage}%</span>
                   </div>
                 )}
+
+                {/* Shipping */}
+                <div className="flex justify-between text-gray-800">
+                  <span>Shipping</span>
+                  <span>Rs. {shippingCost}</span>
+                </div>
+
                 <div className="flex justify-between border-t border-gray-200 pt-3 font-semibold text-gray-900">
                   <span>Total</span>
-                  <span>Rs. {formattedTotal}</span>
+                  <span>Rs. {finalTotalWithShipping.toFixed(2)}</span>
                 </div>
+
+                {/* Free shipping nudge / celebration */}
+                {amountForFreeShipping > 0 ? (
+                  <p className="text-sm text-orange-600 mt-2">
+                    Add Rs. {amountForFreeShipping.toFixed(0)} more to get FREE
+                    shipping!
+                  </p>
+                ) : (
+                  <p className="text-sm text-green-600 mt-2 font-semibold">
+                    🎉 You have qualified for FREE shipping!
+                  </p>
+                )}
               </div>
 
               <button

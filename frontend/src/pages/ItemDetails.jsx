@@ -218,14 +218,13 @@ const ItemDetails = () => {
             )}
 
             <Link
-              to="/cart"
-              className="inline-block text-center bg-gradient-to-r from-blue-500 to-indigo-600 
-                         hover:from-blue-600 hover:to-indigo-700 
-                         text-white font-semibold px-10 py-3 rounded-full 
+              to="/place-your-order"
+              className="inline-block text-center  bg-black
+                         text-white hover:bg-white hover:text-black border-black font-semibold px-10 py-3 rounded-full 
                          transition-all duration-300 ease-in-out 
                          shadow-md hover:shadow-lg hover:scale-105"
             >
-              Go to Cart
+              Buy Now
             </Link>
           </div>
         </div>

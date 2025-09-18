@@ -133,6 +133,29 @@ removeFromCart: async (productId) => {
   }
 },
 
+clearCart: async () => {
+  const token = localStorage.getItem("token");
+
+  if (!token) {
+    // Clear local cart
+    localStorage.removeItem("cart");
+    set({ cart: [] });
+    get().calculateTotals();
+    return;
+  }
+
+  try {
+    // Clear server cart
+    await axios.delete("/cart", { withCredentials: true }); // assumes your backend clears all items on DELETE /cart
+    set({ cart: [] });
+    get().calculateTotals();
+    toast.success("Cart cleared");
+  } catch (error) {
+    toast.error(error.response?.data?.message || "Failed to clear cart");
+  }
+},
+
+
 updateQuantity: async (cartItemId, quantity) => {
   const token = localStorage.getItem("token");
   if (!token) {
@@ -160,8 +183,6 @@ updateQuantity: async (cartItemId, quantity) => {
   }
 },
 
-
-
   calculateTotals: () => {
     const { cart, coupon } = get();
     const subtotal = cart.reduce((sum, i) => sum + i.price * i.quantity, 0);
@@ -174,3 +195,4 @@ updateQuantity: async (cartItemId, quantity) => {
     set({ subtotal, total });
   },
 }));
+
