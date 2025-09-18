@@ -1,14 +1,13 @@
 import { lazy, Suspense } from "react";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
+import { Toaster } from "react-hot-toast";
 
-// --- Normal Imports ---
+// --- Direct Imports ---
 import MainLayout from "./layouts/MainLayout";
 import HomePage from "./pages/HomePage";
 import ProductPage from "./pages/ProductPage";
 import CategoryPage from "./components/CategoryCarousel";
 import WhatsappButton from "./components/WhatsappButton";
-
-import { Toaster } from "react-hot-toast";
 
 // --- Skeletons ---
 import CartPageSkeleton from "./skeletons/CartPageSkeleton";
@@ -55,11 +54,9 @@ const AdminLogin = lazy(() => import("./admin/AdminLogin"));
 const adminLoginPath = import.meta.env.VITE_ADMIN_LOGIN_PATH;
 const adminPanelPath = import.meta.env.VITE_ADMIN_PANEL_PATH;
 
-// --- Wrapped Pages ---
+// --- Wrapped Pages (lazy only) ---
 const WrappedCartPage = PageWrapper(CartPage, <CartPageSkeleton />);
 const WrappedBillingPage = PageWrapper(BillingPage, <BillingPageSkeleton />);
-const WrappedProductPage = PageWrapper(ProductPage, <ProductPageSkeleton />);
-const WrappedCategoryPage = PageWrapper(CategoryPage, <ProductPageSkeleton />);
 const WrappedAllProductsPage = PageWrapper(AllProductsPage, <ProductPageSkeleton />);
 const WrappedLoginPage = PageWrapper(LoginPage, <LoginPageSkeleton />);
 const WrappedSignUpPage = PageWrapper(SignUpPage, <LoginPageSkeleton />);
@@ -84,6 +81,10 @@ const WrappedOrderManager = PageWrapper(OrderManager);
 const WrappedCategoryManager = PageWrapper(CategoryManager);
 const WrappedCouponManager = PageWrapper(CouponManager);
 const WrappedAdminLogin = PageWrapper(AdminLogin);
+
+// --- Direct Imports (NOT wrapped) ---
+const WrappedProductPage = ProductPage;
+const WrappedCategoryPage = CategoryPage;
 
 // --- Router ---
 const router = createBrowserRouter([
@@ -143,7 +144,7 @@ const App = () => (
   <>
     <RouterProvider router={router} />
     <Toaster position="top-center" />
-      <WhatsappButton />
+    <WhatsappButton />
   </>
 );
 
