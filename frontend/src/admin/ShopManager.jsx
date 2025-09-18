@@ -351,14 +351,14 @@ const ShopManager = () => {
                   onChange={(e) =>
                     setEditForm({ ...editForm, benefits: e.target.value })
                   }
-                  className="p-2 border rounded w-full"
+                  className="p-2 border rounded w-full whitespace-pre-line line-clamp-3"
                 />
                 <textarea
                   defaultValue={p.description}
                   onChange={(e) =>
                     setEditForm({ ...editForm, description: e.target.value })
                   }
-                  className="p-2 border rounded w-full"
+                  className="p-2 border rounded w-full whitespace-pre-line line-clamp-3"
                 />
                 <input
                   type="number"
@@ -384,7 +384,7 @@ const ShopManager = () => {
             ) : (
               <>
                 <h3 className="font-bold mt-2">{p.name}</h3>
-                <p className="text-sm">{p.benefits}</p>
+                <p className="text-sm whitespace-pre-line line-clamp-3">{p.benefits}</p>
                 <p className="text-sm">{p.size}</p>
                 <p className="text-sm">Rs {p.price}</p>
                 <p className="text-xs">
