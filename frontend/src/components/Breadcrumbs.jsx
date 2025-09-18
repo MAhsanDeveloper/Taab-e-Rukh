@@ -6,7 +6,7 @@ const Breadcrumbs = () => {
   const pathnames = location.pathname.split("/").filter((x) => x);
 
   // Define hidden routes
-  const hiddenRoutes = ["/", "/login", "/signup", "/billing", "/checkout"];
+  const hiddenRoutes = ["/", "/login", "/signup", "/place-your-order", "/checkout"];
 
   // ❌ Hide breadcrumbs for exact matches
   if (hiddenRoutes.includes(location.pathname)) {

@@ -12,7 +12,7 @@ const ProductCard = ({ product }) => {
       {/* Image + text clickable */}
       <Link to={`/item/${product._id}`} className="block">
         {/* Image */}
-        <div className="relative h-48 sm:h-52 md:h-60 lg:h-64 w-full overflow-hidden rounded-t-xl bg-gray-50 flex items-center justify-center">
+        <div className="relative h-52 sm:h-52 md:h-60 lg:h-64 w-full overflow-hidden rounded-t-xl bg-gray-50 flex items-center justify-center">
           <img
             src={product.mainImage}
             alt={product.name}

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 // eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from "framer-motion"
 import { useCartStore } from "../stores/useCartStore"
@@ -12,7 +12,6 @@ const baseURL = import.meta.env.VITE_API_BASE_URL
 const BillingPage = () => {
   const { cart, coupon, isCouponApplied } = useCartStore()
   const navigate = useNavigate()
-
   const [form, setForm] = useState({
     fullName: "",
     email: "",
@@ -21,10 +20,11 @@ const BillingPage = () => {
     city: "",
     note: "",
   })
-
   const [paymentMethod, setPaymentMethod] = useState("Cash on Delivery")
   const [loading, setLoading] = useState(false)
   const [showSummary, setShowSummary] = useState(false)
+  const summaryRef = useRef(null)
+  const formRef = useRef(null)
 
   const FREE_SHIPPING_THRESHOLD = 5000
   const SHIPPING_COST = 300
@@ -117,7 +117,7 @@ const BillingPage = () => {
 
   return (
     <div className="min-h-screen bg-white">
-      <div className="py-6 sm:py-10 px-4 sm:px-6 md:px-8 lg:px-16 max-w-screen-xl mx-auto">
+      <div className="py-6 mt-10 sm:py-10 px-4 sm:px-6 md:px-8 lg:px-16 max-w-screen-xl mx-auto">
         <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-6 sm:mb-8 text-center lg:text-left">
           Billing & Shipping
         </h1>
@@ -133,10 +133,47 @@ const BillingPage = () => {
             </button>
           </div>
         ) : (
-          <div className="lg:flex lg:items-start gap-6 xl:gap-8">
+          <div className="lg:flex lg:items-start gap-6 xl:gap-8 relative">
+            {/* Mobile Order Summary (fixed on top) */}
+            <div className="lg:hidden fixed top-20 left-0 right-0 z-50 px-4 py-2 bg-white border-b border-gray-200 shadow-md">
+              <div className="flex justify-between items-center">
+                <div className="font-medium text-gray-800">view full order summary</div>
+                <span className="font-bold text-gray-800">Total: PKR {finalTotalWithShipping.toFixed(2)}</span>
+                <button
+                  onClick={() => setShowSummary(!showSummary)}
+                  className="flex items-center justify-center text-gray-800"
+                >
+                  {showSummary ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+                </button>
+              </div>
+              <AnimatePresence>
+                {showSummary && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    className="mt-2"
+                  >
+                    <SummaryContent
+                      cart={cart}
+                      formattedSubtotal={formattedSubtotal}
+                      formattedSavings={formattedSavings}
+                      finalTotalWithShipping={finalTotalWithShipping}
+                      savings={savings}
+                      isCouponApplied={isCouponApplied}
+                      coupon={coupon}
+                      shippingCost={shippingCost}
+                      amountForFreeShipping={amountForFreeShipping}
+                    />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
             {/* Billing Form */}
             <motion.div
-              className="lg:flex-[1.3] order-2 lg:order-1 bg-white p-4 sm:p-6 rounded-2xl shadow-md border border-gray-100"
+              ref={formRef}
+              className="lg:flex-[1.3] order-2 lg:order-1 bg-white p-4 sm:p-6 rounded-2xl shadow-md border border-gray-100 mt-24 lg:mt-0"
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.4 }}
@@ -215,53 +252,31 @@ const BillingPage = () => {
               </div>
             </motion.div>
 
-            {/* Order Summary - Updated sticky behavior and mobile responsiveness */}
+            {/* Desktop Summary */}
             <motion.div
-              className="lg:flex-[0.7] order-1 lg:order-2 mt-6 sm:mt-8 lg:mt-0 lg:sticky lg:top-4 lg:self-start"
+              ref={summaryRef}
+              className="hidden lg:block lg:flex-[0.7] order-1 lg:order-2 mt-0 lg:sticky lg:top-4 lg:self-start"
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.4 }}
             >
-              {/* Mobile toggle */}
-              <div className="lg:hidden mb-3">
-                <button
-                  onClick={() => setShowSummary(!showSummary)}
-                  className="flex items-center justify-between w-full bg-[#FFF8F0] px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg border border-gray-200 font-medium text-gray-800 shadow-md text-sm sm:text-base"
-                >
-                  <span>Order Summary</span>
-                  {showSummary ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
-                </button>
-              </div>
-
-              {/* Summary Content */}
-              <AnimatePresence>
-                {(showSummary || window.innerWidth >= 1024) && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: 20 }}
-                    transition={{ duration: 0.3 }}
-                  >
-                    <SummaryContent
-                      cart={cart}
-                      formattedSubtotal={formattedSubtotal}
-                      formattedSavings={formattedSavings}
-                      finalTotalWithShipping={finalTotalWithShipping}
-                      savings={savings}
-                      isCouponApplied={isCouponApplied}
-                      coupon={coupon}
-                      shippingCost={shippingCost}
-                      amountForFreeShipping={amountForFreeShipping}
-                    />
-                  </motion.div>
-                )}
-              </AnimatePresence>
+              <SummaryContent
+                cart={cart}
+                formattedSubtotal={formattedSubtotal}
+                formattedSavings={formattedSavings}
+                finalTotalWithShipping={finalTotalWithShipping}
+                savings={savings}
+                isCouponApplied={isCouponApplied}
+                coupon={coupon}
+                shippingCost={shippingCost}
+                amountForFreeShipping={amountForFreeShipping}
+              />
             </motion.div>
           </div>
         )}
       </div>
 
-      <footer className="bg-gray-50 border-t border-gray-200 py-6 sm:py-8 px-4 sm:px-6 md:px-8 lg:px-16">
+      <footer className="bg-gray-50 border-t border-gray-200 py-6 sm:py-8 px-4 sm:px-6 md:px-8 lg:px-16 mt-12">
         <div className="max-w-screen-xl mx-auto">
           <div className="flex flex-wrap gap-4 sm:gap-6 justify-center text-xs sm:text-sm text-gray-700">
             <Link to="/privacy-policy" className="text-blue-600 hover:underline transition-colors">
