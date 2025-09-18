@@ -1,11 +1,15 @@
 import { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 import { FaWhatsapp } from "react-icons/fa";
 import axios from "axios";
 
 const baseURL = import.meta.env.VITE_API_BASE_URL;
+const adminPanelPath = import.meta.env.VITE_ADMIN_PANEL_PATH;
+const adminLoginPath = import.meta.env.VITE_ADMIN_LOGIN_PATH;
 
 const WhatsappButton = () => {
   const [whatsappNumber, setWhatsappNumber] = useState("");
+  const location = useLocation();
 
   useEffect(() => {
     const fetchContact = async () => {
@@ -20,12 +24,15 @@ const WhatsappButton = () => {
     fetchContact();
   }, []);
 
-  if (!whatsappNumber || whatsappNumber.trim().length !== 12) return null; // don't show the button until loaded, or if admin mistankly types something wrong
+  // Hide button if number is invalid or on admin routes
+  if (!whatsappNumber || whatsappNumber.trim().length !== 12) return null;
+  if (location.pathname.startsWith(adminPanelPath)) return null;
+  if (location.pathname.startsWith(adminLoginPath)) return null;
 
-    const whatsappLink = `https://wa.me/${whatsappNumber.replace(/\D/g, "")}?text=${encodeURIComponent("Hi, I want to ")}`;
+  const whatsappLink = `https://wa.me/${whatsappNumber.replace(/\D/g, "")}?text=${encodeURIComponent("Hi, I want to ")}`;
 
   return (
-     <a
+    <a
       href={whatsappLink}
       target="_blank"
       rel="noopener noreferrer"

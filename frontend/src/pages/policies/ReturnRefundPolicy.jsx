@@ -12,12 +12,12 @@ export default function ReturnRefundPolicy() {
         />
         <link
           rel="canonical"
-          href="https://taaberukh.com/policies/return-refund-policy"
+          href="https://thesgrgroup.com/return-refund-policy"
         />
       </Helmet>
 
       <h1 className="text-3xl font-bold mb-6">Return & Refund Policy</h1>
-      <p className="mb-4">Last updated: September 8, 2025</p>
+      <p className="mb-4">Last updated: September 18, 2025</p>
 
       {/* ✅ Section 1 */}
       <section className="mb-8">
@@ -56,12 +56,12 @@ export default function ReturnRefundPolicy() {
           <li>
             Contact our support team at{" "}
             <a
-              href="mailto:support@taaberukh.com"
+              href="mailto:thesgrgroup1@gmail.com"
               className="text-blue-600 underline"
             >
-              support@taaberukh.com
+              thesgrgroup1@gmail.com
             </a>{" "}
-            or call <strong>+92 3XX XXXXXXX</strong> within 7 days of delivery.
+            or call <strong>+92-346-5611273</strong> within 7 days of delivery.
           </li>
           <li>
             Our team will verify your request and provide{" "}
@@ -116,18 +116,17 @@ export default function ReturnRefundPolicy() {
           <li>
             <strong>Email:</strong>{" "}
             <a
-              href="mailto:support@taaberukh.com"
+              href="mailto:thesgrgroup1@gmail.com"
               className="text-blue-600 underline"
             >
-              support@taaberukh.com
+              thesgrgroup1@gmail.com
             </a>
           </li>
           <li>
-            <strong>Phone:</strong> +92-3XX-XXXXXXX
+            <strong>Phone:</strong> +92-346-5611273
           </li>
           <li>
-            <strong>Address:</strong> [Registered Business Address, Islamabad,
-            Pakistan]
+            <strong>Address:</strong> Mandi Bahauddin, Punjab, Pakistan
           </li>
         </ul>
       </section>

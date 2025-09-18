@@ -6,7 +6,7 @@ export default function PrivacyPolicy() {
       <SEO
         title="Privacy Policy | Taab e Rukh"
         description="Official Privacy Policy of Taab e Rukh. Learn how we collect, use, and protect your personal information when shopping for herbal skincare products in Pakistan and worldwide."
-        canonical="https://taaberukh.com/policies/privacy-policy"
+        canonical="https://thesgrgroup.com/privacy-policy"
         keywords={[
           "privacy policy Pakistan",
           "data protection Taab e Rukh",
@@ -21,13 +21,13 @@ export default function PrivacyPolicy() {
           "publisher": {
             "@type": "Organization",
             "name": "Taab e Rukh",
-            "url": "https://taaberukh.com",
+            "url": "https://thesgrgroup.com",
           },
         }}
       />
 
       <h1 className="text-3xl font-bold mb-6">Privacy Policy</h1>
-      <p className="mb-4">Last updated: September 8, 2025</p>
+      <p className="mb-4">Last updated: September 18, 2025</p>
 
       <section className="mb-8">
         <h2 className="text-xl font-semibold mb-2">Introduction</h2>
@@ -130,17 +130,13 @@ export default function PrivacyPolicy() {
         <p>For any privacy-related questions or concerns, please contact us:</p>
         <ul className="list-disc ml-6 mt-2">
           <li>
-            <strong>Email:</strong> support@taaberukh.com
+            <strong>Email:</strong> thesgrgroup1@gmail.com
           </li>
           <li>
-            <strong>Phone:</strong> +92-3XX-XXXXXXX
+            <strong>Phone:</strong> +92-346-5611273
           </li>
           <li>
-            <strong>Address:</strong> [Registered Business Address, Islamabad,
-            Pakistan]
-          </li>
-          <li>
-            <strong>Operating Hours:</strong> Monday – Saturday | 10:00 – 18:00
+            <strong>Address:</strong> Mandi Bahauddin, Punjab, Pakistan
           </li>
         </ul>
       </section>

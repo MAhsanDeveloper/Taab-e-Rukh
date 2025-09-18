@@ -7,7 +7,6 @@ import MainLayout from "./layouts/MainLayout";
 import HomePage from "./pages/HomePage";
 import ProductPage from "./pages/ProductPage";
 import CategoryPage from "./components/CategoryCarousel";
-import WhatsappButton from "./components/WhatsappButton";
 
 // --- Skeletons ---
 import CartPageSkeleton from "./skeletons/CartPageSkeleton";
@@ -144,7 +143,6 @@ const App = () => (
   <>
     <RouterProvider router={router} />
     <Toaster position="top-center" />
-    <WhatsappButton />
   </>
 );
 

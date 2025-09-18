@@ -155,7 +155,6 @@ clearCart: async () => {
   }
 },
 
-
 updateQuantity: async (cartItemId, quantity) => {
   const token = localStorage.getItem("token");
   if (!token) {

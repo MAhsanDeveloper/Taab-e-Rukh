@@ -6,7 +6,7 @@ const ShippingPolicy = () => {
       <SEO
         title="Shipping Policy | Taab e Rukh"
         description="Read Taab e Rukh's shipping policy. Free shipping on orders above PKR 5,000. Fast and reliable delivery across Pakistan within 1–5 business days."
-        canonical="https://taaberukh.com/shipping-policy"
+        canonical="https://thesgrgroup.com/shipping-policy"
         keywords={[
           "shipping policy Pakistan",
           "free shipping herbal products",
@@ -21,7 +21,7 @@ const ShippingPolicy = () => {
           publisher: {
             "@type": "Organization",
             name: "Taab e Rukh",
-            url: "https://taaberukh.com",
+            url: "https://thesgrgroup.com",
           },
         }}
       />
@@ -48,13 +48,12 @@ const ShippingPolicy = () => {
       <ul className="list-disc pl-6 space-y-2">
         <li>Standard Shipping: Delivered within 3–5 working days.</li>
         <li>Expedited Shipping: Delivered within 2–4 working days.</li>
-        <li>Express Shipping: Delivered within 1–2 working days.</li>
       </ul>
 
       <h2 className="text-xl font-semibold mt-8 mb-3">3. Shipping Rates</h2>
       <p>
         Shipping costs are calculated at checkout based on order weight, size,
-        and destination.
+        and destination. The most common rate for shipping is PKR 300.
       </p>
       <p className="mt-2 font-semibold">
        Free Shipping: Orders above PKR 5,000 qualify for free standard
@@ -68,10 +67,10 @@ const ShippingPolicy = () => {
         We currently ship <strong>within Pakistan only</strong>. For
         international shipping requests, contact us at{" "}
         <a
-          href="mailto:support@taaberukh.com"
+          href="mailto:thesgrgroup1@gmail.com"
           className="text-blue-600 underline"
         >
-          support@taaberukh.com
+          thesgrgroup1@gmail.com
         </a>
         .
       </p>
@@ -80,9 +79,7 @@ const ShippingPolicy = () => {
         5. Tracking Your Order
       </h2>
       <p>
-        Once shipped, you will receive a confirmation email with a{" "}
-        <strong>tracking number</strong>. You can track your order directly on
-        our courier partner’s website.
+        Once shipped, you will receive a confirmation email. We are currently working on an integrated tracking system.
       </p>
 
       <h2 className="text-xl font-semibold mt-8 mb-3">
@@ -117,18 +114,18 @@ const ShippingPolicy = () => {
       </h2>
       <p>For shipping inquiries, contact us:</p>
       <ul className="mt-3 space-y-2">
-        <li>
-          📍 <strong>Taab e Rukh Headquarters</strong>, Islamabad, Pakistan
-        </li>
-        <li>📞 +92 325 0123455</li>
-        <li>
+        <li>📞 +92 346 5611273 </li>
+           <li>
           📧{" "}
           <a
-            href="mailto:support@taaberukh.com"
+            href="mailto:thesgrgroup1@gmail.com"
             className="text-blue-600 underline"
           >
-            support@taaberukh.com
+            thesgrgroup1@gmail.com
           </a>
+        </li>
+        <li>
+          📍 <strong>Address: </strong>, Mandi Bahauddin, Punjab, Pakistan
         </li>
       </ul>
     </div>

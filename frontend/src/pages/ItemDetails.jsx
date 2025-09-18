@@ -1,12 +1,10 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-// import { lazy, Suspense } from "react";
 import axios from "../lib/axios";
+import { useCartStore } from "../stores/useCartStore";
 import toast from "react-hot-toast";
 import { ArrowLeft } from "lucide-react";
 import AddToCartButton from "../components/AddToCartButton";
-// import { fetchFeaturedByCategory } from "../lib/featuredapi";
-// const FeaturedProducts = lazy(() => import("../components/FeaturedProducts"));
 import USPSTRIP from "../components/USPSTRIP";
 
 const baseURL = import.meta.env.VITE_API_BASE_URL;
@@ -15,8 +13,13 @@ const ItemDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [item, setItem] = useState(null);
+   const { addToCart } = useCartStore();
   const [mainImage, setMainImage] = useState("");
-  // const [featured, setFeatured] = useState([]);
+
+    const handleBuyNow = async () => {
+    await addToCart(item); // Add product to cart first
+    navigate("/place-your-order");
+  };
 
   // Fetch the product details
   useEffect(() => {
@@ -41,44 +44,8 @@ const ItemDetails = () => {
     fetchItem();
   }, [id]);
 
-// useEffect(() => {
-//   if (!item?.category) return;
-
-//   // Map category name → slug for API
-//   const slugMap = {
-//     "Hair Care": "hair-care",
-//     "Skin Care": "skin-care",
-//     "Face & Glow": "face-glow",
-//     "Body & Baby": "body-baby",
-//   };
-
-//   const categorySlug = slugMap[item.category.trim()];
-//   if (!categorySlug) return; // unknown category
-
-//   fetchFeaturedByCategory(categorySlug)
-//     .then((res) => {
-//       if (!Array.isArray(res)) {
-//         console.warn("Invalid response for featured products:", res);
-//         setFeatured([]);
-//         return;
-//       }
-
-//       // Remove current product from list
-//       const filtered = res.filter((p) => p._id !== item._id);
-
-//       // If filtered empty, still show all in category
-//       setFeatured(filtered.length ? filtered : res);
-//     })
-//     .catch((err) => {
-//       console.error("❌ Failed to fetch featured:", err);
-//       setFeatured([]);
-//     });
-// }, [item]);
-
-
-
   if (!item) {
-    return <div className="text-gray-600 text-center mt-16">Loading...</div>;
+    return <div className="text-gray-600 text-center mt-16"></div>;
   }
 
   return (
@@ -217,15 +184,12 @@ const ItemDetails = () => {
               </button>
             )}
 
-            <Link
-              to="/place-your-order"
-              className="inline-block text-center  bg-black
-                         text-white hover:bg-white hover:text-black border-black font-semibold px-10 py-3 rounded-full 
-                         transition-all duration-300 ease-in-out 
-                         shadow-md hover:shadow-lg hover:scale-105"
-            >
-              Buy Now
-            </Link>
+         <button
+      onClick={handleBuyNow}
+      className="inline-block text-center cursor-pointer bg-black text-white hover:bg-white hover:text-black border-black font-semibold px-10 py-3 rounded-full transition-all duration-300 ease-in-out shadow-md hover:shadow-lg hover:scale-105"
+    >
+      Buy Now
+    </button>
           </div>
         </div>
       </div>

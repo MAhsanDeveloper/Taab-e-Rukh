@@ -3,11 +3,11 @@ import ScrollToTop from "../components/scrollToTop";
 import Navbar from "../components/Navbar";
 import Breadcrumbs from "../components/Breadcrumbs";
 import Footer from "../components/Footer";
+import WhatsappButton from "../components/WhatsappButton";
 
 const MainLayout = () => {
   return (
     <div className="w-full flex flex-col bg-white">
-
       <Navbar />
 
       <ScrollToTop />
@@ -17,9 +17,10 @@ const MainLayout = () => {
 
         <Outlet />
       </div>
-      
-        <Footer />
-   
+
+      <Footer />
+
+      <WhatsappButton />
     </div>
   );
 };
