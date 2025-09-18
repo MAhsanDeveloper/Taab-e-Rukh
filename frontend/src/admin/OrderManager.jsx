@@ -20,13 +20,16 @@ const OrderManager = () => {
     fetchOrders();
   }, []);
 
-  const handleDownloadInvoice = (orderId) => {
-    window.open(`/orders/${orderId}/invoice`, "_blank");
-  };
+const backendURL = import.meta.env.VITE_API_BASE_URL;
 
-   const handleDownloadPackSlip = (orderId) => {
-    window.open(`/orders/${orderId}/pack-slip`, "_blank");
-  };
+const handleDownloadInvoice = (orderId) => {
+  window.open(`${backendURL}/orders/${orderId}/invoice`, "_blank");
+};
+
+const handleDownloadPackSlip = (orderId) => {
+  window.open(`${backendURL}/orders/${orderId}/pack-slip`, "_blank");
+};
+
 
   return (
     <section className="p-6">

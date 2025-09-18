@@ -17,7 +17,7 @@ router.get("/:id/invoice", async (req, res) => {
       `attachment; filename=invoice-${order._id}.pdf`
     );
 
-    generateInvoice(order, res); // Pipe PDF to response
+    generateInvoice(order, res);
   } catch (error) {
     console.error("Failed to generate invoice:", error);
     res.status(500).json({ message: "Error generating invoice" });
@@ -36,7 +36,7 @@ router.get("/:id/pack-slip", async (req, res) => {
       `attachment; filename=packaging-slip-${order._id}.pdf`
     );
 
-    generatePackagingSlip(order, res); // Pipe PDF to response
+    generatePackagingSlip(order, res);
   } catch (error) {
     console.error("Failed to generate packaging slip:", error);
     res.status(500).json({ message: "Error generating packaging slip" });
