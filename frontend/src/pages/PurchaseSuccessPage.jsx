@@ -1,8 +1,8 @@
 import { ArrowRight, CheckCircle, HandHeart } from "lucide-react";
-import { useEffect, lazy, Suspense } from "react";
+import { useEffect, } from "react";
 import { Link } from "react-router-dom";
 import { useCartStore } from "../stores/useCartStore";
-const Confetti = lazy(() => import("react-confetti"));
+import Confetti from "react-confetti";
 
 const PurchaseSuccessPage = () => {
   const { clearCart } = useCartStore();
@@ -13,7 +13,6 @@ const PurchaseSuccessPage = () => {
 
   return (
     <div className="h-screen flex items-center justify-center px-4">
-      <Suspense fallback={null}>
         <Confetti
           width={window.innerWidth}
           height={window.innerHeight}
@@ -22,7 +21,6 @@ const PurchaseSuccessPage = () => {
           numberOfPieces={700}
           recycle={false}
         />
-      </Suspense>
 
       <div className="max-w-md w-full bg-gray-800 rounded-lg shadow-xl overflow-hidden relative z-10">
         <div className="p-6 sm:p-8">
