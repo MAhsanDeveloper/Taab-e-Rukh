@@ -7,31 +7,28 @@ import {
   X,
   MessageCircle,
 } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useUserStore } from "../stores/useUserStore";
 import { useCartStore } from "../stores/useCartStore";
 // eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from "framer-motion";
 import { FaFacebook, FaInstagram, FaYoutube, FaTiktok } from "react-icons/fa";
-import axios from "axios";
+import axios from "../lib/axios";
 import logo from "../assets/logo.webp";
-
-const baseURL = import.meta.env.VITE_API_BASE_URL;
 
 const Navbar = () => {
   const { user } = useUserStore();
   const { cart } = useCartStore();
-  // eslint-disable-next-line no-unused-vars
-  const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const searchRef = useRef(null);
 
   const [contact, setContact] = useState({});
   const [loading, setLoading] = useState(true);
 
-  // ✅ Search state
   const [searchOpen, setSearchOpen] = useState(false);
   const [query, setQuery] = useState("");
+  const [results, setResults] = useState([]);
+  const [loadingResults, setLoadingResults] = useState(false);
 
   const categories = [
     { name: "Hair Care", path: "/category/hair-care" },
@@ -40,13 +37,38 @@ const Navbar = () => {
     { name: "Body & Baby", path: "/category/body-baby" },
   ];
 
-  const filteredCategories = categories.filter((cat) =>
-    cat.name.toLowerCase().includes(query.toLowerCase())
-  );
+  useEffect(() => {
+    const fetchProducts = async () => {
+      if (!query.trim()) {
+        setResults([]);
+        setLoadingResults(false);
+        return;
+      }
+
+      setLoadingResults(true);
+      try {
+       const res = await axios.get(`/shop/search?query=${query}`);
+
+
+        const data = Array.isArray(res.data)
+          ? res.data
+          : res.data.products || [];
+        setResults(data);
+      } catch (err) {
+        console.error("Search failed:", err);
+        setResults([]);
+      } finally {
+        setLoadingResults(false);
+      }
+    };
+
+    const delayDebounce = setTimeout(fetchProducts, 400);
+    return () => clearTimeout(delayDebounce);
+  }, [query]);
 
   const fetchContact = async () => {
     try {
-      const res = await axios.get(`${baseURL}/api/contact`);
+      const res = await axios.get(`/contact`);
       setContact(res.data || {});
     } catch (err) {
       console.error("Failed to fetch contact:", err);
@@ -117,35 +139,42 @@ const Navbar = () => {
           {searchOpen && (
             <div
               ref={searchRef}
-              className="absolute top-12 right-0 w-64 bg-white  cursor-pointer shadow-lg rounded-md p-3 z-50"
+              className="absolute top-12 right-0 w-72 bg-white cursor-pointer shadow-lg rounded-md p-3 z-50"
             >
               <input
                 type="text"
-                placeholder="Search categories..."
+                placeholder="Search products..."
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 className="w-full px-3 py-2 border rounded-md outline-none text-black"
               />
 
               <div className="mt-3 space-y-2 max-h-60 overflow-y-auto">
-                {query ? (
-                  filteredCategories.length > 0 ? (
-                    filteredCategories.map((cat) => (
+                {loadingResults ? (
+                  <p className="text-sm text-gray-400 px-3">Searching...</p>
+                ) : query ? (
+                  results.length > 0 ? (
+                    results.map((product) => (
                       <Link
-                        key={cat.name}
-                        to={cat.path}
+                        key={product._id}
+                        to={`/item/${product._id}`}
                         onClick={() => {
                           setSearchOpen(false);
                           setQuery("");
                         }}
-                        className="block px-3 py-2 rounded hover:bg-gray-100 text-black"
+                        className="flex items-center gap-2 px-3 py-2 rounded hover:bg-gray-100 text-black"
                       >
-                        {cat.name}
+                        <img
+                          src={product.mainImage}
+                          alt={product.name}
+                          className="h-8 w-8 rounded object-cover"
+                        />
+                        <span>{product.name}</span>
                       </Link>
                     ))
                   ) : (
                     <p className="text-sm text-gray-500 px-3">
-                      No results found
+                      No products found
                     </p>
                   )
                 ) : (
@@ -196,7 +225,7 @@ const Navbar = () => {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -50 }}
             transition={{ duration: 0.4, ease: "easeInOut" }}
-            className="md:hidden fixed bottom-0 left-0 w-full h-[85vh] bg-white rounded-t-2xl rounded-tr-2xl text-gray-500 z-50 flex flex-col"
+            className="md:hidden fixed top-0 left-0 w-full h-[60vh] bg-white rounded-t-2xl rounded-tr-2xl text-gray-500 z-50 flex flex-col"
           >
             {/* Close Button + Logo */}
             <div className="flex justify-between items-center px-5 py-4 border-b border-gray-700">

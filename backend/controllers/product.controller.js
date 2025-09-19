@@ -163,27 +163,6 @@ export const updateProduct = async (req, res) => {
   }
 };
 
-export const getRecommendedProducts = async (req, res) => {
-  try {
-    const products = await Product.aggregate([
-      { $sample: { size: 4 } },
-      {
-        $project: {
-          _id: 1,
-          name: 1,
-          description: 1,
-          price: 1,
-          mainImage: 1,
-        },
-      },
-    ]);
-    res.json(products);
-  } catch (error) {
-    console.error("Error in getRecommendedProducts:", error.message);
-    res.status(500).json({ message: "Server error", error: error.message });
-  }
-};
-
 export const getProductsByCategory = async (req, res) => {
   try {
     const products = await Product.find({
@@ -231,26 +210,19 @@ export const getProductById = async (req, res) => {
   }
 };
 
-export const getFeaturedByCategory = async (req, res) => {
+export const searchProducts = async (req, res) => {
   try {
-    const { category: slug } = req.params;
+    const searchQuery = req.query.query?.trim();
+    if (!searchQuery) return res.json({ products: [] });
 
-    const slugToCategory = {
-      "hair-care": "Hair Care",
-      "skin-care": "Skin Care",
-      "face-glow": "Face & Glow",
-      "body-baby": "Body & Baby",
-    };
+    const products = await Product.find({
+      name: { $regex: searchQuery, $options: "i" },
+    }).limit(10);
 
-    const categoryName = slugToCategory[slug];
-    if (!categoryName) return res.status(400).json({ message: "Invalid category slug" });
-
-    // 🔹 Just get up to 4 products in the category
-    const products = await Product.find({ category: categoryName }).limit(4);
-
-    res.json(products);
-  } catch (err) {
-    console.error("❌ Error fetching featured by category:", err);
+    res.json({ products });
+  } catch (error) {
+    console.error("searchProducts error:", error.message);
     res.status(500).json({ message: "Server error" });
   }
 };
+

@@ -1,10 +1,10 @@
 import Cart from "../models/cart.model.js";
 
 // Helper function to normalize cart items
-const normalizeCart = (cart) =>
+export const normalizeCart = (cart) =>
   cart.map((item) => ({
-    cartItemId: item._id, // actual Cart document id
-    productId: item.productId._id, // product id
+    cartItemId: item._id,
+    productId: item.productId._id,
     name: item.productId.name,
     description: item.productId.description,
     mainImage: item.productId.mainImage,

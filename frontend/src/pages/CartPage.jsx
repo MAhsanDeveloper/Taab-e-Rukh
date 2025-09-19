@@ -83,6 +83,7 @@ const CartPage = () => {
             transition={{ duration: 0.4 }}
           >
             {cart.map((item) => {
+              const id = item.cartItemId || item._id;
               const price = item.price || 0;
               const discountRate = item.discountRate || 0;
 
@@ -120,7 +121,7 @@ const CartPage = () => {
 
                       {/* Remove Button */}
                       <button
-                        onClick={() => removeFromCart(item.cartItemId)}
+                        onClick={() => removeFromCart(id)}
                         className="flex items-center gap-1 text-sm font-medium text-red-500 hover:text-red-600 transition"
                       >
                         <Trash size={16} /> Remove
@@ -150,9 +151,7 @@ const CartPage = () => {
                       {/* Quantity Controls */}
                       <div className="flex items-center gap-3">
                         <button
-                          onClick={() =>
-                            updateQuantity(item.cartItemId, item.quantity - 1)
-                          }
+                          onClick={() => updateQuantity(id, item.quantity - 1)}
                           className="flex h-8 w-8 items-center justify-center rounded-full border border-gray-300 text-gray-600 hover:bg-blue-500 hover:text-white transition"
                         >
                           <Minus size={16} />
@@ -163,9 +162,7 @@ const CartPage = () => {
                         </span>
 
                         <button
-                          onClick={() =>
-                            updateQuantity(item.cartItemId, item.quantity + 1)
-                          }
+                          onClick={() => updateQuantity(id, item.quantity + 1)}
                           className="flex h-8 w-8 items-center justify-center rounded-full border border-gray-300 text-gray-600 hover:bg-blue-500 hover:text-white transition"
                         >
                           <Plus size={16} />

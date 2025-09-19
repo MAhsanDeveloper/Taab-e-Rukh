@@ -7,7 +7,7 @@ import WhatsappButton from "../components/WhatsappButton";
 
 const MainLayout = () => {
   return (
-    <div className="flex flex-col min-h-screen w-full bg-white">
+    <div className="flex flex-col w-full bg-white">
       <Navbar />
 
       <ScrollToTop />

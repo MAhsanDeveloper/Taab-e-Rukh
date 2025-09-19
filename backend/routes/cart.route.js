@@ -1,4 +1,7 @@
+// cart.route.js
 import express from "express";
+import Cart from "../models/cart.model.js";
+import { normalizeCart } from "../controllers/cart.controller.js";
 import { addToCart, getCartProducts, updateQuantity } from "../controllers/cart.controller.js";
 import { protectRoute } from "../middleware/auth.middleware.js";
 

@@ -6,6 +6,7 @@ import toast from "react-hot-toast";
 import { ArrowLeft } from "lucide-react";
 import AddToCartButton from "../components/AddToCartButton";
 import USPSTRIP from "../components/USPSTRIP";
+import ItemDetailsSkeleton from "../skeletons/ItemDetailsSkeleton";
 
 const baseURL = import.meta.env.VITE_API_BASE_URL;
 
@@ -13,6 +14,7 @@ const ItemDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [item, setItem] = useState(null);
+   const [loading, setLoading] = useState(true);
    const { addToCart } = useCartStore();
   const [mainImage, setMainImage] = useState("");
 
@@ -25,6 +27,7 @@ const ItemDetails = () => {
   useEffect(() => {
     const fetchItem = async () => {
       try {
+        setLoading(true);
         const res = await axios.get(`/shop/${id}`);
         const product = res.data;
 
@@ -38,14 +41,24 @@ const ItemDetails = () => {
       } catch (err) {
         console.error("Failed to fetch item", err);
         toast.error("Failed to load item details");
+      } finally {
+         setLoading(false);
       }
     };
 
     fetchItem();
   }, [id]);
 
+  if (loading) {
+    return <ItemDetailsSkeleton />;
+  }
+
   if (!item) {
-    return <div className="text-gray-600 text-center mt-16"></div>;
+    return (
+      <div className="text-gray-600 text-center mt-16">
+        Item not found.
+      </div>
+    );
   }
 
   return (
@@ -193,16 +206,6 @@ const ItemDetails = () => {
           </div>
         </div>
       </div>
-
-      {/* Featured Section
-      {featured.length > 0 && (
-        <Suspense fallback={<div className="py-12 text-center">Loading recommendations...</div>}>
-          <div className="mt-10 mb-3">
-            <h3 className="text-2xl font-bold mb-5">You may also like</h3>
-            <FeaturedProducts featuredProducts={featured} category={item.category} />
-          </div>
-        </Suspense>
-      )} */}
 
       <div  className="mt-20">
        <USPSTRIP />

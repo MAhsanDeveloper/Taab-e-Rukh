@@ -2,6 +2,22 @@ import { create } from "zustand";
 import axios from "../lib/axios";
 import { toast } from "react-hot-toast";
 
+import { useCartStore } from "./useCartStore";
+
+const { cart: localCart, getCartItems } = useCartStore.getState();
+
+if (localCart.length > 0) {
+  await Promise.all(
+    localCart.map((item) =>
+      axios.post("/api/cart", { productId: item.productId, quantity: item.quantity })
+    )
+  );
+  localStorage.removeItem("cart-storage");
+}
+
+await getCartItems();
+
+
 export const useUserStore = create((set, get) => ({
   user: null,
   loading: false,

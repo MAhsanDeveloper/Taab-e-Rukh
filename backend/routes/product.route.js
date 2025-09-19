@@ -5,11 +5,10 @@ import {
   getAllProducts,
   getFeaturedProducts,
   getProductsByCategory,
-  getRecommendedProducts,
   toggleFeaturedProduct,
   updateProduct,
   getProductById,
-   getFeaturedByCategory,
+   searchProducts
 } from "../controllers/product.controller.js";
 import { adminRoute, protectRoute } from "../middleware/auth.middleware.js";
 import { uploadProductImages } from "../middleware/multer.js";
@@ -18,9 +17,8 @@ const router = express.Router();
 
 router.get("/", getAllProducts);
 router.get("/featured", getFeaturedProducts);
-router.get("/featured/:category", getFeaturedByCategory);
 router.get("/category/:category", getProductsByCategory);
-router.get("/recommendations", getRecommendedProducts);
+router.get("/search", searchProducts);
 router.get("/:id", getProductById);
 
 router.post("/", protectRoute, adminRoute, uploadProductImages, createProduct);

@@ -1,17 +1,17 @@
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect, useRef } from "react";
 // eslint-disable-next-line no-unused-vars
-import { motion, AnimatePresence } from "framer-motion"
-import { useCartStore } from "../stores/useCartStore"
-import { toast } from "react-hot-toast"
-import axios from "../lib/axios"
-import { useNavigate, Link } from "react-router-dom"
-import { ChevronDown, ChevronUp } from "lucide-react"
+import { motion, AnimatePresence } from "framer-motion";
+import { useCartStore } from "../stores/useCartStore";
+import { toast } from "react-hot-toast";
+import axios from "../lib/axios";
+import { useNavigate, Link } from "react-router-dom";
+import { ChevronDown, ChevronUp } from "lucide-react";
 
-const baseURL = import.meta.env.VITE_API_BASE_URL
+const baseURL = import.meta.env.VITE_API_BASE_URL;
 
 const BillingPage = () => {
-  const { cart, coupon, isCouponApplied } = useCartStore()
-  const navigate = useNavigate()
+  const { cart, coupon, isCouponApplied } = useCartStore();
+  const navigate = useNavigate();
   const [form, setForm] = useState({
     fullName: "",
     email: "",
@@ -19,68 +19,75 @@ const BillingPage = () => {
     address: "",
     city: "",
     note: "",
-  })
-  const [paymentMethod, setPaymentMethod] = useState("Cash on Delivery")
-  const [loading, setLoading] = useState(false)
-  const [showSummary, setShowSummary] = useState(false)
-  const summaryRef = useRef(null)
-  const formRef = useRef(null)
+  });
+  const [paymentMethod, setPaymentMethod] = useState("Cash on Delivery");
+  const [loading, setLoading] = useState(false);
+  const [showSummary, setShowSummary] = useState(false);
+  const summaryRef = useRef(null);
+  const formRef = useRef(null);
 
-  const FREE_SHIPPING_THRESHOLD = 5000
-  const SHIPPING_COST = 300
+  const FREE_SHIPPING_THRESHOLD = 5000;
+  const SHIPPING_COST = 300;
 
-  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value })
+  const handleChange = (e) =>
+    setForm({ ...form, [e.target.name]: e.target.value });
 
   const cartSubtotal = cart.reduce((acc, item) => {
-    const price = item.price || 0
-    return acc + price * item.quantity
-  }, 0)
+    const price = item.price || 0;
+    return acc + price * item.quantity;
+  }, 0);
 
   const cartTotal = cart.reduce((acc, item) => {
-    const price = item.price || 0
-    const discountRate = item.discountRate || 0
-    const discountedPrice = item.hasDiscount ? (price * (100 - discountRate)) / 100 : price
-    return acc + discountedPrice * item.quantity
-  }, 0)
+    const price = item.price || 0;
+    const discountRate = item.discountRate || 0;
+    const discountedPrice = item.hasDiscount
+      ? (price * (100 - discountRate)) / 100
+      : price;
+    return acc + discountedPrice * item.quantity;
+  }, 0);
 
-  const savings = cartSubtotal - cartTotal
+  const savings = cartSubtotal - cartTotal;
 
-  let finalTotal = cartTotal
+  let finalTotal = cartTotal;
   if (isCouponApplied && coupon?.discountPercentage) {
-    finalTotal = finalTotal - (finalTotal * coupon.discountPercentage) / 100
+    finalTotal = finalTotal - (finalTotal * coupon.discountPercentage) / 100;
   }
 
-  const shippingCost = finalTotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_COST
-  const amountForFreeShipping = finalTotal >= FREE_SHIPPING_THRESHOLD ? 0 : FREE_SHIPPING_THRESHOLD - finalTotal
-  const finalTotalWithShipping = finalTotal + shippingCost
+  const shippingCost =
+    finalTotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_COST;
+  const amountForFreeShipping =
+    finalTotal >= FREE_SHIPPING_THRESHOLD
+      ? 0
+      : FREE_SHIPPING_THRESHOLD - finalTotal;
+  const finalTotalWithShipping = finalTotal + shippingCost;
 
-  const formattedSubtotal = cartSubtotal.toFixed(2)
-  const formattedSavings = savings.toFixed(2)
+  const formattedSubtotal = cartSubtotal.toFixed(2);
+  const formattedSavings = savings.toFixed(2);
 
   useEffect(() => {
-    ;(async () => {
+    (async () => {
       try {
-        await axios.get("/csrf-token")
+        await axios.get("/csrf-token");
       } catch (err) {
-        console.error("Error fetching CSRF token", err)
+        console.error("Error fetching CSRF token", err);
       }
-    })()
-  }, [])
+    })();
+  }, []);
 
   const handlePlaceOrder = async () => {
     for (const key of ["fullName", "phone", "address", "city"]) {
       if (!form[key]) {
-        toast.error(`Please enter your ${key}`)
-        return
+        toast.error(`Please enter your ${key}`);
+        return;
       }
     }
 
     if (cart.length === 0) {
-      toast.error("Your cart is empty!")
-      return
+      toast.error("Your cart is empty!");
+      return;
     }
 
-    setLoading(true)
+    setLoading(true);
 
     try {
       const orderData = {
@@ -93,27 +100,27 @@ const BillingPage = () => {
         paymentMethod,
         shippingDetails: { ...form },
         totalAmount: finalTotalWithShipping,
-      }
+      };
 
-      const res = await axios.post("/payments/orders/create", orderData)
+      const res = await axios.post("/payments/orders/create", orderData);
       if (res.status === 201) {
-        toast.success("Order placed successfully!")
-        navigate("/order-success")
+        toast.success("Order placed successfully!");
+        navigate("/order-success");
       }
     } catch (err) {
-      console.error(err)
-      toast.error(err.response?.data?.message || "Failed to place order.")
+      console.error(err);
+      toast.error(err.response?.data?.message || "Failed to place order.");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const paymentMethods = [
     { name: "Cash on Delivery", disabled: false },
     { name: "JazzCash", disabled: true },
     { name: "Easypaisa", disabled: true },
     { name: "Bank Transfer (Through FastPay)", disabled: true },
-  ]
+  ];
 
   return (
     <div className="min-h-screen bg-white">
@@ -135,15 +142,23 @@ const BillingPage = () => {
         ) : (
           <div className="lg:flex lg:items-start gap-6 xl:gap-8 relative">
             {/* Mobile Order Summary (fixed on top) */}
-            <div className="lg:hidden fixed top-20 left-0 right-0 z-50 px-4 py-2 bg-white border-b border-gray-200 shadow-md">
+            <div className="lg:hidden fixed top-20 left-0 mb-4 right-0 z-50 px-4 py-2 bg-white border-b border-gray-200 shadow-md">
               <div className="flex justify-between items-center">
-                <div className="font-medium text-gray-800">view full order summary</div>
-                <span className="font-bold text-gray-800">Total: PKR {finalTotalWithShipping.toFixed(2)}</span>
+                <div className="font-medium text-gray-800">
+                  view full order summary
+                </div>
+                <span className="font-bold text-gray-800">
+                  Total: PKR {finalTotalWithShipping.toFixed(2)}
+                </span>
                 <button
                   onClick={() => setShowSummary(!showSummary)}
                   className="flex items-center justify-center text-gray-800"
                 >
-                  {showSummary ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+                  {showSummary ? (
+                    <ChevronUp size={20} />
+                  ) : (
+                    <ChevronDown size={20} />
+                  )}
                 </button>
               </div>
               <AnimatePresence>
@@ -178,20 +193,50 @@ const BillingPage = () => {
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.4 }}
             >
-              <h2 className="text-lg sm:text-xl font-semibold text-gray-800 mb-4 sm:mb-6">Your Details</h2>
+              <h2 className="text-lg sm:text-xl font-semibold text-gray-800 mb-4 sm:mb-6">
+                Your Details
+              </h2>
 
               <div className="space-y-4 sm:space-y-5">
                 {[
-                  { label: "Full Name", name: "fullName", type: "text", required: true },
-                  { label: "Phone", name: "phone", type: "tel", required: true },
-                  { label: "Email (optional)", name: "email", type: "email", required: false },
-                  { label: "Address", name: "address", type: "text", required: true },
+                  {
+                    label: "Full Name",
+                    name: "fullName",
+                    type: "text",
+                    required: true,
+                  },
+                  {
+                    label: "Phone",
+                    name: "phone",
+                    type: "tel",
+                    required: true,
+                  },
+                  {
+                    label: "Email (optional)",
+                    name: "email",
+                    type: "email",
+                    required: false,
+                  },
+                  {
+                    label: "Address",
+                    name: "address",
+                    type: "text",
+                    required: true,
+                  },
                   { label: "City", name: "city", type: "text", required: true },
-                  { label: "Order Notes (optional)", name: "note", type: "text", required: false },
+                  {
+                    label: "Order Notes (optional)",
+                    name: "note",
+                    type: "text",
+                    required: false,
+                  },
                 ].map((field) => (
                   <div key={field.name} className="flex flex-col">
                     <label className="text-gray-600 mb-1 font-medium text-sm sm:text-base">
-                      {field.label} {field.required && <span className="text-red-500">*</span>}
+                      {field.label}{" "}
+                      {field.required && (
+                        <span className="text-red-500">*</span>
+                      )}
                     </label>
                     <input
                       type={field.type}
@@ -213,7 +258,9 @@ const BillingPage = () => {
                       <label
                         key={method.name}
                         className={`flex items-center justify-between border rounded-lg w-full sm:w-fit px-3 sm:px-4 py-2.5 sm:py-3 cursor-pointer transition text-sm sm:text-base ${
-                          method.disabled ? "bg-gray-100 text-gray-400 cursor-not-allowed" : "hover:border-blue-400"
+                          method.disabled
+                            ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                            : "hover:border-blue-400"
                         }`}
                       >
                         <div className="flex items-center gap-2 sm:gap-3">
@@ -279,24 +326,36 @@ const BillingPage = () => {
       <footer className="bg-gray-50 border-t border-gray-200 py-6 sm:py-8 px-4 sm:px-6 md:px-8 lg:px-16 mt-12">
         <div className="max-w-screen-xl mx-auto">
           <div className="flex flex-wrap gap-4 sm:gap-6 justify-center text-xs sm:text-sm text-gray-700">
-            <Link to="/privacy-policy" className="text-blue-600 hover:underline transition-colors">
+            <Link
+              to="/privacy-policy"
+              className="text-blue-600 hover:underline text-sm transition-colors"
+            >
               Privacy Policy
             </Link>
-            <Link to="/return-refund-policy" className="text-blue-600 hover:underline transition-colors">
+            <Link
+              to="/return-refund-policy"
+              className="text-blue-600 hover:underline text-sm transition-colors"
+            >
               Return & Refund Policy
             </Link>
-            <Link to="/shipping-policy" className="text-blue-600 hover:underline transition-colors">
+            <Link
+              to="/shipping-policy"
+              className="text-blue-600 hover:underline text-sm transition-colors"
+            >
               Shipping Policy
             </Link>
-            <Link to="/terms-of-service" className="text-blue-600 hover:underline transition-colors">
+            <Link
+              to="/terms-of-service"
+              className="text-blue-600 hover:underline text-sm transition-colors"
+            >
               Terms of Service
             </Link>
           </div>
         </div>
       </footer>
     </div>
-  )
-}
+  );
+};
 
 const SummaryContent = ({
   cart,
@@ -311,27 +370,36 @@ const SummaryContent = ({
 }) => {
   return (
     <div className="bg-[#FFF8F0] p-4 sm:p-6 rounded-2xl shadow-md border border-gray-200 max-h-[85vh] sm:max-h-[90vh] overflow-y-auto">
-      <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-4 sm:mb-5">Order Summary</h3>
+      <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-4 sm:mb-5">
+        Order Summary
+      </h3>
 
       <div className="space-y-3 sm:space-y-4 max-h-60 sm:max-h-72 overflow-y-auto pr-1 sm:pr-2">
         {cart.map((item) => {
-          const imageUrl = item.mainImage?.startsWith("http") ? item.mainImage : `${baseURL}${item.mainImage}`
+          const imageUrl = item.mainImage?.startsWith("http")
+            ? item.mainImage
+            : `${baseURL}${item.mainImage}`;
           return (
-            <div key={item._id} className="flex items-center justify-between border-b pb-2 sm:pb-3 last:border-b-0">
+            <div
+              key={item._id}
+              className="flex items-center justify-between border-b pb-2 sm:pb-3 last:border-b-0"
+            >
               <img
                 src={imageUrl || "/placeholder.svg"}
                 alt={item.name}
                 className="w-12 h-12 sm:w-16 sm:h-16 object-cover rounded-lg border flex-shrink-0"
               />
               <div className="flex-1 px-2 sm:px-3 min-w-0">
-                <h4 className="text-xs sm:text-sm font-medium text-gray-800 truncate">{item.name}</h4>
+                <h4 className="text-xs sm:text-sm font-medium text-gray-800 truncate">
+                  {item.name}
+                </h4>
                 <p className="text-xs text-gray-500">Qty: {item.quantity}</p>
               </div>
               <div className="text-xs sm:text-sm font-semibold text-gray-800 flex-shrink-0">
                 PKR {item.price * item.quantity}
               </div>
             </div>
-          )
+          );
         })}
       </div>
 
@@ -362,7 +430,8 @@ const SummaryContent = ({
         </p>
         {amountForFreeShipping > 0 ? (
           <p className="text-xs sm:text-sm text-orange-600 mt-2">
-            Add Rs. {amountForFreeShipping.toFixed(0)} more to get FREE shipping!
+            Add Rs. {amountForFreeShipping.toFixed(0)} more to get FREE
+            shipping!
           </p>
         ) : (
           <p className="text-xs sm:text-sm text-green-600 mt-2 font-semibold">
@@ -371,7 +440,7 @@ const SummaryContent = ({
         )}
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default BillingPage
+export default BillingPage;
