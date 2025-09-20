@@ -107,12 +107,16 @@ if (isProduction) {
 const csrfProtection = csurf({
   cookie: {
     httpOnly: false,
-    secure: isProduction,
-    sameSite: isProduction ? "Strict" : "Lax",
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
   },
 });
 
+// Exclude refresh-token route from CSRF
 app.use((req, res, next) => {
+  if (req.path === "/api/auth/refresh-token") {
+    return next();
+  }
   const method = req.method.toUpperCase();
   if (["POST", "PUT", "PATCH", "DELETE"].includes(method)) {
     return csrfProtection(req, res, next);

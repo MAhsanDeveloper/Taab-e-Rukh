@@ -9,7 +9,7 @@ const hashToken = (token) => {
 
 const generateTokens = (userId, jti, isAdmin = false) => {
   const accessToken = jwt.sign({ userId, jti }, process.env.ACCESS_TOKEN_SECRET, {
-    expiresIn: isAdmin ? "12h" : "15m", // admins get 12 hours
+    expiresIn: "1d",
   });
 
   const refreshToken = jwt.sign({ userId, jti }, process.env.REFRESH_TOKEN_SECRET, {
@@ -41,7 +41,7 @@ const cookieOptions = {
 const setAuthCookies = (res, accessToken, refreshToken) => {
   res.cookie("accessToken", accessToken, {
     ...cookieOptions,
-    maxAge: 15 * 60 * 1000, // 15 minutes
+    maxAge: 24 * 60 * 60 * 1000, //  1 day
   });
   res.cookie("refreshToken", refreshToken, {
     ...cookieOptions,
@@ -49,41 +49,70 @@ const setAuthCookies = (res, accessToken, refreshToken) => {
   });
 };
 
+
 const clearAuthCookies = (res) => {
-  res.clearCookie("accessToken");
-  res.clearCookie("refreshToken");
+  const options = {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: process.env.NODE_ENV === "production" ? "Strict" : "Lax",
+    path: "/", 
+  };
+
+  // Clear tokens
+  res.clearCookie("accessToken", options);
+  res.clearCookie("refreshToken", options);
+
+  // Clear CSRF token too
+  res.clearCookie("XSRF-TOKEN", {
+    secure: process.env.NODE_ENV === "production",
+    sameSite: process.env.NODE_ENV === "production" ? "Strict" : "Lax",
+    path: "/", // match csurf config
+  });
 };
 
 export const signup = async (req, res) => {
   try {
-    const { email, password, name, mobileNumber } = req.body;
+    let { email, password, name, mobileNumber } = req.body;
 
-    // --- Basic validations ---
-    if (!email || !password || !name) {
-      return res.status(400).json({ message: "Please fill all required fields" });
+    // Trim all inputs
+    email = email?.trim();
+    name = name?.trim();
+    password = password?.trim();
+    mobileNumber = mobileNumber?.trim();
+
+    // 1. Check required fields
+    if (!name) return res.status(400).json({ message: "Please fill in the required field: name" });
+    if (!email) return res.status(400).json({ message: "Please fill in the required field: email" });
+    if (!password) return res.status(400).json({ message: "Please fill in the required field: password" });
+
+    // 2. Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({ message: "Invalid email address" });
     }
 
+    // 3. Validate password length
     if (password.length < 6) {
       return res.status(400).json({ message: "Password must be at least 6 characters long" });
     }
 
-    // --- Check for existing email ---
-    const userExists = await User.findOne({ email });
-    if (userExists) {
-      return res.status(400).json({ message: "User already exists with this email" });
-    }
-
-    // --- Prepare user data ---
+    // 4. Prepare user data
     const userData = { name, email, password, role: "customer" };
-    // Only include mobileNumber if it's a non-empty string
+    if (mobileNumber && mobileNumber !== "") {
+      // validate mobile number
     if (mobileNumber && mobileNumber.trim() !== "") {
-      userData.mobileNumber = mobileNumber.trim();
+  const mobileRegex = /^[0-9]{10,15}$/;
+  if (!mobileRegex.test(mobileNumber)) {
+    return res.status(400).json({ message: "Invalid mobile number" });
+  }
+  userData.mobileNumber = mobileNumber.trim();
+}
     }
 
-    // --- Create user ---
+    // 5. Create user
     const user = await User.create(userData);
 
-    // --- Generate tokens ---
+    // 6. Generate tokens
     const jti = crypto.randomUUID();
     const { accessToken, refreshToken } = generateTokens(user._id.toString(), jti);
     await storeRefreshToken(user._id.toString(), jti, refreshToken);
@@ -99,12 +128,20 @@ export const signup = async (req, res) => {
       },
     });
   } catch (error) {
+    console.error("Signup error:", error);
+
+    // Duplicate key
+    if (error.code === 11000) {
+      const field = Object.keys(error.keyValue)[0];
+      return res.status(400).json({ message: `${field} already exists` });
+    }
+
+    // Validation error
     if (error.name === "ValidationError") {
       const firstError = Object.values(error.errors)[0].message;
       return res.status(400).json({ message: firstError });
     }
 
-    console.error("Signup error:", error?.message);
     return res.status(500).json({ message: "Something went wrong, please try again" });
   }
 };

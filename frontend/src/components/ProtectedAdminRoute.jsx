@@ -8,7 +8,7 @@ const ProtectedAdminRoute = ({ children }) => {
 
   useEffect(() => {
     axios
-    .get(`/auth/check-admin`)
+    .get(`/auth/check-admin`, { withCredentials: true })
       .then((res) => setIsAdmin(res.data.isAdmin))
       .catch(() => setIsAdmin(false))
       .finally(() => setLoading(false));

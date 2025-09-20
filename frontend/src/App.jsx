@@ -149,9 +149,20 @@ const router = createBrowserRouter([
 const App = () => {
   const checkAuth = useUserStore((s) => s.checkAuth);
 
-  useEffect(() => {
-    checkAuth(); // check user auth + hydrate cart on app load
-  }, [checkAuth]);
+useEffect(() => {
+  let cancelled = false;
+
+  const runCheckAuth = async () => {
+    if (!cancelled) await checkAuth();
+  };
+
+  runCheckAuth();
+
+  return () => {
+    cancelled = true;
+  };
+}, [checkAuth]);
+
 
   return (
     <>

@@ -14,12 +14,19 @@ const userSchema = new mongoose.Schema(
       lowercase: true,
       trim: true,
     },
-   mobileNumber: {
+mobileNumber: {
   type: String,
-  required: false,
   unique: true,
-  sparse: true
+  sparse: true,
+  trim: true,
+  validate: {
+    validator: function(v) {
+      return !v || /^[0-9]{10,15}$/.test(v); // optional but valid if provided
+    },
+    message: props => `${props.value} is not a valid mobile number!`
+  }
 },
+
 
     password: {
       type: String,

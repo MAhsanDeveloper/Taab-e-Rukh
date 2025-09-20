@@ -45,25 +45,60 @@ axiosInstance.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Retry once on 403 (invalid CSRF)
+// Retry once on 401 or 403
 axiosInstance.interceptors.response.use(
   (res) => res,
   async (error) => {
     const original = error.config;
+
+    const isAuthEndpoint =
+      original.url.includes("/auth/profile") ||
+      original.url.includes("/auth/refresh-token") ||
+      original.url.includes("/auth/logout");
+
     if (
-      error.response?.status === 403 &&
+      (error.response?.status === 401 || error.response?.status === 403) &&
       !original._retry &&
-      ["POST", "PUT", "PATCH", "DELETE"].includes(original.method?.toUpperCase())
+      !isAuthEndpoint
     ) {
       original._retry = true;
-      await fetchCsrfToken();
-      if (csrfToken) {
-        original.headers["X-CSRF-Token"] = csrfToken;
+      try {
+        await axiosInstance.post("/auth/refresh-token"); // get new tokens
+        return axiosInstance(original); // retry original request
+      } catch (refreshErr) {
+        return Promise.reject(refreshErr);
       }
-      return axiosInstance(original);
     }
+
     return Promise.reject(error);
   }
 );
+
+axiosInstance.interceptors.response.use(
+  (res) => res,
+  async (error) => {
+    const original = error.config;
+    const isAuthEndpoint =
+      original.url.includes("/auth/profile") ||
+      original.url.includes("/auth/refresh-token");
+
+    if (
+      (error.response?.status === 401 || error.response?.status === 403) &&
+      !original._retry &&
+      !isAuthEndpoint
+    ) {
+      original._retry = true;
+      try {
+        await axiosInstance.post("/auth/refresh-token");
+        return axiosInstance(original);
+      } catch (refreshErr) {
+        return Promise.reject(refreshErr);
+      }
+    }
+
+    return Promise.reject(error);
+  }
+);
+
 
 export default axiosInstance;

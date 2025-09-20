@@ -37,7 +37,6 @@ const AdminLogin = () => {
         withCredentials: true,
       });
       if (res.data.isAdmin) {
-        await axios.get("/auth/check-admin", { withCredentials: true });
         toast.success("Login successful ✅");
         navigate(adminPanelPath);
       } else {

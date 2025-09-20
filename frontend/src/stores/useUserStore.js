@@ -12,30 +12,78 @@ export const useUserStore = create(
       checkingAuth: true,
 
       // -----------------
-      signup: async ({ name, email, password, confirmPassword, mobileNumber }) => {
+      signup: async ({
+        name,
+        email,
+        password,
+        confirmPassword,
+        mobileNumber,
+      }) => {
         set({ loading: true });
-        if (password !== confirmPassword) {
+
+        // Trim input
+        name = name?.trim();
+        email = email?.trim();
+        password = password?.trim();
+        mobileNumber = mobileNumber?.trim();
+
+        // 1. Required fields
+        if (!name || !email || !password) {
+          toast.error("Please fill in the required fields");
           set({ loading: false });
-          toast.error("Passwords do not match");
-          return null;
-        }
-        if (password.length < 6) {
-          set({ loading: false });
-          toast.error("Password must be at least 6 characters long");
           return null;
         }
 
+        // 2. Password match & length
+        if (password !== confirmPassword) {
+          toast.error("Passwords do not match");
+          set({ loading: false });
+          return null;
+        }
+        if (password.length < 6) {
+          toast.error("Password must be at least 6 characters long");
+          set({ loading: false });
+          return null;
+        }
+
+        // 3. Email format
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+          toast.error("Invalid email address");
+          set({ loading: false });
+          return null;
+        }
+
+        // 4. Mobile number (optional)
+        if (mobileNumber) {
+          const mobileRegex = /^[0-9]{10,15}$/;
+          if (!mobileRegex.test(mobileNumber)) {
+            toast.error("Invalid mobile number");
+            set({ loading: false });
+            return null;
+          }
+        }
+
         try {
-          const res = await axios.post("/auth/signup", { name, email, password, mobileNumber });
+          const payload = {
+            name,
+            email,
+            password,
+              ...(mobileNumber ? { mobileNumber } : {}), // only send if exists
+          };
+          
+          const res = await axios.post("/auth/signup", payload);
           set({ user: res.data.user, loading: false });
           toast.success(res.data.message || "Signup successful 🎉");
 
           await useCartStore.getState().mergeLocalCartToServer();
           await useCartStore.getState().getCartItems();
           return res.data.user;
-        } catch (err) {
+        } catch (error) {
+          const message =
+            error.response?.data?.message || "Signup failed. Please try again";
+          toast.error(message);
           set({ loading: false });
-          toast.error(err.response?.data?.message || "Signup failed");
           return null;
         }
       },
@@ -59,10 +107,11 @@ export const useUserStore = create(
       logout: async () => {
         try {
           await axios.post("/auth/logout");
-          set({ user: null });
-          await useCartStore.getState().getCartItems();
         } catch (err) {
-          toast.error(err.response?.data?.message || "Logout failed");
+          console.error("Logout error:", err);
+        } finally {
+          set({ user: null, checkingAuth: false });
+          await useCartStore.getState().getCartItems();
         }
       },
 
@@ -70,11 +119,23 @@ export const useUserStore = create(
       checkAuth: async () => {
         set({ checkingAuth: true });
         try {
-          const res = await axios.get("/auth/profile");
-          set({ user: res.data, checkingAuth: false });
-          await useCartStore.getState().mergeLocalCartToServer();
-        // eslint-disable-next-line no-unused-vars
+          // silent request: bypass interceptors that log errors
+          const res = await axios.get("/auth/profile").catch((err) => {
+            if (err.response?.status !== 401)
+              console.error("checkAuth error:", err);
+            return null; // ignore 401
+          });
+
+          if (res?.data) {
+            set({ user: res.data, checkingAuth: false });
+            await useCartStore.getState().mergeLocalCartToServer();
+          } else {
+            set({ user: null, checkingAuth: false });
+            await useCartStore.getState().getCartItems();
+          }
+          // eslint-disable-next-line no-unused-vars
         } catch (err) {
+          // fallback, unlikely to hit
           set({ user: null, checkingAuth: false });
           await useCartStore.getState().getCartItems();
         }
@@ -82,14 +143,12 @@ export const useUserStore = create(
 
       // -----------------
       refreshToken: async () => {
-        set({ checkingAuth: true });
         try {
-          await axios.post("/auth/refresh-token");
-          await get().checkAuth();
-          set({ checkingAuth: false });
+          await axios.post("/auth/refresh-token"); // only called by interceptor
+          await get().checkAuth(); // re-fetch user if refresh worked
         } catch (err) {
           set({ user: null, checkingAuth: false });
-          throw err;
+          throw err; // will trigger logout in interceptor
         }
       },
     }),
@@ -107,7 +166,18 @@ axios.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config || {};
-    if (error.response?.status === 401 && !originalRequest._retry) {
+
+    // Ignore auth endpoints to prevent infinite loop
+    const isAuthEndpoint =
+      originalRequest.url.includes("/auth/profile") ||
+      originalRequest.url.includes("/auth/refresh-token") ||
+      originalRequest.url.includes("/auth/logout");
+
+    if (
+      error.response?.status === 401 &&
+      !originalRequest._retry &&
+      !isAuthEndpoint
+    ) {
       originalRequest._retry = true;
       const userStore = useUserStore.getState();
 
@@ -118,13 +188,13 @@ axios.interceptors.response.use(
         await refreshPromise;
         refreshPromise = null;
 
-        // retry original request
         return axios(originalRequest);
       } catch (refreshErr) {
         await userStore.logout();
         return Promise.reject(refreshErr);
       }
     }
+
     return Promise.reject(error);
   }
 );
