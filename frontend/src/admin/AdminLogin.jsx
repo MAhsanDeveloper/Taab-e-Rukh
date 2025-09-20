@@ -1,69 +1,50 @@
-import { useState } from "react";
-import axios from "axios";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "../lib/axios";
 import { toast } from "react-hot-toast";
 import { Loader2 } from "lucide-react";
+import useAdminAuth from "../hooks/useAdminAuth";
 
-const baseURL = import.meta.env.VITE_API_BASE_URL;
 const adminPanelPath = import.meta.env.VITE_ADMIN_PANEL_PATH;
 
 const AdminLogin = () => {
-  const [mobileNumber, setMobileNumber] = useState("");
-  const [password, setPassword] = useState("");
-  const [email, setEmail] = useState("");
+  const [credentials, setCredentials] = useState({
+    email: "",
+    mobileNumber: "",
+    password: "",
+  });
   const [loading, setLoading] = useState(false);
-  const [csrfToken, setCsrfToken] = useState("");
-
+  const { isAdmin, loading: authLoading } = useAdminAuth();
   const navigate = useNavigate();
 
-  // fetch CSRF token from backend
-  const getCsrfToken = async () => {
-    try {
-    const res = await axios.get(`${baseURL}/api/csrf-token`,  {
-        withCredentials: true,
-      });
-      setCsrfToken(res.data.csrfToken);
-      return res.data.csrfToken;
-    } catch (err) {
-      console.error("Failed to fetch CSRF token:", err);
-      toast.error("Could not connect to server");
-      return null;
-    }
-  };
+  const handleChange = (e) =>
+    setCredentials({ ...credentials, [e.target.name]: e.target.value });
 
   const handleLogin = async () => {
-    if (!email && !mobileNumber) return toast.error("Please enter email or mobile number");
+    const { email, mobileNumber, password } = credentials;
+    if (!email && !mobileNumber)
+      return toast.error("Please enter email or mobile number");
     if (!password) return toast.error("Please enter password");
 
     setLoading(true);
-
     try {
-      // always fetch CSRF token before POST
-      const token = csrfToken || (await getCsrfToken());
-      if (!token) return;
-
       await axios.post(
-        `${baseURL}/api/auth/admin-login`,
+        "/auth/admin-login",
         { email, mobileNumber, password },
-        {
-          withCredentials: true,
-          headers: { "X-CSRF-Token": token },
-        }
+        { withCredentials: true },
       );
-
-      const check = await axios.get(`${baseURL}/api/auth/check-admin`, {
+      const res = await axios.get("/auth/check-admin", {
         withCredentials: true,
       });
-
-      if (check.data.isAdmin) {
-        toast.success("Login successful");
+      if (res.data.isAdmin) {
+        await axios.get("/auth/check-admin", { withCredentials: true });
+        toast.success("Login successful ✅");
         navigate(adminPanelPath);
       } else {
         toast.error("Access denied. Not an admin.");
       }
     } catch (err) {
-      const message = err?.response?.data?.message || "Login failed";
-      toast.error(message);
+      toast.error(err.response?.data?.message || "Login failed ❌");
     } finally {
       setLoading(false);
     }
@@ -73,48 +54,55 @@ const AdminLogin = () => {
     if (e.key === "Enter") handleLogin();
   };
 
+  useEffect(() => {
+    if (!authLoading && isAdmin) {
+      navigate(adminPanelPath);
+    }
+  }, [authLoading, isAdmin, navigate]);
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
-      <div className="max-w-sm w-full bg-amber-700 rounded-2xl shadow-lg p-8 space-y-6">
+      <div className="max-w-sm w-full bg-white rounded-2xl shadow-lg p-8 space-y-6">
         <h2 className="text-2xl font-bold text-center text-gray-800">
           Admin Login
         </h2>
 
         <div className="space-y-4">
           <input
+            name="mobileNumber"
             type="text"
-            value={mobileNumber}
-            onChange={(e) => setMobileNumber(e.target.value)}
+            value={credentials.mobileNumber}
+            onChange={handleChange}
             onKeyDown={handleKeyDown}
             placeholder="Mobile Number"
-            className="w-full px-4 py-2 border rounded-lg focus:outline-none"
+            className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none"
           />
-
           <input
+            name="email"
             type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            value={credentials.email}
+            onChange={handleChange}
             onKeyDown={handleKeyDown}
             placeholder="Email"
-            className="w-full px-4 py-2 border rounded-lg focus:outline-none"
+            className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none"
           />
-
           <input
+            name="password"
             type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            value={credentials.password}
+            onChange={handleChange}
             onKeyDown={handleKeyDown}
             placeholder="Password"
-            className="w-full px-4 py-2 border rounded-lg focus:outline-none"
+            className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none"
           />
 
           <button
             onClick={handleLogin}
             disabled={loading}
-            className={`w-full text-white py-2 rounded-lg font-semibold transition duration-200 ${
+            className={`w-full py-2 rounded-lg text-white font-semibold transition duration-200 ${
               loading
-                ? "bg-amber-500 cursor-not-allowed"
-                : "bg-amber-600 hover:bg-amber-700 cursor-pointer"
+                ? "bg-blue-400 cursor-not-allowed"
+                : "bg-blue-600 hover:bg-blue-700"
             }`}
           >
             {loading ? (

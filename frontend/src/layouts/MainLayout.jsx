@@ -10,7 +10,8 @@ const MainLayout = () => {
     <div className="flex flex-col w-full bg-white">
       <Navbar />
 
-      <ScrollToTop />
+   <ScrollToTop />
+
 
         <div className="pt-[72px] flex-1">
         <Breadcrumbs />

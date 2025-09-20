@@ -1,106 +1,125 @@
 import { useState } from "react";
 // eslint-disable-next-line no-unused-vars
 import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { LogIn, Mail, Lock, ArrowRight, Loader } from "lucide-react";
 import { useUserStore } from "../stores/useUserStore";
+import { toast } from "react-hot-toast";
 
 const LoginPage = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [formData, setFormData] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
 
   const { login, loading } = useUserStore();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
 
     try {
-      const user = await login(email, password);
-
-      if (user?.role === "admin") {
-        setError("Admin users cannot log in from this page.");
-        return;
+      const user = await login(formData.email, formData.password);
+      if (user) {
+        toast.success("Login successful ✅");
+        navigate("/");
       }
     } catch (err) {
       setError(err.message || "Login failed. Please check your credentials.");
+      toast.error("Login failed ❌");
     }
   };
 
   return (
-    <div className="py-10 px-4 md:px-8 lg:px-16 max-w-screen-md mx-auto">
+    <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4 py-12">
       <motion.div
-        className="bg-white p-8 lg:p-12 rounded-2xl shadow-md border border-gray-100"
-        initial={{ opacity: 0, y: 20 }}
+        className="w-full max-w-md"
+        initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
+        transition={{ duration: 0.8 }}
       >
-        <h2 className="text-3xl font-bold text-gray-800 text-center mb-8">
-          Login to Your Account
+        <h2 className="text-center text-3xl font-bold text-gray-800 mb-6">
+          Login to your account
         </h2>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {error && <p className="text-red-500 text-sm">{error}</p>}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.2 }}
+        >
+          <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-8">
+            <form onSubmit={handleSubmit} className="space-y-6">
+              {error && <p className="text-red-500 text-sm">{error}</p>}
 
-          {/* Email */}
-          <div className="flex flex-col">
-            <label className="text-gray-600 mb-2 font-medium">Email Address</label>
-            <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
-                <Mail className="h-5 w-5" />
-              </span>
-              <input
-                type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="you@example.com"
-                className="w-full pl-10 p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition"
-              />
-            </div>
+              {/* Email */}
+              <div>
+                <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+                  Email address
+                </label>
+                <div className="mt-1 relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <Mail className="h-5 w-5 text-gray-400" />
+                  </div>
+                  <input
+                    id="email"
+                    type="email"
+                    required
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    className="block w-full px-3 py-2 pl-10 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                    placeholder="you@example.com"
+                  />
+                </div>
+              </div>
+
+              {/* Password */}
+              <div>
+                <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+                  Password
+                </label>
+                <div className="mt-1 relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <Lock className="h-5 w-5 text-gray-400" />
+                  </div>
+                  <input
+                    id="password"
+                    type="password"
+                    required
+                    value={formData.password}
+                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                    className="block w-full px-3 py-2 pl-10 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                    placeholder="••••••••"
+                  />
+                </div>
+              </div>
+
+              {/* Submit */}
+              <button
+                type="submit"
+                className="w-full flex justify-center items-center py-2 px-4 rounded-md bg-blue-600 text-white font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition disabled:opacity-50"
+                disabled={loading}
+              >
+                {loading ? (
+                  <>
+                    <Loader className="mr-2 h-5 w-5 animate-spin" />
+                    Loading...
+                  </>
+                ) : (
+                  <>
+                    <LogIn className="mr-2 h-5 w-5" />
+                    Login
+                  </>
+                )}
+              </button>
+            </form>
+
+            <p className="mt-6 text-center text-sm text-gray-600">
+              Not a member?{" "}
+              <Link to="/signup" className="font-medium text-blue-600 hover:text-blue-500 inline-flex items-center">
+                Sign up now <ArrowRight className="ml-1 h-4 w-4" />
+              </Link>
+            </p>
           </div>
-
-          {/* Password */}
-          <div className="flex flex-col">
-            <label className="text-gray-600 mb-2 font-medium">Password</label>
-            <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
-                <Lock className="h-5 w-5" />
-              </span>
-              <input
-                type="password"
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••"
-                className="w-full pl-10 p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition"
-              />
-            </div>
-          </div>
-
-          {/* Submit */}
-          <button
-            type="submit"
-            disabled={loading}
-            className={`w-full flex justify-center items-center gap-2 py-3 px-4 bg-emerald-600 text-white rounded-lg font-medium hover:bg-emerald-700 transition ${
-              loading ? "opacity-70 cursor-not-allowed" : ""
-            }`}
-          >
-            {loading ? <Loader className="animate-spin h-5 w-5" /> : <LogIn className="h-5 w-5" />}
-            {loading ? "Loading..." : "Login"}
-          </button>
-        </form>
-
-        <p className="mt-6 text-center text-gray-500 text-sm">
-          Not a member?{" "}
-          <Link
-            to="/signup"
-            className="font-medium text-emerald-600 hover:text-emerald-500 flex items-center justify-center gap-1"
-          >
-            Sign up now <ArrowRight className="h-4 w-4" />
-          </Link>
-        </p>
+        </motion.div>
       </motion.div>
     </div>
   );

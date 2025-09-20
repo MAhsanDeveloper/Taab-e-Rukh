@@ -142,7 +142,7 @@ const BillingPage = () => {
         ) : (
           <div className="lg:flex lg:items-start gap-6 xl:gap-8 relative">
             {/* Mobile Order Summary (fixed on top) */}
-            <div className="lg:hidden fixed top-20 left-0 mb-4 right-0 z-50 px-4 py-2 bg-white border-b border-gray-200 shadow-md">
+            <div className="lg:hidden fixed top-20 left-0 right-0 z-50 px-4 py-2 bg-white border-b border-gray-200 shadow-md">
               <div className="flex justify-between items-center">
                 <div className="font-medium text-gray-800">
                   view full order summary
@@ -188,7 +188,8 @@ const BillingPage = () => {
             {/* Billing Form */}
             <motion.div
               ref={formRef}
-              className="lg:flex-[1.3] order-2 lg:order-1 bg-white p-4 sm:p-6 rounded-2xl shadow-md border border-gray-100 mt-24 lg:mt-0"
+              className={`lg:flex-[1.3] order-2 lg:order-1 bg-white p-4 sm:p-6 rounded-2xl shadow-md border border-gray-100 
+    mt-[140px] sm:mt-[160px] lg:mt-0`}
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.4 }}

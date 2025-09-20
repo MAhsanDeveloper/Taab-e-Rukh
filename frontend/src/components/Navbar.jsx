@@ -6,6 +6,7 @@ import {
   Menu,
   X,
   MessageCircle,
+  LogOut
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useUserStore } from "../stores/useUserStore";
@@ -15,11 +16,15 @@ import { motion, AnimatePresence } from "framer-motion";
 import { FaFacebook, FaInstagram, FaYoutube, FaTiktok } from "react-icons/fa";
 import axios from "../lib/axios";
 import logo from "../assets/logo.webp";
+import { toast } from "react-hot-toast";
 
 const Navbar = () => {
-  const { user } = useUserStore();
+  const { user, logout } = useUserStore();
   const { cart } = useCartStore();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const [dropdownOpen, setDropdownOpen] = useState(false);
+
+      const dropdownRef = useRef(null);
   const searchRef = useRef(null);
 
   const [contact, setContact] = useState({});
@@ -84,6 +89,18 @@ const Navbar = () => {
   useEffect(() => {
     document.body.style.overflow = mobileMenuOpen ? "hidden" : "";
   }, [mobileMenuOpen]);
+
+    // Close dropdown if clicked outside
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setDropdownOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
 
   useEffect(() => {
     function handleClickOutside(event) {
@@ -186,12 +203,43 @@ const Navbar = () => {
             </div>
           )}
 
-          <Link
-            to={user ? "/profile" : "/login"}
-            className="p-2 rounded-md text-white hidden md:inline-flex"
-          >
-            <User size={20} />
-          </Link>
+         {user ? (
+            <div className="relative" ref={dropdownRef}>
+              <button
+                onClick={() => setDropdownOpen(!dropdownOpen)}
+                className="p-2 rounded-md cursor-pointer text-white"
+              >
+                <User size={20} />
+              </button>
+
+              {dropdownOpen && (
+                <div className="absolute right-0 mt-2 cursor-pointer bg-white shadow-md rounded-md w-32 z-50">
+                  <Link
+                    to="/profile"
+                    onClick={() => setDropdownOpen(false)}
+                    className="block px-4 py-2 cursor-pointer text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    Profile
+                  </Link>
+                  <button
+                    onClick={() => {
+                      logout();
+                      toast.success("Logged out successfully");
+                      setDropdownOpen(false);
+                    }}
+                    className="w-full text-left px-4 cursor-pointer py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    <LogOut size={16} className="inline mr-2" />
+                    Logout
+                  </button>
+                </div>
+              )}
+            </div>
+          ) : (
+            <Link to="/login" className="p-2 rounded-md text-white">
+              <User size={20} />
+            </Link>
+          )}
 
           <Link
             to="/cart"

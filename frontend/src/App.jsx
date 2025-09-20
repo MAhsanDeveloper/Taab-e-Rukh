@@ -1,6 +1,8 @@
+import { useEffect } from "react";
 import { lazy, Suspense } from "react";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
+import { useUserStore } from "./stores/useUserStore";
 
 // --- Direct Imports ---
 import MainLayout from "./layouts/MainLayout";
@@ -14,12 +16,15 @@ import BillingPageSkeleton from "./skeletons/BillingPageSkeleton";
 import ProductPageSkeleton from "./skeletons/ProductCardSkeleton";
 import LoginPageSkeleton from "./skeletons/LoginPageSkeleton";
 import ItemDetailsSkeleton from "./skeletons/ItemDetailsSkeleton";
+import ProfilePageSkeleton from "./skeletons/ProfilePageSkeleton";
+
 import ContactPageSkeleton from "./skeletons/ContactPageSkeleton";
 
 // --- Page Wrapper ---
 import PageWrapper from "./skeletons/PageWrapper";
 
 // --- Lazy Pages ---
+const ProfilePage = lazy(() => import("./pages/ProfilePage"));
 const CartPage = lazy(() => import("./pages/CartPage"));
 const BillingPage = lazy(() => import("./pages/BillingPage"));
 const AllProductsPage = lazy(() => import("./pages/AllProductsPage"));
@@ -55,6 +60,7 @@ const adminPanelPath = import.meta.env.VITE_ADMIN_PANEL_PATH;
 
 // --- Wrapped Pages (lazy only) ---
 const WrappedCartPage = PageWrapper(CartPage, <CartPageSkeleton />);
+const WrappedProfilePage = PageWrapper(ProfilePage, <ProfilePageSkeleton />);
 const WrappedBillingPage = PageWrapper(BillingPage, <BillingPageSkeleton />);
 const WrappedAllProductsPage = PageWrapper(AllProductsPage, <ProductPageSkeleton />);
 const WrappedLoginPage = PageWrapper(LoginPage, <LoginPageSkeleton />);
@@ -93,6 +99,7 @@ const router = createBrowserRouter([
     children: [
       { path: "/", element: <HomePage />, errorElement: <WrappedNotFound /> },
       { path: "/all-products", element: <WrappedAllProductsPage /> },
+      { path: "/profile", element: <WrappedProfilePage /> },
       { path: "/item/:id", element: <WrappedItemDetailsPage /> },
       { path: "/category/:category", element: <WrappedProductPage /> },
       { path: "/category/", element: <WrappedCategoryPage /> },
@@ -139,11 +146,19 @@ const router = createBrowserRouter([
   { path: "*", element: <WrappedNotFound /> },
 ]);
 
-const App = () => (
-  <>
-    <RouterProvider router={router} />
-    <Toaster position="top-center" />
-  </>
-);
+const App = () => {
+  const checkAuth = useUserStore((s) => s.checkAuth);
+
+  useEffect(() => {
+    checkAuth(); // check user auth + hydrate cart on app load
+  }, [checkAuth]);
+
+  return (
+    <>
+      <RouterProvider router={router} />
+      <Toaster position="top-center" />
+    </>
+  );
+};
 
 export default App;
