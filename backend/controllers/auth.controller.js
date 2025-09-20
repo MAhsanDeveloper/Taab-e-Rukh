@@ -58,6 +58,7 @@ export const signup = async (req, res) => {
   try {
     const { email, password, name, mobileNumber } = req.body;
 
+    // --- Basic validations ---
     if (!email || !password || !name) {
       return res.status(400).json({ message: "Please fill all required fields" });
     }
@@ -66,26 +67,30 @@ export const signup = async (req, res) => {
       return res.status(400).json({ message: "Password must be at least 6 characters long" });
     }
 
+    // --- Check for existing email ---
     const userExists = await User.findOne({ email });
     if (userExists) {
       return res.status(400).json({ message: "User already exists with this email" });
     }
 
-    const user = await User.create({
-      name,
-      email,
-      password,
-      mobileNumber: mobileNumber || undefined, // ✅ optional
-      role: "customer",
-    });
+    // --- Prepare user data ---
+    const userData = { name, email, password, role: "customer" };
+    // Only include mobileNumber if it's a non-empty string
+    if (mobileNumber && mobileNumber.trim() !== "") {
+      userData.mobileNumber = mobileNumber.trim();
+    }
 
+    // --- Create user ---
+    const user = await User.create(userData);
+
+    // --- Generate tokens ---
     const jti = crypto.randomUUID();
     const { accessToken, refreshToken } = generateTokens(user._id.toString(), jti);
     await storeRefreshToken(user._id.toString(), jti, refreshToken);
     setAuthCookies(res, accessToken, refreshToken);
 
     return res.status(201).json({
-      message: "Signup successful 🎉", // ✅ friendly success message
+      message: "Signup successful 🎉",
       user: {
         _id: user._id,
         name: user.name,
@@ -96,13 +101,14 @@ export const signup = async (req, res) => {
   } catch (error) {
     if (error.name === "ValidationError") {
       const firstError = Object.values(error.errors)[0].message;
-      return res.status(400).json({ message: firstError }); // ✅ clean error toast
+      return res.status(400).json({ message: firstError });
     }
 
-    console.error("Signup error:", error?.message); // ✅ no leaking critical info
+    console.error("Signup error:", error?.message);
     return res.status(500).json({ message: "Something went wrong, please try again" });
   }
 };
+
 
 
 export const login = async (req, res) => {
