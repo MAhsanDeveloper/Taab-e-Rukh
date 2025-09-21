@@ -90,30 +90,30 @@ const BillingPage = () => {
     setLoading(true);
 
     try {
-const orderData = {
- products: cart.map((p) => {
-  if (!p._id && !p.productId) {
-    throw new Error("Cart item missing product ID");
-  }
-  return {
-    product: p.productId || p._id, // logged-in users: productId, guests: _id
-    quantity: p.quantity,
-    price: p.price,
-  };
-}),
+      const orderData = {
+        products: cart.map((p) => {
+          if (!p._id && !p.productId) {
+            throw new Error("Cart item missing product ID");
+          }
+          return {
+            product: p.productId || p._id, // logged-in users: productId, guests: _id
+            quantity: p.quantity,
+            price: p.price,
+          };
+        }),
 
-  couponCode: coupon?.code || null,
-  paymentMethod,
-  shippingDetails: { ...form },
-  totalAmount: finalTotalWithShipping,
-};
+        couponCode: coupon?.code || null,
+        paymentMethod,
+        shippingDetails: { ...form },
+        totalAmount: finalTotalWithShipping,
+      };
       const res = await axios.post("/payments/orders/create", orderData);
-    if (res.status === 201) {
-  toast.success("Order placed successfully!");
-  // Clear cart for logged-in users
-  await useCartStore.getState().clearCart(); 
-  navigate("/order-success");
-}
+      if (res.status === 201) {
+        toast.success("Order placed successfully!");
+        // Clear cart for logged-in users
+        useCartStore.getState().clearCart();
+        navigate("/order-success");
+      }
     } catch (err) {
       console.error(err);
       toast.error(err.response?.data?.message || "Failed to place order.");
@@ -195,8 +195,7 @@ const orderData = {
             {/* Billing Form */}
             <motion.div
               ref={formRef}
-              className={`lg:flex-[1.3] order-2 lg:order-1 bg-white p-4 sm:p-6 rounded-2xl shadow-md border border-gray-100 
-    mt-[140px] sm:mt-[160px] lg:mt-0`}
+                className="lg:flex-[1.3] order-2 lg:order-1 bg-white p-4 sm:p-6 rounded-2xl shadow-md border border-gray-100 mt-[220px] sm:mt-[240px] lg:mt-0"
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.4 }}

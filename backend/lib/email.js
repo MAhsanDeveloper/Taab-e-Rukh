@@ -2,31 +2,50 @@ import axios from "axios";
 
 export const sendOrderConfirmation = async (order, user) => {
   try {
- const productRows = order.products
-  .map((p) => {
-    const price = p.price; // original price
-    const discountedPrice = p.discountedPrice || price; // use discounted price
-    const quantity = p.quantity;
-    const total = discountedPrice * quantity;
+    // Generate product rows
+    const productRows = order.products
+      .map((p) => {
+        const quantity = p.quantity;
+        const total = p.discountedPrice * quantity;
 
-    return `
-      <tr>
-        <td style="padding: 8px; border: 1px solid #ddd;">${p.product.name}</td>
-        <td style="padding: 8px; border: 1px solid #ddd; text-align:center;">${quantity}</td>
-        <td style="padding: 8px; border: 1px solid #ddd; text-align:right;">
-          Rs ${price} ${price !== discountedPrice ? `<br/><span style="color: green;">Discounted: Rs ${discountedPrice.toFixed(2)}</span>` : ""}
-        </td>
-        <td style="padding: 8px; border: 1px solid #ddd; text-align:right;">Rs ${total.toFixed(2)}</td>
-      </tr>
-    `;
-  })
-  .join("");
+        return `
+          <tr>
+            <td style="padding:8px;border:1px solid #ddd;">${p.product.name}</td>
+            <td style="padding:8px;border:1px solid #ddd;text-align:center;">${quantity}</td>
+            <td style="padding:8px;border:1px solid #ddd;text-align:right;">
+              Rs ${p.price.toFixed(2)} ${
+                p.price !== p.discountedPrice
+                  ? `<br/><span style="color:green;">Discounted: Rs ${p.discountedPrice.toFixed(2)}</span>`
+                  : ""
+              }
+            </td>
+            <td style="padding:8px;border:1px solid #ddd;text-align:right;">Rs ${total.toFixed(2)}</td>
+          </tr>
+        `;
+      })
+      .join("");
 
+    // Calculate subtotal
+    const subtotal = order.products.reduce(
+      (acc, p) => acc + p.discountedPrice * p.quantity,
+      0
+    );
 
-    const shippingCost = order.shippingCost || 0;
     const couponText = order.couponCode
       ? `<p><strong>Coupon (${order.couponCode}) applied:</strong> -${order.couponDiscount || 0}%</p>`
       : "";
+
+    // Apply coupon discount
+    const totalAfterCoupon = order.couponDiscount
+      ? subtotal - (subtotal * order.couponDiscount) / 100
+      : subtotal;
+
+    const shippingCost = order.shippingCost || 0;
+    const finalTotal = totalAfterCoupon + shippingCost;
+    const savings = order.products.reduce(
+      (acc, p) => acc + (p.price - p.discountedPrice) * p.quantity,
+      0
+    );
 
     const emailData = {
       sender: { email: "info@thesgrgroup.com", name: "The SGR Group" },
@@ -40,10 +59,10 @@ export const sendOrderConfirmation = async (order, user) => {
           <table style="width: 100%; border-collapse: collapse; margin-top: 10px; margin-bottom: 20px;">
             <thead>
               <tr style="background-color: #f4f4f4;">
-                <th style="padding: 10px; border: 1px solid #ddd; text-align:left;">Product</th>
-                <th style="padding: 10px; border: 1px solid #ddd; text-align:center;">Qty</th>
-                <th style="padding: 10px; border: 1px solid #ddd; text-align:right;">Price (PKR)</th>
-                <th style="padding: 10px; border: 1px solid #ddd; text-align:right;">Total (PKR)</th>
+                <th style="padding:10px;border:1px solid #ddd;text-align:left;">Product</th>
+                <th style="padding:10px;border:1px solid #ddd;text-align:center;">Qty</th>
+                <th style="padding:10px;border:1px solid #ddd;text-align:right;">Price (PKR)</th>
+                <th style="padding:10px;border:1px solid #ddd;text-align:right;">Total (PKR)</th>
               </tr>
             </thead>
             <tbody>
@@ -51,10 +70,12 @@ export const sendOrderConfirmation = async (order, user) => {
             </tbody>
           </table>
 
+          <p><strong>Subtotal:</strong> Rs ${subtotal.toFixed(2)}</p>
+          ${savings > 0 ? `<p style="color:green;"><strong>Savings:</strong> Rs ${savings.toFixed(2)}</p>` : ""}
           ${couponText}
-          <p><strong>Shipping:</strong> Rs ${shippingCost}</p>
-          <p><strong>Total Amount:</strong> Rs ${order.totalAmount}</p>
-          <p><strong>Contact:</strong> ${order.shippingDetails.phone} / ${user.email}</p>
+          <p><strong>Shipping:</strong> Rs ${shippingCost.toFixed(2)}</p>
+          <p><strong>Total Amount:</strong> Rs ${finalTotal.toFixed(2)}</p>
+          <p><strong>Contact:</strong> ${order.shippingDetails.phone || "N/A"} / ${user.email}</p>
           <p>Your order will be delivered within 3-5 business days.</p>
 
           <p style="margin-top: 20px;">Thank you for shopping with <strong>The SGR Group</strong>!</p>
@@ -79,4 +100,3 @@ export const sendOrderConfirmation = async (order, user) => {
     );
   }
 };
-
