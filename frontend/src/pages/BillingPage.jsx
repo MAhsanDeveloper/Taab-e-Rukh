@@ -90,21 +90,28 @@ const BillingPage = () => {
     setLoading(true);
 
     try {
-      const orderData = {
-        products: cart.map((p) => ({
-          _id: p._id,
-          quantity: p.quantity,
-          price: p.price,
-        })),
-        couponCode: coupon?.code || null,
-        paymentMethod,
-        shippingDetails: { ...form },
-        totalAmount: finalTotalWithShipping,
-      };
+const orderData = {
+ products: cart.map((p) => {
+  if (!p._id && !p.productId) {
+    throw new Error("Cart item missing product ID");
+  }
+  return {
+    product: p.productId || p._id, // logged-in users: productId, guests: _id
+    quantity: p.quantity,
+    price: p.price,
+  };
+}),
 
+  couponCode: coupon?.code || null,
+  paymentMethod,
+  shippingDetails: { ...form },
+  totalAmount: finalTotalWithShipping,
+};
       const res = await axios.post("/payments/orders/create", orderData);
       if (res.status === 201) {
         toast.success("Order placed successfully!");
+         // Clear cart in store
+      useCartStore.getState().clearCart();
         navigate("/order-success");
       }
     } catch (err) {
@@ -213,7 +220,7 @@ const BillingPage = () => {
                     required: true,
                   },
                   {
-                    label: "Email (optional)",
+                    label: "Email (to receive order confirmation email)",
                     name: "email",
                     type: "email",
                     required: false,
