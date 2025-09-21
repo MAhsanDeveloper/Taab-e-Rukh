@@ -100,26 +100,24 @@ const CartPage = () => {
                   key={item.cartItemId}
                   className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm hover:shadow-md transition"
                 >
-                  <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
                     {/* Product Image */}
                     <div className="shrink-0">
                       <img
                         src={imageUrl}
                         alt={item.name}
-                        className="h-24 w-24 md:h-32 md:w-32 rounded-lg object-cover"
+                        className="h-24 w-24 md:h-32 md:w-32 rounded-lg object-fill"
                       />
                     </div>
 
                     {/* Product Info */}
-                    <div className="flex-1 min-w-0 space-y-2">
+                    <div className="flex-1 min-w-0 space-y-2 sm:ml-4">
                       <h3 className="text-lg font-semibold text-gray-800 line-clamp-1">
                         {item.name}
                       </h3>
                       <p className="text-sm text-gray-500 line-clamp-2">
                         {item.description}
                       </p>
-
-                      {/* Remove Button */}
                       <button
                         onClick={() => removeFromCart(id)}
                         className="flex items-center gap-1 text-sm font-medium text-red-500 hover:text-red-600 transition"
