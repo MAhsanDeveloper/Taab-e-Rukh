@@ -108,12 +108,12 @@ const orderData = {
   totalAmount: finalTotalWithShipping,
 };
       const res = await axios.post("/payments/orders/create", orderData);
-      if (res.status === 201) {
-        toast.success("Order placed successfully!");
-         // Clear cart in store
-      useCartStore.getState().clearCart();
-        navigate("/order-success");
-      }
+    if (res.status === 201) {
+  toast.success("Order placed successfully!");
+  // Clear cart for logged-in users
+  await useCartStore.getState().clearCart(); 
+  navigate("/order-success");
+}
     } catch (err) {
       console.error(err);
       toast.error(err.response?.data?.message || "Failed to place order.");

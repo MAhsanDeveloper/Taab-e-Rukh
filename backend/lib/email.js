@@ -2,25 +2,26 @@ import axios from "axios";
 
 export const sendOrderConfirmation = async (order, user) => {
   try {
-    const productRows = order.products
-      .map((p) => {
-        const originalPrice = p.price; // original price from order
-        const quantity = p.quantity;
-        const discountedPrice = p.discountedPrice || originalPrice; // in case you stored discounted price
-        const total = discountedPrice * quantity;
+ const productRows = order.products
+  .map((p) => {
+    const price = p.price; // original price
+    const discountedPrice = p.discountedPrice || price; // use discounted price
+    const quantity = p.quantity;
+    const total = discountedPrice * quantity;
 
-        return `
-          <tr>
-            <td style="padding: 8px; border: 1px solid #ddd;">${p.product.name}</td>
-            <td style="padding: 8px; border: 1px solid #ddd; text-align:center;">${quantity}</td>
-            <td style="padding: 8px; border: 1px solid #ddd; text-align:right;">
-              Rs ${originalPrice} ${originalPrice !== discountedPrice ? `<br/><span style="color: green;">Discounted: Rs ${discountedPrice}</span>` : ""}
-            </td>
-            <td style="padding: 8px; border: 1px solid #ddd; text-align:right;">Rs ${total}</td>
-          </tr>
-        `;
-      })
-      .join("");
+    return `
+      <tr>
+        <td style="padding: 8px; border: 1px solid #ddd;">${p.product.name}</td>
+        <td style="padding: 8px; border: 1px solid #ddd; text-align:center;">${quantity}</td>
+        <td style="padding: 8px; border: 1px solid #ddd; text-align:right;">
+          Rs ${price} ${price !== discountedPrice ? `<br/><span style="color: green;">Discounted: Rs ${discountedPrice.toFixed(2)}</span>` : ""}
+        </td>
+        <td style="padding: 8px; border: 1px solid #ddd; text-align:right;">Rs ${total.toFixed(2)}</td>
+      </tr>
+    `;
+  })
+  .join("");
+
 
     const shippingCost = order.shippingCost || 0;
     const couponText = order.couponCode
