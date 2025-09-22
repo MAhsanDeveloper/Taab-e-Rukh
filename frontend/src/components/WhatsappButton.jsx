@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { FaWhatsapp } from "react-icons/fa";
+import { trackEvent } from "../lib/analytics";
 import axios from "axios";
 
 const baseURL = import.meta.env.VITE_API_BASE_URL;
@@ -10,6 +11,15 @@ const adminLoginPath = import.meta.env.VITE_ADMIN_LOGIN_PATH;
 const WhatsappButton = () => {
   const [whatsappNumber, setWhatsappNumber] = useState("");
   const location = useLocation();
+
+  const handleClick = () => {
+  trackEvent({
+    action: "social_click",
+    category: "floating_button",
+    label: "WhatsApp",
+    value: whatsappNumber
+  });
+};
 
   useEffect(() => {
     const fetchContact = async () => {
@@ -36,6 +46,7 @@ const WhatsappButton = () => {
       href={whatsappLink}
       target="_blank"
       rel="noopener noreferrer"
+      onClick={handleClick}
       className="fixed bottom-5 right-5 z-50 flex items-center gap-2 bg-white/80 p-2 px-3 rounded-full shadow-lg hover:bg-white transition"
     >
       <span className="text-sm text-gray-700 font-medium hidden sm:inline">

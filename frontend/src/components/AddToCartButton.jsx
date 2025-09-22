@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { ShoppingCart } from "lucide-react";
 import { useCartStore } from "../stores/useCartStore";
+import { trackAddToCart } from "../lib/analytics";
 
 const AddToCartButton = ({ product, className = "", iconOnly = false }) => {
   const { addToCart } = useCartStore();
@@ -14,6 +15,7 @@ const AddToCartButton = ({ product, className = "", iconOnly = false }) => {
       // Simulate network delay (remove in production)
       await new Promise((resolve) => setTimeout(resolve, 1500));
       await addToCart(product);
+      trackAddToCart(product);
     } finally {
       setLoading(false);
     }

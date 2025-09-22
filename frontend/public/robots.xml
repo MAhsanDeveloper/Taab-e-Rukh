@@ -1,0 +1,13 @@
+# Allow all crawlers to index the site
+User-agent: *
+Disallow: /admin/
+Disallow: /checkout/
+Disallow: /login/
+Disallow: /signup/
+Disallow: /api/
+
+# Sitemap location
+Sitemap: https://www.thesgrgroup.com/sitemap.xml
+
+# Crawl delay (optional, prevents server overload)
+Crawl-delay: 10

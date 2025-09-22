@@ -3,6 +3,8 @@ import { lazy, Suspense } from "react";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import { useUserStore } from "./stores/useUserStore";
+import { useLocation } from "react-router-dom";
+import { initGA, trackPageView } from "./lib/analytics";
 
 // --- Direct Imports ---
 import MainLayout from "./layouts/MainLayout";
@@ -148,6 +150,16 @@ const router = createBrowserRouter([
 
 const App = () => {
   const checkAuth = useUserStore((s) => s.checkAuth);
+    const location = useLocation();
+
+  useEffect(() => {
+    initGA();
+  }, []);
+
+  useEffect(() => {
+    trackPageView(location.pathname + location.search);
+  }, [location]);
+
 
 useEffect(() => {
   let cancelled = false;

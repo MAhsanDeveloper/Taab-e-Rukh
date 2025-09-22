@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
+import { trackEvent } from "../lib/analytics";
 // eslint-disable-next-line no-unused-vars
 import { motion } from "framer-motion";
 import {
@@ -60,6 +61,15 @@ const Footer = () => {
     setMessage("Thanks For Subscribing!");
     setEmail("");
   };
+
+  const handleSocialClick = (platform, url) => {
+  trackEvent({
+    action: "social_click",
+    category: "footer",
+    label: platform,
+    value: url
+  });
+};
 
   return (
     <footer className="bg-black text-white px-6 py-12 md:px-20 mt-12">
@@ -281,6 +291,7 @@ const Footer = () => {
                 href={contact.facebook}
                 target="_blank"
                 rel="noreferrer"
+                  onClick={() => handleSocialClick("Facebook", contact.facebook)}
                 className="hover:scale-110 transition cursor-pointer"
               >
                 <FaFacebook className="hover:text-blue-500 transition" />
@@ -291,6 +302,7 @@ const Footer = () => {
                 href={contact.instagram}
                 target="_blank"
                 rel="noreferrer"
+                onClick={() => handleSocialClick("Instagram", contact.instagram)}
                 className="hover:scale-110 transition cursor-pointer"
               >
                 <FaInstagram className="hover:text-pink-500 transition" />
@@ -301,6 +313,7 @@ const Footer = () => {
                 href={contact.youtube}
                 target="_blank"
                 rel="noreferrer"
+                onClick={() => handleSocialClick("YouTube", contact.youtube)}
                 className="hover:scale-110 transition cursor-pointer"
               >
                 <FaYoutube className="hover:text-red-500 transition" />
@@ -311,6 +324,7 @@ const Footer = () => {
                 href={contact.tiktok}
                 target="_blank"
                 rel="noreferrer"
+                onClick={() => handleSocialClick("TikTok", contact.tiktok)}
                 className="hover:scale-110 transition cursor-pointer"
               >
                 <FaTiktok className="hover:text-gray-300 transition" />
