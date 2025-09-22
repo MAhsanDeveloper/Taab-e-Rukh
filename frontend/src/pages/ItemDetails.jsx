@@ -6,6 +6,8 @@ import toast from "react-hot-toast";
 import { ArrowLeft } from "lucide-react";
 import AddToCartButton from "../components/AddToCartButton";
 import USPSTRIP from "../components/USPSTRIP";
+import ReviewForm from "../components/ReviewForm";
+import ProductReviews from "../components/ProductReviews";
 import ItemDetailsSkeleton from "../skeletons/ItemDetailsSkeleton";
 
 const baseURL = import.meta.env.VITE_API_BASE_URL;
@@ -14,11 +16,40 @@ const ItemDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [item, setItem] = useState(null);
-   const [loading, setLoading] = useState(true);
-   const { addToCart } = useCartStore();
+  const [loading, setLoading] = useState(true);
+  const { addToCart } = useCartStore();
   const [mainImage, setMainImage] = useState("");
+  const [reviews, setReviews] = useState([]);
 
-    const handleBuyNow = async () => {
+  const handleReviewSubmit = (data) => {
+    setReviews(data.reviews);
+    toast.success(data.message);
+  };
+
+  useEffect(() => {
+    const fetchItem = async () => {
+      try {
+        setLoading(true);
+        const res = await axios.get(`/shop/${id}`);
+        const product = res.data;
+        setItem(product);
+        setReviews(product.reviews || []);
+        const mainImg = product.mainImage?.startsWith("http")
+          ? product.mainImage
+          : `${baseURL}${product.mainImage}`;
+        setMainImage(mainImg);
+      } catch (err) {
+        console.error("Failed to fetch item", err);
+        toast.error("Failed to load item details");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchItem();
+  }, [id]);
+
+  const handleBuyNow = async () => {
     await addToCart(item); // Add product to cart first
     navigate("/place-your-order");
   };
@@ -42,7 +73,7 @@ const ItemDetails = () => {
         console.error("Failed to fetch item", err);
         toast.error("Failed to load item details");
       } finally {
-         setLoading(false);
+        setLoading(false);
       }
     };
 
@@ -55,9 +86,7 @@ const ItemDetails = () => {
 
   if (!item) {
     return (
-      <div className="text-gray-600 text-center mt-16">
-        Item not found.
-      </div>
+      <div className="text-gray-600 text-center mt-16">Item not found.</div>
     );
   }
 
@@ -197,21 +226,29 @@ const ItemDetails = () => {
               </button>
             )}
 
-         <button
-      onClick={handleBuyNow}
-      className="inline-block text-center cursor-pointer bg-black text-white hover:bg-white hover:text-black border-black font-semibold px-10 py-3 rounded-full transition-all duration-300 ease-in-out shadow-md hover:shadow-lg hover:scale-105"
-    >
-      Buy Now
-    </button>
+            <button
+              onClick={handleBuyNow}
+              className="inline-block text-center cursor-pointer bg-black text-white hover:bg-white hover:text-black border-black font-semibold px-10 py-3 rounded-full transition-all duration-300 ease-in-out shadow-md hover:shadow-lg hover:scale-105"
+            >
+              Buy Now
+            </button>
           </div>
         </div>
       </div>
 
-      <div  className="mt-20">
-       <USPSTRIP />
+      <div className="mt-20">
+        <USPSTRIP />
       </div>
-
-     
+         {/* Reviews */}
+      <div className="mt-16 max-w-4xl mx-auto">
+        <h3 className="text-2xl font-bold text-gray-900 mb-6">
+          Customer Reviews
+        </h3>
+        <ReviewForm productId={item._id} onReviewSubmit={handleReviewSubmit} />
+        <div className="mt-8">
+          <ProductReviews reviews={reviews} />
+        </div>
+      </div>
     </div>
   );
 };

@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { ShoppingCart } from "lucide-react";
 import AddToCartButton from "./AddToCartButton";
+import StarRating from "./StarRating";
 
 const ProductCard = ({ product }) => {
   const discountedPrice = product.hasDiscount
@@ -94,9 +95,15 @@ const ProductCard = ({ product }) => {
           />
         </div>
       </div>
-      
+      {/* Reviews Section */}
+      <div className="px-3 sm:px-4 pb-3">
+        <StarRating
+          averageRating={product.averageRating}
+          numReviews={product.numReviews}
+          size={14}
+        />
+      </div>
     </div>
-    
   );
 };
 

@@ -86,9 +86,10 @@ const Navbar = () => {
     fetchContact();
   }, []);
 
-  useEffect(() => {
-    document.body.style.overflow = mobileMenuOpen ? "hidden" : "";
-  }, [mobileMenuOpen]);
+ useEffect(() => {
+  document.body.style.overflow = mobileMenuOpen ? "hidden" : "auto";
+}, [mobileMenuOpen]);
+
 
     // Close dropdown if clicked outside
   useEffect(() => {

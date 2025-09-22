@@ -105,25 +105,27 @@ export const useCartStore = create(
       },
 
       removeFromCart: async (id) => {
-        const user = useUserStore.getState().user;
-        if (!user) {
-          set((prev) => {
-            const newCart = prev.cart.filter((i) => i.cartItemId !== id && i._id !== id);
-            localStorage.setItem(LOCAL_CART_KEY, JSON.stringify(newCart));
-            return { cart: newCart };
-          });
-          get().calculateTotals();
-          return;
-        }
+  const user = useUserStore.getState().user;
+  if (!user) {
+    set((prev) => {
+      const newCart = prev.cart.filter((i) => i.cartItemId !== id && i._id !== id);
+      localStorage.setItem(LOCAL_CART_KEY, JSON.stringify(newCart));
+      return { cart: newCart };
+    });
+    get().calculateTotals();
+    return;
+  }
 
-        try {
-          await axios.delete(`/cart/${id}`);
-          await get().getCartItems();
-          toast.success("Item removed");
-        } catch (err) {
-          toast.error(err.response?.data?.message || "Failed to remove item");
-        }
-      },
+  try {
+    // Instead of DELETE, call updateQuantity with 0
+    await axios.put(`/cart/${id}`, { quantity: 0 });
+    await get().getCartItems();
+    toast.success("Item removed");
+  } catch (err) {
+    toast.error(err.response?.data?.message || "Failed to remove item");
+  }
+},
+
 
       clearCart: async () => {
         const user = useUserStore.getState().user;

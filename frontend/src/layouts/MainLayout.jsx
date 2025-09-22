@@ -7,17 +7,17 @@ import WhatsappButton from "../components/WhatsappButton";
 
 const MainLayout = () => {
   return (
-    <div className="flex flex-col w-full bg-white">
+    // ensure this container fills viewport height so flex-1 pushes footer to bottom
+    <div className="flex flex-col w-full bg-white min-h-screen">
       <Navbar />
 
-   <ScrollToTop />
+      <ScrollToTop />
 
-
-        <div className="pt-[72px] flex-1">
+      {/* main is the scrollable content area. flex-1 will expand between navbar & footer */}
+      <main className="pt-[72px] flex-1 min-h-[calc(100vh-72px-200px)]">
         <Breadcrumbs />
-
         <Outlet />
-      </div>
+      </main>
 
       <Footer />
 

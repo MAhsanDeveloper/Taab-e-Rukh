@@ -1,9 +1,13 @@
 @import "tailwindcss";
 
-html, body {
+html, body, #root {
   overflow-x: hidden;
-  overflow-y: auto; /* only vertical if content overflows */
-  height: 100%;
+  /* Let the root/layout control page height. Don't force height:100% here. */
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-overflow-scrolling: touch; /* smoother mobile scrolling */
 }
 
 
