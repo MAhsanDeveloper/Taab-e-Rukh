@@ -17,7 +17,6 @@ export const useUserStore = create(
         email,
         password,
         confirmPassword,
-        mobileNumber,
       }) => {
         set({ loading: true });
 
@@ -25,7 +24,6 @@ export const useUserStore = create(
         name = name?.trim();
         email = email?.trim();
         password = password?.trim();
-        mobileNumber = mobileNumber?.trim();
 
         // 1. Required fields
         if (!name || !email || !password) {
@@ -54,22 +52,11 @@ export const useUserStore = create(
           return null;
         }
 
-        // 4. Mobile number (optional)
-        if (mobileNumber) {
-          const mobileRegex = /^[0-9]{10,15}$/;
-          if (!mobileRegex.test(mobileNumber)) {
-            toast.error("Invalid mobile number");
-            set({ loading: false });
-            return null;
-          }
-        }
-
         try {
           const payload = {
             name,
             email,
             password,
-              ...(mobileNumber ? { mobileNumber } : {}), // only send if exists
           };
           
           const res = await axios.post("/auth/signup", payload);

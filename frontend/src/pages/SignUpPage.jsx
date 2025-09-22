@@ -11,7 +11,6 @@ const SignUpPage = () => {
     email: "",
     password: "",
     confirmPassword: "",
-    mobileNumber: "",
   });
 
   const { signup, loading } = useUserStore();
@@ -19,8 +18,8 @@ const SignUpPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const { name, email, password, confirmPassword, mobileNumber } = formData;
-    const user = await signup({ name, email, password, confirmPassword, mobileNumber });
+    const { name, email, password, confirmPassword } = formData;
+    const user = await signup({ name, email, password, confirmPassword });
     if (user) navigate("/");
   };
 
@@ -85,25 +84,6 @@ const SignUpPage = () => {
                 </div>
               </div>
 
-              {/* Mobile Number (Optional) */}
-              <div>
-                <label htmlFor="mobileNumber" className="block text-sm font-medium text-gray-700">
-                  Mobile number (optional)
-                </label>
-                <div className="mt-1 relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <Phone className="h-5 w-5 text-gray-400" />
-                  </div>
-                  <input
-                    id="mobileNumber"
-                    type="tel"
-                    value={formData.mobileNumber}
-                    onChange={(e) => setFormData({ ...formData, mobileNumber: e.target.value })}
-                    className="block w-full px-3 py-2 pl-10 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                    placeholder="03XXXXXXXXX"
-                  />
-                </div>
-              </div>
 
               {/* Password */}
               <div>

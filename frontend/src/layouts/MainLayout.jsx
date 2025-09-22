@@ -1,11 +1,18 @@
-import { Outlet } from "react-router-dom";
+import { useEffect } from "react";
+import { Outlet, useLocation } from "react-router-dom";
 import ScrollToTop from "../components/scrollToTop";
 import Navbar from "../components/Navbar";
 import Breadcrumbs from "../components/Breadcrumbs";
 import Footer from "../components/Footer";
 import WhatsappButton from "../components/WhatsappButton";
+import { trackPageView } from "../lib/analytics";
 
 const MainLayout = () => {
+  const location = useLocation();
+
+   useEffect(() => {
+    trackPageView(location.pathname + location.search);
+  }, [location]);
   return (
     // ensure this container fills viewport height so flex-1 pushes footer to bottom
     <div className="flex flex-col w-full bg-white min-h-screen">

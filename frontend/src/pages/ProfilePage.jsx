@@ -1,39 +1,79 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { useUserStore } from "../stores/useUserStore";
 
 const ProfilePage = () => {
+  const [profile, setProfile] = useState(null);
+  const { token } = useUserStore();
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const res = await axios.get("/auth/profile", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setProfile(res.data);
+      } catch (err) {
+        console.error("Failed to fetch profile:", err);
+      }
+    };
+    fetchProfile();
+  }, [token]);
+
+  if (!profile) return <p className="text-center mt-10">Loading...</p>;
+
   return (
-<div className="flex flex-col min-h-[calc(100vh-72px)] bg-gray-50 items-center pt-10 pb-10 px-4">
+    <div className="flex flex-col min-h-[calc(100vh-72px)] bg-gray-50 items-center pt-10 pb-10 px-4">
       <h1 className="text-3xl font-bold mb-6 text-gray-800">My Profile</h1>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-2xl w-full">
-        {/* Order Tracking */}
-        <div className="rounded-2xl shadow-md border border-gray-200 p-6 text-center">
-          <h2 className="text-xl font-semibold mb-2">Order Tracking</h2>
-          <p className="text-gray-500 mb-3">
-            We will be adding order tracking soon to make your shopping
-            experience smoother.
+      <div className="max-w-2xl w-full space-y-6">
+        {/* User Info */}
+        <div className="rounded-2xl shadow-md border border-gray-200 p-6">
+          <h2 className="text-xl font-semibold mb-2">User Information</h2>
+          <p>
+            <strong>Name:</strong> {profile.name}
           </p>
-          <button
-            disabled
-            className="px-4 py-2 rounded-lg border border-gray-300 text-gray-400 cursor-not-allowed"
-          >
-            Coming Soon
-          </button>
+          <p>
+            <strong>Email:</strong> {profile.email}
+          </p>
         </div>
 
-        {/* Review System */}
-        <div className="rounded-2xl shadow-md border border-gray-200 p-6 text-center">
-          <h2 className="text-xl font-semibold mb-2">Review System</h2>
-          <p className="text-gray-500 mb-3">
-            A product review system will be available soon for sharing your
-            feedback.
-          </p>
-          <button
-            disabled
-            className="px-4 py-2 rounded-lg border border-gray-300 text-gray-400 cursor-not-allowed"
-          >
-            Coming Soon
-          </button>
+        {/* Reviews */}
+        <div className="rounded-2xl shadow-md border border-gray-200 p-6">
+          <h2 className="text-xl font-semibold mb-2">My Reviews</h2>
+          {profile.reviews?.length === 0 ? (
+            <p>No reviews yet.</p>
+          ) : (
+            <ul className="space-y-2">
+              {profile.reviews?.map((r, i) => (
+                <li key={i} className="border p-2 rounded-md">
+                  <p>
+                    <strong>Product:</strong> {r.productName}
+                  </p>
+                  <p>
+                    <strong>Rating:</strong> {r.rating}
+                  </p>
+                  <p>
+                    <strong>Comment:</strong> {r.comment}
+                  </p>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+
+        {/* Purchased Products */}
+        <div className="rounded-2xl shadow-md border border-gray-200 p-6">
+          <h2 className="text-xl font-semibold mb-2">Purchased Products</h2>
+          {profile.purchases?.length === 0 ? (
+            <p>No purchases yet.</p>
+          ) : (
+            <ul className="space-y-2">
+              {profile.purchases?.map((p, i) => (
+                <li key={i} className="border p-2 rounded-md">{p.name}</li>
+              ))}
+            </ul>
+          )}
         </div>
       </div>
     </div>

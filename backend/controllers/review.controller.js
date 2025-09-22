@@ -1,5 +1,44 @@
 import Product from "../models/product.model.js";
 
+export const addReview = async (req, res) => {
+  const { productId } = req.params;
+  const { rating, comment } = req.body;
+  const userId = req.user._id;
+
+  try {
+    const product = await Product.findById(productId);
+
+    if (!product) return res.status(404).json({ message: "Product not found" });
+
+    // Check if user has already reviewed
+    const existingReview = product.reviews.find(
+      (r) => r.user.toString() === userId.toString()
+    );
+
+    if (existingReview) {
+      // optional: update review
+      existingReview.rating = rating;
+      existingReview.comment = comment;
+    } else {
+      // add new review
+      product.reviews.push({
+        user: userId,
+        name: req.user.name, // <-- attach actual user name
+        rating,
+        comment,
+      });
+    }
+
+    await product.save();
+
+    res.status(201).json({ message: "Review added successfully", review: { user: req.user.name, rating, comment } });
+  } catch (err) {
+    console.error("Add review error:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+
 export const addOrUpdateReview = async (req, res) => {
   try {
     const { productId } = req.params;

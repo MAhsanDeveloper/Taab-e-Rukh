@@ -2,6 +2,8 @@ import crypto from "crypto";
 import jwt from "jsonwebtoken";
 import { redis } from "../lib/redis.js";
 import User from "../models/user.model.js";
+import Review from "../models/product.model.js";
+import Order from "../models/order.model.js";
 
 const hashToken = (token) => {
   return crypto.createHash("sha256").update(token).digest("hex");
@@ -72,13 +74,12 @@ const clearAuthCookies = (res) => {
 
 export const signup = async (req, res) => {
   try {
-    let { email, password, name, mobileNumber } = req.body;
+    let { email, password, name } = req.body;
 
     // Trim all inputs
     email = email?.trim();
     name = name?.trim();
     password = password?.trim();
-    mobileNumber = mobileNumber?.trim();
 
     // 1. Check required fields
     if (!name) return res.status(400).json({ message: "Please fill in the required field: name" });
@@ -98,16 +99,6 @@ export const signup = async (req, res) => {
 
     // 4. Prepare user data
     const userData = { name, email, password, role: "customer" };
-    if (mobileNumber && mobileNumber !== "") {
-      // validate mobile number
-    if (mobileNumber && mobileNumber.trim() !== "") {
-  const mobileRegex = /^[0-9]{10,15}$/;
-  if (!mobileRegex.test(mobileNumber)) {
-    return res.status(400).json({ message: "Invalid mobile number" });
-  }
-  userData.mobileNumber = mobileNumber.trim();
-}
-    }
 
     // 5. Create user
     const user = await User.create(userData);
@@ -299,9 +290,38 @@ export const refreshToken = async (req, res) => {
 
 export const getProfile = async (req, res) => {
   try {
-    return res.json(req.user);
+    // `req.user` comes from `protectRoute` middleware
+    const userId = req.user._id;
+
+    // Fetch user reviews
+    const reviews = await Review.find({ user: userId })
+      .populate("product", "name") // get product name for each review
+      .lean();
+
+    // Fetch purchased products from orders
+    const orders = await Order.find({ user: userId })
+      .populate("products.product", "name")
+      .lean();
+
+    const purchasedProducts = orders.flatMap(order =>
+      order.products.map(p => p.product)
+    );
+
+   return res.json({
+  _id: req.user._id,
+  name: req.user.name,
+  email: req.user.email,
+  role: req.user.role,
+  reviews: reviews.map(r => ({
+    productName: r.product.name,
+    rating: r.rating,
+    comment: r.comment,
+  })),
+  purchases: purchasedProducts,
+});
+
   } catch (error) {
-    console.error("Error in getProfile controller:", error);
+    console.error("Error fetching profile:", error);
     return res.status(500).json({ message: "Server error" });
   }
 };
