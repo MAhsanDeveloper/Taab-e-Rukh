@@ -77,7 +77,7 @@ const CartPage = () => {
         <div className="lg:flex gap-10">
           {/* Cart Items */}
           <motion.div
-            className="flex-1 space-y-6"
+            className="flex-1 space-y-4"
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.4 }}
@@ -97,71 +97,76 @@ const CartPage = () => {
 
               return (
                 <div
-                  key={item.cartItemId}
-                  className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm hover:shadow-md transition"
+                  key={id}
+                  className="relative rounded-2xl border border-gray-200 bg-white p-4 sm:p-5 shadow-sm hover:shadow-md transition"
                 >
-                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
-                    {/* Product Image */}
-                    <div className="shrink-0">
+                  <div className="flex flex-row items-center justify-between gap-5 sm:gap-6">
+
+                    {/* Product Image with Quantity Badge */}
+                    <div className="shrink-0 relative w-fit">
                       <img
                         src={imageUrl}
                         alt={item.name}
-                        className="h-24 w-24 md:h-32 md:w-32 rounded-lg object-fill"
+                        className="h-20 w-20 sm:h-32 sm:w-32 rounded-lg object-fill"
                       />
+                      {/* Quantity Badge */}
+                      <div className="absolute -top-2 -right-2 sm:-top-2 sm:-right-2 rounded-full bg-white text-black text-sm sm:text-base font-semibold w-6 h-6 sm:w-6 sm:h-6 flex items-center justify-center shadow-md">
+                        {item.quantity}
+                      </div>
                     </div>
 
                     {/* Product Info */}
-                    <div className="flex-1 min-w-0 space-y-2 sm:ml-4">
-                      <h3 className="text-lg font-semibold text-gray-800 line-clamp-1">
+                    <div className="flex-1 min-w-0 space-y-1 sm:space-y-2 sm:ml-4">
+                      <h3 className="text-base sm:text-lg font-semibold text-gray-800 line-clamp-1">
                         {item.name}
                       </h3>
-                      <p className="text-sm text-gray-500 line-clamp-2">
+                      <p className="text-xs sm:text-sm text-gray-500 line-clamp-2">
                         {item.description}
                       </p>
                       <button
                         onClick={() => removeFromCart(id)}
-                        className="flex items-center gap-1 text-sm font-medium text-red-500 hover:text-red-600 transition"
+                        className="flex items-center gap-1 text-xs sm:text-sm font-medium text-red-500 hover:text-red-600 transition"
                       >
                         <Trash size={16} /> Remove
                       </button>
                     </div>
 
-                    {/* Price + Quantity */}
-                    <div className="flex flex-col items-end gap-3">
+                    {/* Price + Quantity Controls */}
+                    <div className="flex flex-col items-end gap-2 mt-2 sm:mt-0">
                       {/* Price */}
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2 text-sm sm:text-base">
                         {item.hasDiscount ? (
                           <>
-                            <span className="text-base text-red-600 line-through">
+                            <span className="text-sm sm:text-base text-red-600 line-through">
                               Rs. {price}
                             </span>
-                            <span className="text-xl font-bold text-emerald-600">
+                            <span className="text-lg sm:text-xl font-bold text-emerald-600">
                               Rs. {discountedPrice.toFixed(0)}
                             </span>
                           </>
                         ) : (
-                          <span className="text-xl font-bold text-emerald-600">
+                          <span className="text-lg sm:text-xl font-bold text-emerald-600">
                             Rs. {price}
                           </span>
                         )}
                       </div>
 
                       {/* Quantity Controls */}
-                      <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-2 mt-1">
                         <button
                           onClick={() => updateQuantity(id, item.quantity - 1)}
-                          className="flex h-8 w-8 items-center justify-center rounded-full border border-gray-300 text-gray-600 hover:bg-blue-500 hover:text-white transition"
+                          className="flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-full border border-gray-300 text-gray-600 hover:bg-blue-500 hover:text-white transition"
                         >
                           <Minus size={16} />
                         </button>
 
-                        <span className="min-w-[24px] text-center text-gray-800 font-medium">
+                        <span className="min-w-[24px] text-center text-gray-800 font-medium text-sm sm:text-base">
                           {item.quantity}
                         </span>
 
                         <button
                           onClick={() => updateQuantity(id, item.quantity + 1)}
-                          className="flex h-8 w-8 items-center justify-center rounded-full border border-gray-300 text-gray-600 hover:bg-blue-500 hover:text-white transition"
+                          className="flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-full border border-gray-300 text-gray-600 hover:bg-blue-500 hover:text-white transition"
                         >
                           <Plus size={16} />
                         </button>
@@ -180,7 +185,7 @@ const CartPage = () => {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.4 }}
           >
-            <div className="bg-white border border-gray-200 p-6 rounded-2xl shadow-sm">
+            <div className="bg-white border border-gray-200 p-6 mb-4 rounded-2xl shadow-sm">
               <h3 className="text-xl font-semibold text-gray-800 mb-5">
                 Order Summary
               </h3>

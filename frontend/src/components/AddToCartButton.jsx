@@ -12,8 +12,7 @@ const AddToCartButton = ({ product, className = "", iconOnly = false }) => {
 
     setLoading(true);
     try {
-      // Simulate network delay (remove in production)
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      await new Promise((resolve) => setTimeout(resolve, 500));
       await addToCart(product);
       trackAddToCart(product);
     } finally {

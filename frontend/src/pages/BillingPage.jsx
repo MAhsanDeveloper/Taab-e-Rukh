@@ -92,21 +92,22 @@ const BillingPage = () => {
     try {
       const orderData = {
         products: cart.map((p) => {
-          if (!p._id && !p.productId) {
-            throw new Error("Cart item missing product ID");
-          }
+          const discountedPrice = p.hasDiscount
+            ? (p.price * (100 - (p.discountRate ?? 0))) / 100
+            : p.price;
           return {
-            product: p.productId || p._id, // logged-in users: productId, guests: _id
+            product: p.productId || p._id,
             quantity: p.quantity,
             price: p.price,
+            discountedPrice,
           };
         }),
-
         couponCode: coupon?.code || null,
         paymentMethod,
         shippingDetails: { ...form },
         totalAmount: finalTotalWithShipping,
       };
+
       const res = await axios.post("/payments/orders/create", orderData);
       if (res.status === 201) {
         toast.success("Order placed successfully!");
@@ -387,30 +388,42 @@ const SummaryContent = ({
           const imageUrl = item.mainImage?.startsWith("http")
             ? item.mainImage
             : `${baseURL}${item.mainImage}`;
+          const unitPrice = item.hasDiscount
+            ? (item.price * (100 - (item.discountRate ?? 0))) / 100
+            : item.price;
+          const totalPrice = unitPrice * item.quantity;
+
           return (
             <div
-              key={item._id}
-              className="flex items-center justify-between border-b pb-2 sm:pb-3 last:border-b-0"
+              key={item._id || item.productId}
+              className="flex items-center justify-between border-b p-2 sm:p-3 last:border-b-0"
             >
-              <img
-                src={imageUrl || "/placeholder.svg"}
-                alt={item.name}
-                className="w-12 h-12 sm:w-16 sm:h-16 object-cover rounded-lg border flex-shrink-0"
-              />
+              <div className="shrink-0 relative w-fit ">
+                <img
+                  src={imageUrl}
+                  alt={item.name}
+                  className="h-14 w-14 sm:h-14 sm:w-14 rounded-lg object-fill"
+                />
+                <div className="absolute -top-2 bg-[#FFF8F0] -right-2 sm:-top-2 sm:-right-2 rounded-full text-black text-sm sm:text-base font-semibold w-5 h-5 sm:w-5 sm:h-5 flex items-center justify-center shadow-md">
+                  {item.quantity}
+                </div>
+              </div>
+
               <div className="flex-1 px-2 sm:px-3 min-w-0">
                 <h4 className="text-xs sm:text-sm font-medium text-gray-800 truncate">
                   {item.name}
                 </h4>
-                <p className="text-xs text-gray-500">Qty: {item.quantity}</p>
               </div>
+
               <div className="text-xs sm:text-sm font-semibold text-gray-800 flex-shrink-0">
-                PKR {item.price * item.quantity}
+                PKR {totalPrice.toFixed(2)}
               </div>
             </div>
           );
         })}
       </div>
 
+      {/* Totals */}
       <div className="mt-4 sm:mt-5 border-t pt-3 sm:pt-4 text-gray-700 space-y-1.5 sm:space-y-2">
         <p className="flex justify-between text-xs sm:text-sm">
           <span>Original Price</span>
@@ -438,7 +451,7 @@ const SummaryContent = ({
         </p>
         {amountForFreeShipping > 0 ? (
           <p className="text-xs sm:text-sm text-orange-600 mt-2">
-            Add Rs. {amountForFreeShipping.toFixed(0)} more to get FREE
+            Add PKR {amountForFreeShipping.toFixed(0)} more to get FREE
             shipping!
           </p>
         ) : (

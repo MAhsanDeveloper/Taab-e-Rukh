@@ -20,15 +20,6 @@ export const sendOrderConfirmation = async (order, user) => {
           <tr>
             <td style="padding:8px;border:1px solid #ddd;">${productName}</td>
             <td style="padding:8px;border:1px solid #ddd;text-align:center;">${quantity}</td>
-            <td style="padding:8px;border:1px solid #ddd;text-align:right;">
-              Rs ${price.toFixed(2)} ${
-          price !== discountedPrice
-            ? `<br/><span style="color:green;">Discounted: Rs ${discountedPrice.toFixed(2)}</span>`
-            : ""
-        }
-            </td>
-            <td style="padding:8px;border:1px solid #ddd;text-align:right;">Rs ${total.toFixed(2)}</td>
-          </tr>
         `;
       })
       .join("");
@@ -55,8 +46,6 @@ export const sendOrderConfirmation = async (order, user) => {
               <tr style="background-color:#f4f4f4;">
                 <th style="padding:10px;border:1px solid #ddd;text-align:left;">Product</th>
                 <th style="padding:10px;border:1px solid #ddd;text-align:center;">Qty</th>
-                <th style="padding:10px;border:1px solid #ddd;text-align:right;">Price (PKR)</th>
-                <th style="padding:10px;border:1px solid #ddd;text-align:right;">Total (PKR)</th>
               </tr>
             </thead>
             <tbody>
@@ -65,7 +54,6 @@ export const sendOrderConfirmation = async (order, user) => {
           </table>
 
           ${couponText}
-          <p><strong>Shipping:</strong> Rs ${shippingCost.toFixed(2)}</p>
           <p><strong>Total Amount:</strong> Rs ${totalAmount.toFixed(2)}</p>
           <p><strong>Contact:</strong> ${order.shippingDetails?.phone || "N/A"} / ${user.email || "N/A"}</p>
           <p>Your order will be delivered within 3-5 business days.</p>

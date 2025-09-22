@@ -140,7 +140,6 @@ export const useCartStore = create(
           await axios.delete("/cart");
           set({ cart: [] });
           get().calculateTotals();
-          toast.success("Cart cleared");
         } catch (err) {
           toast.error(err.response?.data?.message || "Failed to clear cart");
         }
