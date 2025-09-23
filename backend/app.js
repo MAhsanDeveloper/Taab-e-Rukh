@@ -24,9 +24,6 @@ import categoryImageRoutes from "./routes/categoryImage.route.js";
 import orderRoutes from "./routes/order.route.js";
 import reviewRoutes from "./routes/review.route.js";
 
-import { createAdmin } from "./controllers/admin.controller.js";
-import { protectRoute, adminRoute } from "./middleware/auth.middleware.js";
-
 dotenv.config();
 const app = express();
 const isProduction = process.env.NODE_ENV === "production";
@@ -153,8 +150,6 @@ app.use("/api/spotlight", spotlightRoutes);
 app.use("/api/category-images", categoryImageRoutes);
 app.use("/api/orders", apiLimiter, orderRoutes);
 app.use("/api/products", reviewRoutes);
-
-app.post("/api/admin/create-admin", protectRoute, adminRoute, createAdmin);
 
 // --- Error handler ---
 app.use((err, req, res, next) => {
