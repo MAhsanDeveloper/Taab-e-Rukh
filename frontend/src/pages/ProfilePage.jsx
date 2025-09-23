@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import axios from "../lib/axios";
 import { useUserStore } from "../stores/useUserStore";
 
 const ProfilePage = () => {
@@ -9,9 +9,7 @@ const ProfilePage = () => {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const res = await axios.get("/auth/profile", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+       const res = await axios.get("/auth/profile");
         setProfile(res.data);
       } catch (err) {
         console.error("Failed to fetch profile:", err);
@@ -36,44 +34,6 @@ const ProfilePage = () => {
           <p>
             <strong>Email:</strong> {profile.email}
           </p>
-        </div>
-
-        {/* Reviews */}
-        <div className="rounded-2xl shadow-md border border-gray-200 p-6">
-          <h2 className="text-xl font-semibold mb-2">My Reviews</h2>
-          {profile.reviews?.length === 0 ? (
-            <p>No reviews yet.</p>
-          ) : (
-            <ul className="space-y-2">
-              {profile.reviews?.map((r, i) => (
-                <li key={i} className="border p-2 rounded-md">
-                  <p>
-                    <strong>Product:</strong> {r.productName}
-                  </p>
-                  <p>
-                    <strong>Rating:</strong> {r.rating}
-                  </p>
-                  <p>
-                    <strong>Comment:</strong> {r.comment}
-                  </p>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-
-        {/* Purchased Products */}
-        <div className="rounded-2xl shadow-md border border-gray-200 p-6">
-          <h2 className="text-xl font-semibold mb-2">Purchased Products</h2>
-          {profile.purchases?.length === 0 ? (
-            <p>No purchases yet.</p>
-          ) : (
-            <ul className="space-y-2">
-              {profile.purchases?.map((p, i) => (
-                <li key={i} className="border p-2 rounded-md">{p.name}</li>
-              ))}
-            </ul>
-          )}
         </div>
       </div>
     </div>

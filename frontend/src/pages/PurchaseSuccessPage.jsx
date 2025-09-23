@@ -12,7 +12,7 @@ const PurchaseSuccessPage = () => {
   }, [clearCart]);
 
   return (
-    <div className="h-screen flex items-center justify-center px-4">
+    <div className=" flex justify-center mt-5">
         <Confetti
           width={window.innerWidth}
           height={window.innerHeight}

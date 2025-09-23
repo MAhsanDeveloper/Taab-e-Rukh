@@ -20,6 +20,15 @@ const userSchema = new mongoose.Schema(
       required: [true, "Password is required"],
       minlength: [6, "Password must be at least 6 characters long"],
     },
+
+    // ✅ Mobile number (only needed for admins)
+    mobileNumber: {
+      type: String,
+      sparse: true, // allows multiple docs without mobileNumber
+      unique: true, // still enforces uniqueness if mobileNumber is provided
+      trim: true,
+    },
+
     cartItems: [
       {
         quantity: {
@@ -32,6 +41,7 @@ const userSchema = new mongoose.Schema(
         },
       },
     ],
+
     role: {
       type: String,
       enum: ["customer", "admin"],
@@ -42,6 +52,9 @@ const userSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
+
+// Ensure mobileNumber index is sparse & unique
+userSchema.index({ mobileNumber: 1 }, { unique: true, sparse: true });
 
 // Pre-save hook to hash password before saving to database
 userSchema.pre("save", async function (next) {

@@ -2,7 +2,7 @@ import crypto from "crypto";
 import jwt from "jsonwebtoken";
 import { redis } from "../lib/redis.js";
 import User from "../models/user.model.js";
-import Review from "../models/product.model.js";
+import Product from "../models/product.model.js";
 import Order from "../models/order.model.js";
 
 const hashToken = (token) => {
@@ -141,16 +141,14 @@ export const signup = async (req, res) => {
 
 export const login = async (req, res) => {
   try {
-    const { email, mobileNumber, password } = req.body;
+    const { email, password } = req.body;
 
-    if (!password || (!email && !mobileNumber)) {
+    if (!password || !email) {
       return res.status(400).json({ message: "Missing credentials" });
     }
 
-    const user = await User.findOne({
-      $or: [{ email: email || null }, { mobileNumber: mobileNumber || null }],
-    });
-
+   const user = await User.findOne({ email });
+   
     if (!user) {
       return res.status(400).json({ message: "Invalid email or password" });
     }
@@ -290,36 +288,43 @@ export const refreshToken = async (req, res) => {
 
 export const getProfile = async (req, res) => {
   try {
-    // `req.user` comes from `protectRoute` middleware
     const userId = req.user._id;
 
-    // Fetch user reviews
-    const reviews = await Review.find({ user: userId })
-      .populate("product", "name") // get product name for each review
+    // ✅ Fetch user reviews from embedded array
+    const reviewedProducts = await Product.find({ "reviews.user": userId })
+      .select("name reviews")
       .lean();
 
-    // Fetch purchased products from orders
+    const reviews = reviewedProducts.flatMap(p =>
+      p.reviews
+        .filter(r => r.user.toString() === userId.toString())
+        .map(r => ({
+          productName: p.name,
+          rating: r.rating,
+          comment: r.comment,
+        }))
+    );
+
+    // ✅ Fetch purchased products from orders
     const orders = await Order.find({ user: userId })
       .populate("products.product", "name")
       .lean();
 
     const purchasedProducts = orders.flatMap(order =>
-      order.products.map(p => p.product)
+      order.products.map(p => ({
+        name: p.product?.name,
+        quantity: p.quantity,
+      }))
     );
 
-   return res.json({
-  _id: req.user._id,
-  name: req.user.name,
-  email: req.user.email,
-  role: req.user.role,
-  reviews: reviews.map(r => ({
-    productName: r.product.name,
-    rating: r.rating,
-    comment: r.comment,
-  })),
-  purchases: purchasedProducts,
-});
-
+    return res.json({
+      _id: req.user._id,
+      name: req.user.name,
+      email: req.user.email,
+      role: req.user.role,
+      reviews,
+      purchases: purchasedProducts,
+    });
   } catch (error) {
     console.error("Error fetching profile:", error);
     return res.status(500).json({ message: "Server error" });
