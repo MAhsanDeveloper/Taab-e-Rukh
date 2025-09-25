@@ -2,17 +2,19 @@ import Cart from "../models/cart.model.js";
 
 // Helper function to normalize cart items
 export const normalizeCart = (cart) =>
-  cart.map((item) => ({
-    cartItemId: item._id,
-    productId: item.productId._id,
-    name: item.productId.name,
-    description: item.productId.description,
-    mainImage: item.productId.mainImage,
-    price: item.productId.price,
-    hasDiscount: item.productId.hasDiscount,
-    discountRate: item.productId.discountRate,
-    quantity: item.quantity,
-  }));
+  cart
+    .filter((item) => item.productId)
+    .map((item) => ({
+      cartItemId: item._id,
+      productId: item.productId._id,
+      name: item.productId.name,
+      description: item.productId.description,
+      mainImage: item.productId.mainImage,
+      price: item.productId.price,
+      hasDiscount: item.productId.hasDiscount,
+      discountRate: item.productId.discountRate,
+      quantity: item.quantity,
+    }));
 
 export const getCartProducts = async (req, res) => {
   try {
@@ -50,18 +52,19 @@ export const addToCart = async (req, res) => {
 export const updateQuantity = async (req, res) => {
   try {
     const { id: cartItemId } = req.params;
- const { quantity } = req.body;
- const userId = req.user._id;
+    const { quantity } = req.body;
+    const userId = req.user._id;
 
- if (quantity <= 0) {
-   await Cart.deleteOne({ _id: cartItemId, user: userId });
- } else {
-   const cartItem = await Cart.findOneAndUpdate(
-     { _id: cartItemId, user: userId },
-     { $set: { quantity } },
-     { new: true }
-   ).populate("productId");
- }  const updated = await Cart.find({ user: userId }).populate("productId");
+    if (quantity <= 0) {
+      await Cart.deleteOne({ _id: cartItemId, user: userId });
+    } else {
+      const cartItem = await Cart.findOneAndUpdate(
+        { _id: cartItemId, user: userId },
+        { $set: { quantity } },
+        { new: true }
+      ).populate("productId");
+    }
+    const updated = await Cart.find({ user: userId }).populate("productId");
     res.json(normalizeCart(updated));
   } catch (error) {
     console.error("updateQuantity error:", error.message);
@@ -79,4 +82,3 @@ export const clearCart = async (req, res) => {
     res.status(500).json({ message: "Failed to clear cart" });
   }
 };
-
