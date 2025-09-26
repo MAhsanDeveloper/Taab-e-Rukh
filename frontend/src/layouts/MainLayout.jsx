@@ -10,7 +10,7 @@ import { trackPageView } from "../lib/analytics";
 const MainLayout = () => {
   const location = useLocation();
 
-   useEffect(() => {
+  useEffect(() => {
     trackPageView(location.pathname + location.search);
   }, [location]);
   return (
@@ -21,7 +21,7 @@ const MainLayout = () => {
       <ScrollToTop />
 
       {/* main is the scrollable content area. flex-1 will expand between navbar & footer */}
-      <main className="pt-[72px] flex-1 min-h-[calc(100vh-72px-200px)]">
+      <main className="pt-0 md:pt-[72px] flex-1">
         <Breadcrumbs />
         <Outlet />
       </main>

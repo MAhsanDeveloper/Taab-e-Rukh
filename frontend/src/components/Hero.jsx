@@ -34,7 +34,7 @@ const Hero = () => {
     setCurrentIndex((prev) => (prev - 1 + images.length) % images.length);
 
   return (
-    <div className="relative w-full h-[50vh] sm:h-[60vh] md:h-[75vh] lg:h-[90vh] overflow-hidden md:px-8 lg:px-12 mt-2 sm:m-0">
+    <div className="relative px-4 py-4 h-[50vh] sm:h-[60vh] md:h-[75vh] lg:h-[90vh] overflow-hidden md:px-8 lg:px-12 lg:py-2 mt-2 sm:m-0">
       <div className="relative w-full h-full flex sm:block overflow-x-auto sm:overflow-hidden snap-x sm:snap-none">
       <div className="relative w-full h-full">
   {images.map((img, index) => (
@@ -47,7 +47,7 @@ const Hero = () => {
       <img
         src={`${img.url.replace("/upload/", "/upload/f_auto,q_auto:best/")}`}
         alt="Hero"
-        className="w-full h-full object-fill rounded-xl"
+        className="w-full h-full object-fill rounded"
         fetchPriority={index === currentIndex ? "high" : "low"}
         loading={index === currentIndex ? "eager" : "lazy"}
       />

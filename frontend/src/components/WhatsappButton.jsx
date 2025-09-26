@@ -47,7 +47,7 @@ const WhatsappButton = () => {
       target="_blank"
       rel="noopener noreferrer"
       onClick={handleClick}
-      className="fixed bottom-5 right-5 z-50 flex items-center gap-2 bg-white/80 p-2 px-3 rounded-full shadow-lg hover:bg-white transition"
+      className="fixed bottom-25 right-5 z-50 flex items-center gap-2 bg-white/80 p-2 px-3 rounded-full shadow-lg hover:bg-white transition"
     >
       <span className="text-sm text-gray-700 font-medium hidden sm:inline">
         Chat with us

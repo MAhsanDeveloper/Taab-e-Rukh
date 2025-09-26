@@ -9,10 +9,8 @@ import {
   MapPin,
   Phone,
   Mail,
-  CheckCircle,
   ChevronDown,
   ChevronUp,
-  Send,
 } from "lucide-react";
 import { FaFacebook, FaInstagram, FaYoutube, FaTiktok } from "react-icons/fa";
 
@@ -21,8 +19,6 @@ const baseURL = import.meta.env.VITE_API_BASE_URL;
 const Footer = () => {
   const [contact, setContact] = useState({});
   const [loading, setLoading] = useState(true);
-  const [email, setEmail] = useState("");
-  const [message, setMessage] = useState("");
 
   const [quickLinksOpen, setQuickLinksOpen] = useState(false);
   const [infoOpen, setInfoOpen] = useState(false);
@@ -49,19 +45,6 @@ const Footer = () => {
     fetchContact();
   }, []);
 
-  const handleSubscribe = (e) => {
-    e.preventDefault();
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-    if (!emailRegex.test(email)) {
-      setMessage("❌ Please enter a valid email address");
-      return;
-    }
-
-    setMessage("Thanks For Subscribing!");
-    setEmail("");
-  };
-
   const handleSocialClick = (platform, url) => {
   trackEvent({
     action: "social_click",
@@ -72,7 +55,7 @@ const Footer = () => {
 };
 
   return (
-    <footer className="bg-black text-white px-6 py-12 md:px-20 mt-12">
+    <footer className="bg-black text-white mb-20 px-6 py-12 md:px-20 mt-12">
    <motion.div
   className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 md:gap-14"
   initial={{ opacity: 0, y: 50 }}
@@ -214,7 +197,7 @@ const Footer = () => {
             </li>
             <li>
               <Link
-                to="/refund-return-policy"
+                to="/return-refund-policy"
                 className="hover:text-white hover:underline underline-offset-4 transition"
               >
                 Refund & Returns Policy
@@ -246,43 +229,6 @@ const Footer = () => {
           transition={{ duration: 0.6, delay: 0.6 }}
           className="flex flex-col"
         >
-          <div className="border-b border-gray-700 pb-4 mb-4">
-            <h3 className="font-bold text-xl">Stay in the loop</h3>
-            <p className="text-gray-400 text-sm mt-1">
-              Get exclusive deals & product launches.
-            </p>
-          </div>
-          <form
-            onSubmit={handleSubscribe}
-            className="flex flex-col sm:flex-row items-stretch bg-gray-100 rounded-lg overflow-hidden shadow-md w-fit"
-          >
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Enter your email"
-              className="flex-1 py-3 text-black focus:outline-none px-2 text-sm sm:text-base"
-            />
-            <button
-              type="submit"
-              className="bg-green-500 text-white font-semibold cursor-pointer py-3 flex items-center justify-center gap-2 transition hover:bg-green-600 sm:min-w-[60px]"
-            >
-              <Send size={12} className="text-white" />
-            </button>
-          </form>
-
-          {message && (
-            <p
-              className={`mt-2 text-sm px-3 py-2 rounded-md transition-all ${
-                message.includes("Thanks")
-                  ? "text-green-400 bg-white/20"
-                  : "text-red-400 bg-white/10"
-              } flex items-center gap-2`}
-            >
-              {message.includes("Thanks") && <CheckCircle size={16} />}
-              {message}
-            </p>
-          )}
 
           {/* Social Links */}
           <div className="flex justify-around sm:justify-start sm:space-x-7 mt-4 text-xl sm:text-2xl w-full">

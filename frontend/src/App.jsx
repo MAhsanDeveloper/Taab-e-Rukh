@@ -110,7 +110,7 @@ const router = createBrowserRouter([
       { path: "/cancel", element: <WrappedPurchaseCancelPage /> },
       { path: "/shipping-policy", element: <WrappedShippingPolicy /> },
       { path: "/privacy-policy", element: <WrappedPrivacyPolicy /> },
-      { path: "/refund-return-policy", element: <WrappedReturnRefundPolicy /> },
+      { path: "/return-refund-policy", element: <WrappedReturnRefundPolicy /> },
       { path: "/terms-of-service", element: <WrappedTermsOfService /> },
       { path: "/contact-us", element: <WrappedContactPage /> },
     ],
