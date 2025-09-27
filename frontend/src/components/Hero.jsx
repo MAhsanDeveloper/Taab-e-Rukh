@@ -35,8 +35,8 @@ const Hero = () => {
 
   return (
     <div className="relative px-4 py-4 h-[50vh] sm:h-[60vh] md:h-[75vh] lg:h-[90vh] overflow-hidden md:px-8 lg:px-12 lg:py-2 mt-2 sm:m-0">
-      <div className="relative w-full h-full flex sm:block overflow-x-auto sm:overflow-hidden snap-x sm:snap-none">
-      <div className="relative w-full h-full">
+      <div className="relative w-full h-full mt-2 flex sm:block overflow-x-auto sm:overflow-hidden snap-x sm:snap-none">
+    <div className="relative w-[95%] lg:w-[80%] h-full mx-auto">
   {images.map((img, index) => (
     <div
       key={img._id}
@@ -51,10 +51,11 @@ const Hero = () => {
         fetchPriority={index === currentIndex ? "high" : "low"}
         loading={index === currentIndex ? "eager" : "lazy"}
       />
-      <div className="absolute inset-0 bg-gradient-to-r from-black/30 via-black/10 to-transparent rounded-xl"></div>
+      <div className="absolute inset-0 rounded-xl"></div>
     </div>
   ))}
 </div>
+
 
 
         {/* Arrows (hidden on mobile) */}
