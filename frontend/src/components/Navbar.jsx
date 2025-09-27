@@ -557,7 +557,7 @@ const Navbar = () => {
     </Link>
 
     {/* Return Policy */}
-    <Link to="/return-policy" className="flex flex-col items-center gap-1" aria-label="Return Policy">
+    <Link to="/return-refund-policy" className="flex flex-col items-center gap-1" aria-label="Return Policy">
       <RotateCcw size={22} />
       <span className="text-[11px] text-gray-600">Returns</span>
     </Link>
