@@ -10,8 +10,6 @@ html, body, #root {
   -webkit-overflow-scrolling: touch; /* smoother mobile scrolling */
 }
 
-
-
 /* prevent overflow issues */
 .featured-badge {
   overflow: hidden;

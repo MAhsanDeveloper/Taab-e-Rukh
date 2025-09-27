@@ -212,12 +212,9 @@ const Navbar = () => {
 
   return (
     <>
-      {/* TOP HEADER: desktop fixed, mobile small top bar (not fixed overall but visible) */}
       <header
-        // desktop fixed; mobile top bar will be sticky within flow to avoid double-fixed behavior.
         className={`${
-          // make it fixed on md and above
-          "md:fixed md:top-0 md:left-0 md:w-full md:z-50 md:shadow-md"
+          "md:sticky md:top-0 md:left-0 md:w-full md:z-50 md:shadow-md"
         } bg-white`}
         aria-label="Main navigation"
       >

@@ -6,6 +6,7 @@ import Breadcrumbs from "../components/Breadcrumbs";
 import Footer from "../components/Footer";
 import WhatsappButton from "../components/WhatsappButton";
 import { trackPageView } from "../lib/analytics";
+import AnnouncementBar from "../components/AnnouncementBar";
 
 const MainLayout = () => {
   const location = useLocation();
@@ -14,20 +15,19 @@ const MainLayout = () => {
     trackPageView(location.pathname + location.search);
   }, [location]);
   return (
-    // ensure this container fills viewport height so flex-1 pushes footer to bottom
     <div className="flex flex-col w-full bg-white min-h-screen">
+      <AnnouncementBar />
+
       <Navbar />
 
       <ScrollToTop />
 
-      {/* main is the scrollable content area. flex-1 will expand between navbar & footer */}
-      <main className="pt-0 md:pt-[72px] flex-1">
+      <main className="flex-1">
         <Breadcrumbs />
         <Outlet />
       </main>
 
       <Footer />
-
       <WhatsappButton />
     </div>
   );

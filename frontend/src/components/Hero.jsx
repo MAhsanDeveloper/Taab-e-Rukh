@@ -34,8 +34,8 @@ const Hero = () => {
     setCurrentIndex((prev) => (prev - 1 + images.length) % images.length);
 
   return (
-    <div className="relative px-4 py-4 h-[50vh] sm:h-[60vh] md:h-[75vh] lg:h-[90vh] overflow-hidden md:px-8 lg:px-12 lg:py-2 mt-2 sm:m-0">
-      <div className="relative w-full h-full mt-2 flex sm:block overflow-x-auto sm:overflow-hidden snap-x sm:snap-none">
+    <div className="relative px-4 h-[50vh] sm:h-[60vh] md:h-[75vh] lg:h-[90vh] overflow-hidden md:px-8 lg:px-12 lg:py-2 mt-2 sm:m-0">
+      <div className="relative w-full h-full flex sm:block overflow-x-auto sm:overflow-hidden snap-x sm:snap-none">
     <div className="relative w-[95%] lg:w-[80%] h-full mx-auto">
   {images.map((img, index) => (
     <div
