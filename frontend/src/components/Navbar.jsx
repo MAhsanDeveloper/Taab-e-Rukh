@@ -51,7 +51,7 @@ const Navbar = () => {
   const categories = [
     { name: "Hair Care", path: "/category/hair-care" },
     { name: "Skin Care", path: "/category/skin-care" },
-    { name: "Body Care", slug: "body-care" },
+    { name: "Body Care", path: "/category/body-care" },
   ];
 
   // --vh fix for mobile viewport units

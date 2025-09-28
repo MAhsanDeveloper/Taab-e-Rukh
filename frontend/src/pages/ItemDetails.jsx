@@ -196,32 +196,34 @@ const ItemDetails = () => {
             )}
           </div>
 
-          {/* Buttons in single line */}
-          <div className="flex items-center gap-4 pt-2">
-            {item.inStock ? (
-              <AddToCartButton
-                product={item}
-                className="flex-1 bg-black hover:bg-white hover:text-black border border-black 
-                   text-white font-bold rounded-full px-10 py-4 
-                   transition-all duration-300 ease-in-out 
-                   shadow-md hover:shadow-lg"
-              />
-            ) : (
-              <button
-                disabled
-                className="flex-1 bg-red-600 text-white font-semibold px-6 py-3 rounded-full cursor-not-allowed"
-              >
-                Out of Stock
-              </button>
-            )}
+{/* Buttons Responsive Layout */}
+<div className="flex flex-col lg:flex-row items-center gap-4 pt-2 w-full">
+  {item.inStock ? (
+    <AddToCartButton
+      product={item}
+      className="flex-1 w-full bg-black hover:bg-white hover:text-black border border-black 
+                 text-white font-bold rounded-full px-10 py-4 
+                 transition-all duration-300 ease-in-out 
+                 shadow-md hover:shadow-lg"
+    />
+  ) : (
+    <button
+      disabled
+      className="flex-1 w-full bg-red-600 text-white font-semibold px-6 py-3 rounded-full cursor-not-allowed"
+    >
+      Out of Stock
+    </button>
+  )}
 
-            <button
-              onClick={handleBuyNow}
-              className="flex-1 text-center cursor-pointer bg-black text-white hover:bg-white hover:text-black border-black font-bold px-10 py-4 rounded-full transition-all duration-300 ease-in-out shadow-md hover:shadow-lg hover:scale-105"
-            >
-              Buy Now
-            </button>
-          </div>
+  <button
+    onClick={handleBuyNow}
+    className="flex-1 w-full text-center cursor-pointer bg-black text-white hover:bg-white hover:text-black border-black font-bold px-10 py-4 rounded-full transition-all duration-300 ease-in-out shadow-md hover:shadow-lg hover:scale-105"
+  >
+    Buy Now
+  </button>
+</div>
+
+
 
         {/* Trust / Benefit messages */}
 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6">
