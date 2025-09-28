@@ -43,7 +43,7 @@ const AnnouncementBar = () => {
   return (
     <div className="w-full bg-black text-white px-4 py-3 text-sm font-medium flex items-center justify-between md:px-10">
       {/* Left: Social Links */}
-      <div className="flex space-x-6 text-lg items-center">
+      <div className="hidden md:flex space-x-6 text-lg items-center">
         {!loading && (
           <>
             {contact.facebook && (

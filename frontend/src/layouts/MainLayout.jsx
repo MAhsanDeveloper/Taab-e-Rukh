@@ -1,10 +1,11 @@
+import React, { Suspense } from "react";
 import { useEffect } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import ScrollToTop from "../components/scrollToTop";
 import Navbar from "../components/Navbar";
 import Breadcrumbs from "../components/Breadcrumbs";
-import Footer from "../components/Footer";
-import WhatsappButton from "../components/WhatsappButton";
+const Footer = React.lazy(() => import("../components/Footer"));
+const WhatsappButton = React.lazy(() => import("../components/WhatsappButton"));
 import { trackPageView } from "../lib/analytics";
 import AnnouncementBar from "../components/AnnouncementBar";
 
@@ -27,8 +28,10 @@ const MainLayout = () => {
         <Outlet />
       </main>
 
-      <Footer />
-      <WhatsappButton />
+      <Suspense fallback={null}>
+        <Footer />
+        <WhatsappButton />
+      </Suspense>
     </div>
   );
 };

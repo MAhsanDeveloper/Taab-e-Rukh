@@ -6,6 +6,7 @@ import {
   Search,
   Menu,
   X,
+  Home,
   MessageCircle,
   LogOut,
   RotateCcw 
@@ -160,37 +161,44 @@ const Navbar = () => {
     };
   }, [searchOpen]);
 
-  // Bottom nav scroll hide/show logic (mobile)
-  useEffect(() => {
-    // Only do mobile behavior - check window width on handler
-    const onScroll = () => {
-      const currentY = window.scrollY || window.pageYOffset;
-      const isMobile = window.innerWidth < 768; // md breakpoint
-      if (!isMobile) return;
+ // Bottom nav scroll hide/show logic (mobile)
+useEffect(() => {
+  const onScroll = () => {
+    const currentY = window.scrollY || window.pageYOffset;
+    const isMobile = window.innerWidth < 768; // md breakpoint
+    if (!isMobile) return;
 
-      // Scrolling down -> hide, scrolling up -> show
-      if (currentY > lastScrollY.current && currentY > 50) {
-        // scrolling down
-        setShowBottomNav(false);
-      } else {
-        // scrolling up or near top
-        setShowBottomNav(true);
-      }
-      lastScrollY.current = currentY;
+    // ✅ Hide bottom nav completely while still in the first section
+    const threshold = window.innerHeight * 0.75; // ~75% of first screen
+    if (currentY < threshold) {
+      setShowBottomNav(false);
+      return;
+    }
 
-      // detect stop scrolling: show nav after small timeout
-      if (scrollTimeout.current) clearTimeout(scrollTimeout.current);
-      scrollTimeout.current = setTimeout(() => {
-        setShowBottomNav(true);
-      }, 200); // 200ms after user stops
-    };
+    // Normal scroll behavior
+    if (currentY > lastScrollY.current) {
+      // scrolling down -> hide
+      setShowBottomNav(false);
+    } else {
+      // scrolling up -> show
+      setShowBottomNav(true);
+    }
+    lastScrollY.current = currentY;
 
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => {
-      window.removeEventListener("scroll", onScroll);
-      if (scrollTimeout.current) clearTimeout(scrollTimeout.current);
-    };
-  }, []);
+    // detect stop scrolling: show nav after small timeout
+    if (scrollTimeout.current) clearTimeout(scrollTimeout.current);
+    scrollTimeout.current = setTimeout(() => {
+      setShowBottomNav(true);
+    }, 200);
+  };
+
+  window.addEventListener("scroll", onScroll, { passive: true });
+  return () => {
+    window.removeEventListener("scroll", onScroll);
+    if (scrollTimeout.current) clearTimeout(scrollTimeout.current);
+  };
+}, []);
+
 
   // keyboard escape to close mobile drawer
   useEffect(() => {
@@ -534,6 +542,14 @@ const Navbar = () => {
     aria-label="Mobile bottom navigation"
   >
 
+      {/* Return Policy */}
+    <Link to="/" className="flex flex-col items-center gap-1" aria-label="Home">
+      <Home size={22} />
+      <span className="text-[11px] text-gray-600">Home</span>
+    </Link>
+
+    
+
     {/* Profile */}
     <Link to={user ? "/profile" : "/login"} className="flex flex-col items-center gap-1" aria-label="Profile">
       <User size={22} />
@@ -556,7 +572,7 @@ const Navbar = () => {
     {/* Return Policy */}
     <Link to="/return-refund-policy" className="flex flex-col items-center gap-1" aria-label="Return Policy">
       <RotateCcw size={22} />
-      <span className="text-[11px] text-gray-600">Returns</span>
+      <span className="text-[11px] text-gray-600">Return Policy</span>
     </Link>
   </motion.nav>
 </div>
