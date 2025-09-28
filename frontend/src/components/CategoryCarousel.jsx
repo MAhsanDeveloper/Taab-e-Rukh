@@ -9,8 +9,7 @@ const hardcodedCategories = [
   { name: "All Products", slug: "all-products" },
   { name: "Hair Care", slug: "hair-care" },
   { name: "Skin Care", slug: "skin-care" },
-  { name: "Face & Glow", slug: "face-glow" },
-  { name: "Body & Baby", slug: "body-baby" },
+  { name: "Body Care", slug: "body-care" },
 ];
 
 const CategoryCarousel = () => {

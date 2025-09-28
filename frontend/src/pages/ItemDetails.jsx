@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import { useParams, useNavigate, Link } from "react-router-dom";
+import { useParams, useNavigate, } from "react-router-dom";
 import axios from "../lib/axios";
 import { useCartStore } from "../stores/useCartStore";
 import toast from "react-hot-toast";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Truck, BadgeCheck, Wallet } from "lucide-react";
 import AddToCartButton from "../components/AddToCartButton";
 import USPSTRIP from "../components/USPSTRIP";
 import ReviewForm from "../components/ReviewForm";
@@ -102,7 +102,7 @@ const ItemDetails = () => {
         </button>
       </div>
 
-      <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-10">
+      <div className="max-w-[90%] mx-auto grid grid-cols-1 md:grid-cols-2 gap-12">
         {/* Image Section */}
         <div className="flex flex-col items-center md:sticky md:top-24 self-start">
           <div className="w-full h-[390px] flex items-center justify-center border border-gray-200 rounded-xl shadow-md bg-white">
@@ -163,64 +163,53 @@ const ItemDetails = () => {
               }`}
             >
               {item.inStock
-                ? `${item.available} item(s) available`
+                ? ` ${item.available} item(s) available, Ready To Ship`
                 : "Out of Stock"}
             </p>
 
-            <div className="mt-3 space-y-2">
+            {/* Price section on single line */}
+            <div className="mt-3 flex items-baseline gap-3">
               {item.hasDiscount ? (
                 <>
-                  <p className="text-lg text-gray-500 relative inline-block">
-                    <span
-                      className="relative text-gray-400"
-                      style={{
-                        textDecoration: "line-through",
-                        textDecorationColor: "red",
-                        textDecorationThickness: "2px",
-                        textDecorationStyle: "solid",
-                        transform: "skewY(-5deg)",
-                        display: "inline-block",
-                      }}
-                    >
-                      Rs {item.price.toLocaleString()}
-                    </span>
-                  </p>
-                  <p className="text-3xl text-emerald-600 font-extrabold">
+                  <span className="text-lg text-gray-400 line-through decoration-2 decoration-red-500">
+                    Rs {item.price.toLocaleString()}
+                  </span>
+                  <span className="text-3xl text-emerald-600 font-extrabold">
                     Rs{" "}
                     {Math.round(
                       item.price - (item.price * item.discountRate) / 100
                     ).toLocaleString()}
-                  </p>
-                  <p className="text-sm text-green-500 font-medium">
-                    Save {item.discountRate}% instantly!
-                  </p>
+                  </span>
                 </>
               ) : (
-                <div>
-                  <p className="text-3xl text-yellow-600 font-bold">
-                    Rs {item.price.toLocaleString()}
-                  </p>
-                  <span className="inline-block text-xs px-2 py-1 mt-1 rounded bg-green-100 text-green-700 font-medium">
-                    Free Delivery
-                  </span>
-                </div>
+                <span className="text-3xl text-yellow-600 font-bold">
+                  Rs {item.price.toLocaleString()}
+                </span>
               )}
             </div>
+
+            {/* Discount message */}
+            {item.hasDiscount && (
+              <p className="text-sm text-green-500 font-medium">
+                Save {item.discountRate}% instantly!
+              </p>
+            )}
           </div>
 
-          <div className="flex flex-col items-center gap-4">
+          {/* Buttons in single line */}
+          <div className="flex items-center gap-4 pt-2">
             {item.inStock ? (
               <AddToCartButton
                 product={item}
-                className="bg-black hover:bg-gray-800 border border-black 
-                           text-white font-bold rounded-full px-10 py-4 
-                           transition-all duration-300 ease-in-out 
-                           shadow-md hover:shadow-lg hover:scale-105"
+                className="flex-1 bg-black hover:bg-white hover:text-black border border-black 
+                   text-white font-bold rounded-full px-10 py-4 
+                   transition-all duration-300 ease-in-out 
+                   shadow-md hover:shadow-lg"
               />
             ) : (
               <button
                 disabled
-                className="w-full bg-red-600 text-white font-semibold px-6 py-3 rounded-xl cursor-not-allowed"
+                className="flex-1 bg-red-600 text-white font-semibold px-6 py-3 rounded-full cursor-not-allowed"
               >
                 Out of Stock
               </button>
@@ -228,18 +217,34 @@ const ItemDetails = () => {
 
             <button
               onClick={handleBuyNow}
-              className="inline-block text-center cursor-pointer bg-black text-white hover:bg-white hover:text-black border-black font-semibold px-10 py-3 rounded-full transition-all duration-300 ease-in-out shadow-md hover:shadow-lg hover:scale-105"
+              className="flex-1 text-center cursor-pointer bg-black text-white hover:bg-white hover:text-black border-black font-bold px-10 py-4 rounded-full transition-all duration-300 ease-in-out shadow-md hover:shadow-lg hover:scale-105"
             >
               Buy Now
             </button>
           </div>
+
+        {/* Trust / Benefit messages */}
+<div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6">
+  <div className="flex items-center gap-2 bg-gray-50 px-4 py-3 rounded-xl shadow-sm">
+    <Truck className="w-5 h-5 text-emerald-600" />
+    <span className="text-sm font-medium text-gray-700">Fast Shipping</span>
+  </div>
+  <div className="flex items-center gap-2 bg-gray-50 px-4 py-3 rounded-xl shadow-sm">
+    <BadgeCheck className="w-5 h-5 text-emerald-600" />
+    <span className="text-sm font-medium text-gray-700">Quality Guaranteed</span>
+  </div>
+  <div className="flex items-center gap-2 bg-gray-50 px-4 py-3 rounded-xl shadow-sm">
+    <Wallet className="w-5 h-5 text-emerald-600" />
+    <span className="text-sm font-medium text-gray-700">Cash on Delivery</span>
+  </div>
+</div>
         </div>
       </div>
 
       <div className="mt-20">
         <USPSTRIP />
       </div>
-         {/* Reviews */}
+      {/* Reviews */}
       <div className="mt-16 max-w-4xl mx-auto">
         <h3 className="text-2xl font-bold text-gray-900 mb-6">
           Customer Reviews

@@ -7,8 +7,7 @@ const baseURL = import.meta.env.VITE_API_BASE_URL;
 const categories = [
   { name: "Hair Care", slug: "hair-care" },
   { name: "Skin Care", slug: "skin-care" },
-  { name: "Face & Glow", slug: "face-glow" },
-  { name: "Body & Baby", slug: "body-baby" },
+  { name: "Body Care", slug: "body-care" },
 ];
 
 const ShopManager = () => {
@@ -437,49 +436,6 @@ const ShopManager = () => {
             )}
           </div>
         ))}
-      </div>
-
-      <div className="bg-white text-black p-6 rounded-xl shadow mt-10 mx-1">
-        <h3 className="text-xl font-semibold mb-4">Spotlight Categories</h3>
-        <p className="text-sm mb-2">
-          Choose up to 4 categories to spotlight on homepage
-        </p>
-
-     <div className="flex flex-wrap gap-3">
-  {categories.map((cat) => {
-    const selected = spotlightCategories.includes(cat.slug);
-
-    return (
-      <button
-        key={cat.slug}
-        onClick={() => {
-          if (selected) {
-            setSpotlightCategories(
-              spotlightCategories.filter((c) => c !== cat.slug)
-            );
-          } else if (spotlightCategories.length < 4) {
-            setSpotlightCategories([...spotlightCategories, cat.slug]);
-          } else {
-            toast.error("Maximum 4 spotlight categories allowed");
-          }
-        }}
-        className={`px-4 py-2 rounded ${
-          selected ? "bg-amber-600 text-white" : "bg-gray-200"
-        }`}
-      >
-        {cat.name}
-      </button>
-    );
-  })}
-</div>
-
-
-        <button
-          onClick={updateSpotlight}
-          className="mt-4 bg-amber-800 text-white px-4 py-2 rounded"
-        >
-          Save Spotlight
-        </button>
       </div>
     </div>
   );

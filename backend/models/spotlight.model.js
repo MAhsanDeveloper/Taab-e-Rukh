@@ -6,9 +6,9 @@ const spotlightSchema = new mongoose.Schema(
       type: [String],
       validate: {
         validator: function (arr) {
-          return arr.length <= 4; // max 4 spotlight categories
+          return arr.length <= 3; // max 4 spotlight categories
         },
-        message: "You can select up to 4 spotlight categories only.",
+        message: "You can select up to 3 spotlight categories only.",
       },
     },
   },

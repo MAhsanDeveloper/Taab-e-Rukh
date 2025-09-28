@@ -15,9 +15,9 @@ export const updateSpotlight = async (req, res) => {
   try {
     const { categories } = req.body;
 
-    if (!Array.isArray(categories) || categories.length > 4) {
+    if (!Array.isArray(categories) || categories.length > 3) {
       return res.status(400).json({
-        message: "You must provide an array with up to 4 categories."
+        message: "You must provide an array with up to 3 categories."
       });
     }
 
