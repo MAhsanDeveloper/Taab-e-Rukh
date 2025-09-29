@@ -186,15 +186,31 @@ const ShopManager = () => {
             }
             className="p-2 rounded border"
           />
-          <input
-            type="number"
-            placeholder="Size"
-            value={newProduct.size}
-            onChange={(e) =>
-              setNewProduct({ ...newProduct, size: e.target.value })
-            }
-            className="p-2 rounded border"
-          />
+          <div className="flex gap-2">
+            <input
+              type="number"
+              placeholder="Size"
+              value={newProduct.size}
+              onChange={(e) =>
+                setNewProduct({ ...newProduct, size: e.target.value })
+              }
+              className="w-1 pl-1 rounded border flex-1"
+            />
+
+            <select
+              value={newProduct.sizeUnit}
+              onChange={(e) =>
+                setNewProduct({ ...newProduct, sizeUnit: e.target.value })
+              }
+              className="p-2 rounded border"
+            >
+              <option value="ml">ml</option>
+              <option value="g">g</option>
+              <option value="mg">mg</option>
+              <option value="l">l</option>
+              <option value="oz">oz</option>
+            </select>
+          </div>
 
           <select
             value={newProduct.category}
@@ -337,13 +353,27 @@ const ShopManager = () => {
                   className="p-2 border rounded w-full"
                 />
                 <input
-                  type="text"
+                  type="number"
                   defaultValue={p.size}
                   onChange={(e) =>
                     setEditForm({ ...editForm, size: e.target.value })
                   }
                   className="p-2 border rounded w-full"
                 />
+
+                <select
+                  defaultValue={p.sizeUnit}
+                  onChange={(e) =>
+                    setEditForm({ ...editForm, sizeUnit: e.target.value })
+                  }
+                  className="p-2 border rounded w-full"
+                >
+                  <option value="ml">ml</option>
+                  <option value="g">g</option>
+                  <option value="mg">mg</option>
+                  <option value="l">l</option>
+                  <option value="oz">oz</option>
+                </select>
                 <input
                   type="text"
                   defaultValue={p.benefits}
@@ -383,7 +413,9 @@ const ShopManager = () => {
             ) : (
               <>
                 <h3 className="font-bold mt-2">{p.name}</h3>
-                <p className="text-sm whitespace-pre-line line-clamp-3">{p.benefits}</p>
+                <p className="text-sm whitespace-pre-line line-clamp-3">
+                  {p.benefits}
+                </p>
                 <p className="text-sm">{p.size}</p>
                 <p className="text-sm">Rs {p.price}</p>
                 <p className="text-xs">

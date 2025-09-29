@@ -54,7 +54,7 @@ const ProductCard = ({ product }) => {
           </p>
 
           <p className="text-xs sm:text-base text-emerald-600 font-medium">
-            {product.size} <span className="text-gray-800">ml</span>
+            {product.size} <span className="text-gray-800">{product.sizeUnit}</span>
           </p>
 
           {/* Price */}

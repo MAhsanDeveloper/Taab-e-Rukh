@@ -28,6 +28,11 @@ const productSchema = new mongoose.Schema(
     description: { type: String, required: true },
     price: { type: Number, min: 0, required: true },
     size: { type: Number, min: 0, required: true },
+    sizeUnit: {
+      type: String,
+      default: "ml",
+      enum: ["ml", "g", "mg", "l", "oz"],
+    },
 
     mainImage: { type: String, required: true },
     previewImages: [{ type: String }],
