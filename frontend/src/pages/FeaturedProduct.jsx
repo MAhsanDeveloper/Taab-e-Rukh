@@ -123,8 +123,16 @@ const FeaturedProduct = () => {
         <div className="flex items-center gap-3 mt-2">
           {product.hasDiscount ? (
             <>
-              <span className="text-lg sm:text-xl text-black line-through">
+              <span className="relative text-lg sm:text-xl text-gray-500 ">
                 Rs. {product.price}
+                  {/* Diagonal line */}
+                  <span
+                    className="absolute top-3/4 left-0 w-full h-[1px] bg-red-500"
+                    style={{
+                      transform: "translateY(-50%) rotate(-10deg)",
+                      transformOrigin: "left center",
+                    }}
+                  ></span>
               </span>
               <span className="text-xl sm:text-2xl font-bold text-red-500">
                 Rs. {discountedPrice.toFixed(0)}

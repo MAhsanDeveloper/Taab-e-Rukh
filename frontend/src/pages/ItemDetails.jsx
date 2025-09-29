@@ -184,8 +184,16 @@ const handleTouchEnd = (e) => {
             <div className="mt-3 flex items-baseline gap-3">
               {item.hasDiscount ? (
                 <>
-                  <span className="text-lg text-gray-400 line-through decoration-2 decoration-red-500">
+                  <span className="relative text-lg text-gray-500">
                     Rs {item.price.toLocaleString()}
+                      {/* Diagonal line */}
+                  <span
+                    className="absolute top-3/4 left-0 w-full h-[1px] bg-red-500"
+                    style={{
+                      transform: "translateY(-50%) rotate(-10deg)",
+                      transformOrigin: "left center",
+                    }}
+                  ></span>
                   </span>
                   <span className="text-3xl text-emerald-600 font-extrabold">
                     Rs{" "}

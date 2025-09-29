@@ -54,24 +54,24 @@ const ProductCard = ({ product }) => {
           </p>
 
           <p className="text-xs sm:text-base text-emerald-600 font-medium">
-            {product.size} <span className="text-gray-800">{product.sizeUnit}</span>
+            {product.size}{" "}
+            <span className="text-gray-800">{product.sizeUnit}</span>
           </p>
 
           {/* Price */}
           <div className="flex items-center gap-2 sm:gap-3 mt-2">
             {product.hasDiscount ? (
               <>
-                <span
-                  className="text-xs sm:text-sm text-gray-500 relative"
-                  style={{
-                    textDecoration: "line-through",
-                    textDecorationColor: "red",
-                    textDecorationThickness: "2px",
-                    transform: "skewY(-5deg)",
-                    display: "inline-block",
-                  }}
-                >
+                <span className="relative text-xs sm:text-sm text-gray-500 inline-block">
                   Rs. {product.price.toLocaleString()}
+                  {/* Diagonal line */}
+                  <span
+                    className="absolute top-3/4 left-0 w-full h-[1px] bg-red-500"
+                    style={{
+                      transform: "translateY(-50%) rotate(-10deg)",
+                      transformOrigin: "left center",
+                    }}
+                  ></span>
                 </span>
                 <span className="text-base sm:text-xl font-extrabold text-emerald-600">
                   Rs. {discountedPrice.toFixed(0)}
