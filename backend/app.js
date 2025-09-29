@@ -91,16 +91,6 @@ app.use(
   })
 );
 
-// HTTPS redirect in production
-if (isProduction) {
-  app.use((req, res, next) => {
-    if (req.secure || req.headers["x-forwarded-proto"] === "https") {
-      return next();
-    }
-    return res.redirect(301, `https://${req.get("host")}${req.originalUrl}`);
-  });
-}
-
 // CSRF protection
 const csrfProtection = csurf({
   cookie: {
