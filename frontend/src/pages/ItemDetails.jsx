@@ -167,7 +167,7 @@ const handleTouchEnd = (e) => {
             </p>
 
             <p className="text-base text-emerald-700 font-medium">
-              Size: {item.size} ml
+              Size: {item.size} {item.sizeUnit}
             </p>
 
             <p

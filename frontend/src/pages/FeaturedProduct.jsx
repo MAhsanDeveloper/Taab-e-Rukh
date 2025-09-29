@@ -111,6 +111,10 @@ const FeaturedProduct = () => {
           {product.name}
         </h1>
 
+        <p className="text-base text-emerald-700 font-medium">
+              Size: {product.size} {product.sizeUnit}
+            </p>
+
         <p
           className="text-gray-700 text-sm sm:text-base md:text-base leading-relaxed whitespace-pre-line text-justify"
           dangerouslySetInnerHTML={{ __html: product.description }}
