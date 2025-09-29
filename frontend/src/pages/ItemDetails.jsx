@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams, useNavigate, } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import axios from "../lib/axios";
 import { useCartStore } from "../stores/useCartStore";
 import toast from "react-hot-toast";
@@ -20,6 +20,9 @@ const ItemDetails = () => {
   const { addToCart } = useCartStore();
   const [mainImage, setMainImage] = useState("");
   const [reviews, setReviews] = useState([]);
+
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [touchStartX, setTouchStartX] = useState(null);
 
   const handleReviewSubmit = (data) => {
     setReviews(data.reviews);
@@ -54,31 +57,44 @@ const ItemDetails = () => {
     navigate("/place-your-order");
   };
 
-  // Fetch the product details
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const images =
+    item?.mainImage || item?.previewImages
+      ? [item.mainImage, ...(item.previewImages || [])].map((img) =>
+          img?.startsWith("http") ? img : `${baseURL}${img}`
+        )
+      : [];
+
+  // update main image when currentIndex changes
   useEffect(() => {
-    const fetchItem = async () => {
-      try {
-        setLoading(true);
-        const res = await axios.get(`/shop/${id}`);
-        const product = res.data;
+    if (images.length > 0) {
+      setMainImage(images[currentIndex]);
+    }
+  }, [currentIndex, images]);
 
-        setItem(product);
+  // Swipe handlers
+  const handleTouchStart = (e) => {
+    setTouchStartX(e.touches[0].clientX);
+  };
 
-        const mainImg = product.mainImage?.startsWith("http")
-          ? product.mainImage
-          : `${baseURL}${product.mainImage}`;
+const handleTouchEnd = (e) => {
+  if (!touchStartX) return;
+  const touchEndX = e.changedTouches[0].clientX;
+  const diff = touchStartX - touchEndX;
 
-        setMainImage(mainImg);
-      } catch (err) {
-        console.error("Failed to fetch item", err);
-        toast.error("Failed to load item details");
-      } finally {
-        setLoading(false);
-      }
-    };
+  if (Math.abs(diff) > 50) {
+    if (diff > 0) {
+      // swipe left → next image (loop to first if last)
+      setCurrentIndex((prev) => (prev + 1) % images.length);
+    } else {
+      // swipe right → previous image (loop to last if first)
+      setCurrentIndex((prev) => (prev - 1 + images.length) % images.length);
+    }
+  }
 
-    fetchItem();
-  }, [id]);
+  setTouchStartX(null);
+};
+
 
   if (loading) {
     return <ItemDetailsSkeleton />;
@@ -105,40 +121,37 @@ const ItemDetails = () => {
       <div className="max-w-[90%] mx-auto grid grid-cols-1 md:grid-cols-2 gap-12">
         {/* Image Section */}
         <div className="flex flex-col items-center md:sticky md:top-24 self-start">
-          <div className="w-full h-[390px] flex items-center justify-center border border-gray-200 rounded-xl shadow-md bg-white">
+          <div
+            className="w-full h-[390px] flex items-center justify-center border border-gray-200 rounded-xl shadow-md bg-white overflow-hidden"
+            onTouchStart={handleTouchStart}
+            onTouchEnd={handleTouchEnd}
+          >
             <img
               src={mainImage}
               alt={item.name}
-              className="w-full h-full object-fill rounded-xl"
+              className="w-full h-full object-fill rounded-xl transition-all duration-300"
             />
           </div>
 
           {/* Thumbnails */}
           <div className="flex justify-center gap-3 mt-4 flex-wrap">
-            {[item.mainImage, ...(item.previewImages || [])]
-              .slice(0, 4)
-              .map((img, index) => {
-                const finalUrl = img?.startsWith("http")
-                  ? img
-                  : `${baseURL}${img}`;
-                return (
-                  <div
-                    key={index}
-                    onClick={() => setMainImage(finalUrl)}
-                    className={`w-20 h-20 sm:w-24 sm:h-24 rounded-lg overflow-hidden border cursor-pointer transition-all duration-200 flex items-center justify-center ${
-                      mainImage === finalUrl
-                        ? "ring-2 ring-primary border-primary"
-                        : "border-gray-300"
-                    }`}
-                  >
-                    <img
-                      src={finalUrl}
-                      alt={`preview-${index}`}
-                      className="w-full h-full object-fill"
-                    />
-                  </div>
-                );
-              })}
+            {images.slice(0, 4).map((img, index) => (
+              <div
+                key={index}
+                onClick={() => setCurrentIndex(index)}
+                className={`w-20 h-20 sm:w-24 sm:h-24 rounded-lg overflow-hidden border cursor-pointer transition-all duration-200 flex items-center justify-center ${
+                  currentIndex === index
+                    ? "ring-2 ring-primary border-primary"
+                    : "border-gray-300"
+                }`}
+              >
+                <img
+                  src={img}
+                  alt={`preview-${index}`}
+                  className="w-full h-full object-fill"
+                />
+              </div>
+            ))}
           </div>
         </div>
 
@@ -149,7 +162,7 @@ const ItemDetails = () => {
               {item.name}
             </h2>
 
-            <p className="text-base text-gray-700 leading-relaxed whitespace-pre-line">
+            <p className="text-base text-gray-700 leading-relaxed whitespace-pre-line text-justify">
               {item.description}
             </p>
 
@@ -196,50 +209,54 @@ const ItemDetails = () => {
             )}
           </div>
 
-{/* Buttons Responsive Layout */}
-<div className="flex flex-col lg:flex-row items-center gap-4 pt-2 w-full">
-  {item.inStock ? (
-    <AddToCartButton
-      product={item}
-      className="flex-1 w-full bg-black hover:bg-white hover:text-black border border-black 
+          {/* Buttons Responsive Layout */}
+          <div className="flex flex-col lg:flex-row items-center gap-4 pt-2 w-full">
+            {item.inStock ? (
+              <AddToCartButton
+                product={item}
+                className="flex-1 w-full bg-black hover:bg-white hover:text-black border border-black 
                  text-white font-bold rounded-full px-10 py-4 
                  transition-all duration-300 ease-in-out 
                  shadow-md hover:shadow-lg"
-    />
-  ) : (
-    <button
-      disabled
-      className="flex-1 w-full bg-red-600 text-white font-semibold px-6 py-3 rounded-full cursor-not-allowed"
-    >
-      Out of Stock
-    </button>
-  )}
+              />
+            ) : (
+              <button
+                disabled
+                className="flex-1 w-full bg-red-600 text-white font-semibold px-6 py-3 rounded-full cursor-not-allowed"
+              >
+                Out of Stock
+              </button>
+            )}
 
-  <button
-    onClick={handleBuyNow}
-    className="flex-1 w-full text-center cursor-pointer bg-black text-white hover:bg-white hover:text-black border-black font-bold px-10 py-4 rounded-full transition-all duration-300 ease-in-out shadow-md hover:shadow-lg hover:scale-105"
-  >
-    Buy Now
-  </button>
-</div>
+            <button
+              onClick={handleBuyNow}
+              className="flex-1 w-full text-center cursor-pointer bg-black text-white hover:bg-white hover:text-black border-black font-bold px-10 py-4 rounded-full transition-all duration-300 ease-in-out shadow-md hover:shadow-lg hover:scale-105"
+            >
+              Buy Now
+            </button>
+          </div>
 
-
-
-        {/* Trust / Benefit messages */}
-<div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6">
-  <div className="flex items-center gap-2 bg-gray-50 px-4 py-3 rounded-xl shadow-sm">
-    <Truck className="w-5 h-5 text-emerald-600" />
-    <span className="text-sm font-medium text-gray-700">Fast Shipping</span>
-  </div>
-  <div className="flex items-center gap-2 bg-gray-50 px-4 py-3 rounded-xl shadow-sm">
-    <BadgeCheck className="w-5 h-5 text-emerald-600" />
-    <span className="text-sm font-medium text-gray-700">Quality Guaranteed</span>
-  </div>
-  <div className="flex items-center gap-2 bg-gray-50 px-4 py-3 rounded-xl shadow-sm">
-    <Wallet className="w-5 h-5 text-emerald-600" />
-    <span className="text-sm font-medium text-gray-700">Cash on Delivery</span>
-  </div>
-</div>
+          {/* Trust / Benefit messages */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6">
+            <div className="flex items-center gap-2 bg-gray-50 px-4 py-3 rounded-xl shadow-sm">
+              <Truck className="w-5 h-5 text-emerald-600" />
+              <span className="text-sm font-medium text-gray-700">
+                Fast Shipping
+              </span>
+            </div>
+            <div className="flex items-center gap-2 bg-gray-50 px-4 py-3 rounded-xl shadow-sm">
+              <BadgeCheck className="w-5 h-5 text-emerald-600" />
+              <span className="text-sm font-medium text-gray-700">
+                Quality Guaranteed
+              </span>
+            </div>
+            <div className="flex items-center gap-2 bg-gray-50 px-4 py-3 rounded-xl shadow-sm">
+              <Wallet className="w-5 h-5 text-emerald-600" />
+              <span className="text-sm font-medium text-gray-700">
+                Cash on Delivery
+              </span>
+            </div>
+          </div>
         </div>
       </div>
 

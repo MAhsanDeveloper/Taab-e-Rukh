@@ -44,7 +44,7 @@ const FeaturedProduct = () => {
     : product.price;
 
   return (
-    <div className="flex flex-col md:flex-row bg-white rounded-xl max-w-6xl mx-auto my-5 p-4 md:p-6 gap-6 justify-between">
+    <div className="flex flex-col md:flex-row bg-white rounded-xl max-w-6xl mx-auto my-5 p-4 md:p-6 gap-4 justify-between">
       {/* Left Side */}
       <div className="flex flex-col md:flex-row w-full md:w-3/4 items-center md:items-start gap-4">
         {/* Previews */}
@@ -106,13 +106,13 @@ const FeaturedProduct = () => {
       </div>
 
       {/* Right Side */}
-      <div className="flex flex-col justify-center items-start w-full md:w-1/2 space-y-4 md:space-y-6 text-left pl-0 md:pl-10">
+      <div className="flex flex-col justify-center items-start w-full md:w-1/2 space-y-4 md:space-y-6 text-left pl-0 md:pl-6">
         <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold">
           {product.name}
         </h1>
 
         <p
-          className="text-gray-700 text-sm sm:text-base md:text-base leading-relaxed"
+          className="text-gray-700 text-sm sm:text-base md:text-base leading-relaxed whitespace-pre-line text-justify"
           dangerouslySetInnerHTML={{ __html: product.description }}
         />
 
