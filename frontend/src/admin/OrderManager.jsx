@@ -23,11 +23,11 @@ const OrderManager = () => {
 const backendURL = import.meta.env.VITE_API_BASE_URL;
 
 const handleDownloadInvoice = (orderId) => {
-  window.open(`${backendURL}/orders/${orderId}/invoice`, "_blank");
+  window.open(`${backendURL}/api/orders/${orderId}/invoice`, "_blank");
 };
 
 const handleDownloadPackSlip = (orderId) => {
-  window.open(`${backendURL}/orders/${orderId}/pack-slip`, "_blank");
+  window.open(`${backendURL}/api/orders/${orderId}/pack-slip`, "_blank");
 };
 
 

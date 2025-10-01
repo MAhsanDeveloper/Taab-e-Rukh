@@ -23,9 +23,10 @@ export const generateInvoice = (order, stream) => {
   const customerName = shipping.fullName || "Guest";
   const customerEmail = shipping.email || "N/A";
   const customerPhone = shipping.phone || "-";
-  const customerAddress = shipping.address && shipping.city 
-    ? `${shipping.address}, ${shipping.city}` 
-    : "N/A";
+  const customerAddress =
+    shipping.address && shipping.city
+      ? `${shipping.address}, ${shipping.city}`
+      : "N/A";
 
   doc
     .fontSize(12)
@@ -65,9 +66,13 @@ export const generateInvoice = (order, stream) => {
 
   const products = order.products || [];
   products.forEach((item) => {
-    const name = item.product?.name || item.product || "Unnamed product";
+    // Get name from product object or fallback
+    const name = item.product?.name || "Unnamed product";
+
     const quantity = item.quantity || 0;
-    const price = item.price || 0;
+
+    // FIX: price should come from item.product.price (not item.price)
+    const price = item.price ?? item.product?.price ?? 0;
 
     doc
       .text(name, itemX, positionY)

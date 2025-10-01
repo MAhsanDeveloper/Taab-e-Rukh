@@ -83,7 +83,7 @@ app.use(
           "https://maps.google.com",
         ],
         fontSrc: ["'self'", "https:", "data:"],
-        scriptSrc: ["'self'"],
+        scriptSrc: ["'self'", "https://www.googletagmanager.com", "https://www.google-analytics.com"],
         styleSrc: ["'self'", "https:", "'unsafe-inline'"],
       },
     },
