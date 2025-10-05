@@ -82,19 +82,27 @@ export const createOrder = async (req, res) => {
         email: shippingDetails.email,
       };
     } else {
-      return res.status(400).json({
-        message: "No email available to send order confirmation.",
-      });
-    }
+  // No email available, but still place the order successfully
+  console.warn("Order placed without email confirmation.");
+  userInfo = {
+    name: shippingDetails.fullName || "Customer",
+    email: null,
+  };
+}
 
-    // Populate product names for email
-    const populatedOrder = await newOrder.populate("products.product", "name");
+  // Populate product names for email
+const populatedOrder = await newOrder.populate("products.product", "name");
 
-    try {
-      await sendOrderConfirmation(populatedOrder, userInfo);
-    } catch (err) {
-      console.error("Failed to send order confirmation email:", err);
-    }
+if (userInfo.email) {
+  try {
+    await sendOrderConfirmation(populatedOrder, userInfo);
+  } catch (err) {
+    console.error("Failed to send order confirmation email:", err);
+  }
+} else {
+  console.log("Skipping email confirmation — no email provided.");
+}
+
 
     res.status(201).json({ message: "Order placed successfully!", orderId: newOrder._id });
   } catch (err) {

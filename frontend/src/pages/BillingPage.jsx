@@ -133,7 +133,7 @@ const BillingPage = () => {
   return (
     <div className="min-h-screen bg-white">
       {/* Add padding here so heading + form start below fixed bar */}
-      <div className="pt-32 sm:pt-36 lg:pt-10 px-4 sm:px-6 md:px-8 lg:px-16 max-w-screen-xl mx-auto">
+      <div className="pt-28 sm:pt-28 lg:pt-10 px-4 sm:px-6 md:px-8 lg:px-16 max-w-screen-xl mx-auto">
         <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-6 sm:mb-8 text-center lg:text-left">
           Billing & Shipping
         </h1>
@@ -151,7 +151,7 @@ const BillingPage = () => {
         ) : (
           <div className="lg:flex lg:items-start gap-6 xl:gap-8">
             {/* Mobile Order Summary (fixed on top) */}
-            <div className="lg:hidden fixed top-20 left-0 right-0 z-50 px-4 py-2 bg-white border-b border-gray-200 shadow-md">
+            <div className="lg:hidden fixed top-28 left-0 right-0 z-50 px-4 py-2 bg-white border-b border-gray-200 shadow-md">
               <div className="flex justify-between items-center">
                 <div className="font-medium text-gray-800">
                   view full order summary
@@ -221,7 +221,7 @@ const BillingPage = () => {
                     required: true,
                   },
                   {
-                    label: "Email (to receive order confirmation email)",
+                    label: "Email (to receive order confirmation email, optional)",
                     name: "email",
                     type: "email",
                     required: false,
