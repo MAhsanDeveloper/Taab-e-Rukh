@@ -83,7 +83,6 @@ export const createOrder = async (req, res) => {
       };
     } else {
   // No email available, but still place the order successfully
-  console.warn("Order placed without email confirmation.");
   userInfo = {
     name: shippingDetails.fullName || "Customer",
     email: null,
