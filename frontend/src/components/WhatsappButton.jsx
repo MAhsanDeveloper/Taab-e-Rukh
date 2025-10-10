@@ -10,16 +10,17 @@ const adminLoginPath = import.meta.env.VITE_ADMIN_LOGIN_PATH;
 
 const WhatsappButton = () => {
   const [whatsappNumber, setWhatsappNumber] = useState("");
+  const [loading, setLoading] = useState(true);
   const location = useLocation();
 
   const handleClick = () => {
-  trackEvent({
-    action: "social_click",
-    category: "floating_button",
-    label: "WhatsApp",
-    value: whatsappNumber
-  });
-};
+    trackEvent({
+      action: "social_click",
+      category: "floating_button",
+      label: "WhatsApp",
+      value: whatsappNumber,
+    });
+  };
 
   useEffect(() => {
     const fetchContact = async () => {
@@ -28,13 +29,22 @@ const WhatsappButton = () => {
         setWhatsappNumber(res.data.whatsapp);
       } catch (err) {
         console.error("Failed to fetch contact info", err);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchContact();
   }, []);
 
-  // Hide button if number is invalid or on admin routes
+  // Hide button if still loading or invalid number
+  if (loading)
+    return (
+      <div className="fixed bottom-24 right-5 z-50 flex items-center justify-center bg-white/80 p-3 rounded-full shadow-lg">
+        <div className="w-6 h-6 border-3 border-green-500 border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    );
+
   if (!whatsappNumber || whatsappNumber.trim().length !== 12) return null;
   if (location.pathname.startsWith(adminPanelPath)) return null;
   if (location.pathname.startsWith(adminLoginPath)) return null;
@@ -47,7 +57,7 @@ const WhatsappButton = () => {
       target="_blank"
       rel="noopener noreferrer"
       onClick={handleClick}
-      className="fixed bottom-25 right-5 z-50 flex items-center gap-2 bg-white/80 p-2 px-3 rounded-full shadow-lg hover:bg-white transition"
+      className="fixed bottom-24 right-5 z-50 flex items-center gap-2 bg-white/80 p-2 px-3 rounded-full shadow-lg hover:bg-white transition"
     >
       <span className="text-sm text-gray-700 font-medium hidden sm:inline">
         Chat with us
