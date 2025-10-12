@@ -234,7 +234,7 @@ const CartPage = () => {
               <button
                 onClick={goToBilling}
                 disabled={!cart.length}
-                className={`mt-6 w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 transition ${
+                className={`mt-6 w-full bg-blue-600 text-white py-3 cursor-pointer rounded-lg font-medium hover:bg-blue-700 transition ${
                   !cart.length ? "opacity-70 cursor-not-allowed" : ""
                 }`}
               >
@@ -245,7 +245,7 @@ const CartPage = () => {
                 <span className="text-sm text-gray-500">or</span>
                 <Link
                   to="/"
-                  className="text-sm font-medium text-blue-600 hover:underline"
+                  className="text-sm font-medium cursor-pointer text-blue-600 hover:underline"
                 >
                   Continue Shopping
                 </Link>

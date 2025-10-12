@@ -108,7 +108,7 @@ const BillingPage = () => {
         totalAmount: finalTotalWithShipping,
       };
 
-      const res = await axios.post("/payments/orders/create", orderData);
+      const res = await axios.post("/orders/orders/create", orderData);
       if (res.status === 201) {
         toast.success("Order placed successfully!");
         // Clear cart for logged-in users

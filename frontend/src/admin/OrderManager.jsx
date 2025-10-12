@@ -8,7 +8,7 @@ const OrderManager = () => {
 
   const fetchOrders = async () => {
     try {
-      const res = await axios.get("/payments/orders");
+      const res = await axios.get("/orders/orders");
       setOrders(res.data.orders || []);
     } catch (err) {
       console.error("Failed to fetch orders:", err);

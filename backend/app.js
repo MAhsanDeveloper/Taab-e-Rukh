@@ -15,7 +15,6 @@ import authRoutes from "./routes/auth.route.js";
 import productRoutes from "./routes/product.route.js";
 import cartRoutes from "./routes/cart.route.js";
 import couponRoutes from "./routes/coupon.route.js";
-import paymentRoutes from "./routes/payment.route.js";
 import contactRoutes from "./routes/contact.route.js";
 import analyticsRoutes from "./routes/analytics.route.js";
 import heroRoutes from "./routes/hero.route.js";
@@ -129,7 +128,6 @@ app.get("/api/csrf-token", csrfProtection, (req, res) => {
 
 // --- API routes ---
 app.use("/api/auth", apiLimiter, authRoutes);
-app.use("/api/payments", apiLimiter, paymentRoutes);
 app.use("/api/shop", productRoutes);
 app.use("/api/cart", cartRoutes);
 app.use("/api/contact", contactRoutes);
