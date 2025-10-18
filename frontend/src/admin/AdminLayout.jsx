@@ -1,17 +1,27 @@
 import React, { useState } from "react";
 import { Outlet, Link, useNavigate } from "react-router-dom";
 import axios from "../lib/axios";
+import { Loader2 } from "lucide-react"; // for a small spinning loader icon
 
 const AdminLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [loggingOut, setLoggingOut] = useState(false);
   const navigate = useNavigate();
 
   const handleLogout = async () => {
+    setLoggingOut(true);
     try {
-    await axios.post("/auth/logout", {});
-      navigate("/");
+      await axios.post("/auth/logout", {}, { withCredentials: true });
+
+      // Clear any local cache if you’re using context or localStorage
+      localStorage.removeItem("isAdmin");
+
+      // Optional: Force a hard refresh to fully clear auth state
+      navigate("/", { replace: true });
+      window.location.reload();
     } catch (err) {
       console.error("Logout failed", err);
+      setLoggingOut(false);
     }
   };
 
@@ -42,11 +52,23 @@ const AdminLayout = () => {
           <Link to="categories-section" className="hover:underline">Manage Categories Section</Link>
           <Link to="coupons" className="hover:underline">Manage Coupons</Link>
         </nav>
+
         <button
           onClick={handleLogout}
-          className="bg-white text-amber-700 font-semibold py-1 px-4 rounded hover:bg-gray-200 transition"
+          disabled={loggingOut}
+          className={`w-full flex items-center justify-center gap-2 bg-white text-amber-700 font-semibold py-1 px-4 rounded transition ${
+            loggingOut
+              ? "opacity-70 cursor-not-allowed"
+              : "hover:bg-gray-200 cursor-pointer"
+          }`}
         >
-          Logout
+          {loggingOut ? (
+            <>
+              <Loader2 className="animate-spin w-4 h-4" /> Logging out...
+            </>
+          ) : (
+            "Logout"
+          )}
         </button>
       </aside>
 

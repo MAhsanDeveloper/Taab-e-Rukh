@@ -5,6 +5,7 @@ import toast from "react-hot-toast";
 
 const ContactManager = () => {
   const [loading, setLoading] = useState(true);
+  const [updating, setUpdating] = useState(false);
   const [contact, setContact] = useState({
     phone: "",
     email: "",
@@ -32,11 +33,14 @@ const ContactManager = () => {
   };
 
   const handleUpdate = async () => {
+    setUpdating(true);
     try {
       await axios.put("/contact", contact);
       toast.success("Contact updated successfully");
     } catch (err) {
       toast.error("Update failed");
+    } finally {
+      setUpdating(false);
     }
   };
 
@@ -72,7 +76,7 @@ const ContactManager = () => {
           placeholder="Address"
           className="w-full p-2 rounded text-black min-w-0"
         />
-         <input
+        <input
           name="whatsapp"
           value={contact.whatsapp}
           onChange={handleChange}
@@ -108,11 +112,17 @@ const ContactManager = () => {
           className="w-full p-2 rounded text-black min-w-0"
         />
         <button
-          onClick={handleUpdate}
-          className="bg-white text-amber-700 px-4 py-2 rounded font-bold hover:bg-amber-100"
-        >
-          Save Changes
-        </button>
+  onClick={handleUpdate}
+  disabled={updating}
+  className={`flex items-center justify-center gap-2 bg-white text-amber-700 px-4 py-2 rounded font-bold transition ${
+    updating
+      ? "opacity-70 cursor-not-allowed"
+      : "hover:bg-amber-100 cursor-pointer"
+  }`}
+>
+  {updating ? "Saving..." : "Save Changes"}
+</button>
+
       </div>
     </div>
   );

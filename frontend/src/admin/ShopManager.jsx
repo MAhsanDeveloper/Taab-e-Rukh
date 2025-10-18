@@ -12,6 +12,8 @@ const categories = [
 
 const ShopManager = () => {
   const [products, setProducts] = useState([]);
+  const [adding, setAdding] = useState(false);
+  const [deletingId, setDeletingId] = useState(null);
   const [newProduct, setNewProduct] = useState({
     name: "",
     benefits: "",
@@ -45,6 +47,7 @@ const ShopManager = () => {
   };
 
   const addProduct = async () => {
+    setAdding(true);
     try {
       const formData = new FormData();
       Object.entries(newProduct).forEach(([key, value]) => {
@@ -66,6 +69,8 @@ const ShopManager = () => {
       fetchProducts();
     } catch {
       toast.error("Failed to add product");
+    } finally {
+      setAdding(false);
     }
   };
 
@@ -90,12 +95,20 @@ const ShopManager = () => {
   };
 
   const deleteProduct = async (id) => {
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this product?"
+    );
+    if (!confirmDelete) return;
+
+    setDeletingId(id);
     try {
       await axios.delete(`/shop/${id}`);
-      toast.success("Deleted");
+      toast.success("Product deleted successfully");
       fetchProducts();
     } catch {
-      toast.error("Delete failed");
+      toast.error("Failed to delete product");
+    } finally {
+      setDeletingId(null);
     }
   };
 
@@ -313,9 +326,25 @@ const ShopManager = () => {
           />
           <button
             onClick={addProduct}
-            className="bg-amber-800 hover:bg-amber-900 cursor-pointer text-white py-2 px-4 rounded font-bold"
+            disabled={adding}
+            className={`flex items-center justify-center gap-2 bg-amber-800 text-white py-2 px-4 rounded font-bold transition ${
+              adding
+                ? "opacity-70 cursor-not-allowed"
+                : "hover:bg-amber-900 cursor-pointer"
+            }`}
           >
-            Add Product
+            {adding ? (
+              <>
+                <span className="flex gap-1">
+                  <span className="w-2 h-2 bg-white rounded-full animate-bounce [animation-delay:-0.3s]"></span>
+                  <span className="w-2 h-2 bg-white rounded-full animate-bounce [animation-delay:-0.15s]"></span>
+                  <span className="w-2 h-2 bg-white rounded-full animate-bounce"></span>
+                </span>
+                Adding...
+              </>
+            ) : (
+              "Add Product"
+            )}
           </button>
         </div>
       </div>
@@ -429,15 +458,31 @@ const ShopManager = () => {
                       setEditingId(p._id);
                       setEditForm(p);
                     }}
-                    className="bg-blue-100 text-blue-600 px-3 py-1 rounded text-sm"
+                    className="bg-blue-100 text-blue-600 cursor-pointer px-3 py-1 rounded text-sm hover:bg-blue-200"
                   >
                     Edit
                   </button>
                   <button
                     onClick={() => deleteProduct(p._id)}
-                    className="bg-red-100 text-red-600 px-3 py-1 rounded text-sm"
+                    disabled={deletingId === p._id}
+                    className={`flex items-center justify-center gap-2 bg-red-100 text-red-600 px-3 py-1 rounded text-sm transition ${
+                      deletingId === p._id
+                        ? "opacity-70 cursor-not-allowed"
+                        : "hover:bg-red-200 cursor-pointer"
+                    }`}
                   >
-                    Delete
+                    {deletingId === p._id ? (
+                      <>
+                        <span className="flex gap-1">
+                          <span className="w-2 h-2 bg-red-600 rounded-full animate-bounce [animation-delay:-0.3s]"></span>
+                          <span className="w-2 h-2 bg-red-600 rounded-full animate-bounce [animation-delay:-0.15s]"></span>
+                          <span className="w-2 h-2 bg-red-600 rounded-full animate-bounce"></span>
+                        </span>
+                        Deleting...
+                      </>
+                    ) : (
+                      "Delete"
+                    )}
                   </button>
 
                   {/* Featured Toggle */}
@@ -455,7 +500,7 @@ const ShopManager = () => {
                         toast.error("Failed to toggle Featured status");
                       }
                     }}
-                    className={`px-3 py-1 rounded text-sm ${
+                    className={`px-3 py-1 rounded cursor-pointer text-sm hover:bg-gray-300 ${
                       p.isFeatured
                         ? "bg-yellow-500 text-white"
                         : "bg-gray-200 text-black"

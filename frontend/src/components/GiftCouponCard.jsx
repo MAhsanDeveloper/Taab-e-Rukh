@@ -17,10 +17,10 @@ const GiftCouponCard = () => {
     else setUserInputCode("");
   }, [coupon]);
 
-const handleApplyCoupon = () => {
-  if (!userInputCode) return;
-  applyCoupon(userInputCode);
-};
+  const handleApplyCoupon = () => {
+    if (!userInputCode) return;
+    applyCoupon(userInputCode);
+  };
 
   const handleRemoveCoupon = async () => {
     await removeCoupon();
@@ -45,7 +45,7 @@ const handleApplyCoupon = () => {
           <input
             type="text"
             id="voucher"
-            className="block w-full rounded-lg border border-gray-600 bg-gray-700 
+            className="block w-full rounded-lg border uppercase border-gray-600 bg-gray-700 
     p-2.5 text-sm text-white placeholder-gray-400 focus:border-emerald-500 
     focus:ring-emerald-500"
             placeholder="Enter code here"

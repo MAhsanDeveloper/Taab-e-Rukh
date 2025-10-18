@@ -4,6 +4,9 @@ import { toast } from "react-hot-toast";
 
 const CouponManager = () => {
   const [coupons, setCoupons] = useState([]);
+  const [adding, setAdding] = useState(false);
+  const [deletingId, setDeletingId] = useState(null);
+
   const [form, setForm] = useState({
     code: "",
     discountPercentage: "",
@@ -21,6 +24,7 @@ const CouponManager = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setAdding(true);
     try {
       await axios.post("/coupons", {
         ...form,
@@ -31,16 +35,26 @@ const CouponManager = () => {
       fetchCoupons();
     } catch (err) {
       toast.error(err.response?.data?.message || "Failed to create coupon");
+    } finally {
+      setAdding(false);
     }
   };
 
   const handleDelete = async (id) => {
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this coupon?"
+    );
+    if (!confirmDelete) return;
+
+    setDeletingId(id);
     try {
       await axios.delete(`/coupons/${id}`);
       toast.success("Coupon deleted");
       fetchCoupons();
     } catch {
       toast.error("Failed to delete coupon");
+    } finally {
+      setDeletingId(null);
     }
   };
 
@@ -61,7 +75,7 @@ const CouponManager = () => {
           placeholder="Code"
           value={form.code}
           onChange={(e) => setForm({ ...form, code: e.target.value })}
-          className="border p-2 w-full"
+          className="border p-2 w-full uppercase"
           required
         />
 
@@ -86,9 +100,12 @@ const CouponManager = () => {
 
         <button
           type="submit"
-          className="bg-amber-600 text-white px-4 py-2 rounded"
+          disabled={adding}
+          className={`bg-amber-600 cursor-pointer text-white px-4 py-2 rounded transition ${
+            adding ? "opacity-70 cursor-not-allowed" : "hover:bg-amber-700"
+          }`}
         >
-          Create Coupon
+          {adding ? "Creating..." : "Create Coupon"}
         </button>
       </form>
 
@@ -96,16 +113,21 @@ const CouponManager = () => {
         <h3 className="font-semibold mb-2">Existing Coupons</h3>
         <ul>
           {coupons.map((c) => (
-            <li key={c._id} className="flex justify-between border-b py-2">
+            <li key={c._id} className="flex justify-between uppercase border-b py-2">
               <span>
                 {c.code} — {c.discountPercentage}% (expires{" "}
                 {new Date(c.expirationDate).toLocaleDateString()})
               </span>
               <button
                 onClick={() => handleDelete(c._id)}
-                className="bg-red-500 text-white px-2 py-1 rounded"
+                disabled={deletingId === c._id}
+                className={`bg-red-500 text-white cursor-pointer px-2 py-1 rounded transition ${
+                  deletingId === c._id
+                    ? "opacity-70 cursor-not-allowed"
+                    : "hover:bg-red-600"
+                }`}
               >
-                Delete
+                {deletingId === c._id ? "Deleting..." : "Delete"}
               </button>
             </li>
           ))}

@@ -21,17 +21,6 @@ router.get("/:id/invoice", async (req, res) => {
 
     if (!order) return res.status(404).json({ message: "Order not found" });
 
-    // DEBUG: Always log product info
-    console.log("🧾 [DEBUG] Order products for invoice:");
-    order.products.forEach((p, i) => {
-      console.log(
-        `Product #${i + 1}:`,
-        p.product ? p.product.name : "No product object",
-        "| Quantity:", p.quantity,
-        "| Price:", p.price ?? p.product?.price
-      );
-    });
-
     res.setHeader("Content-Type", "application/pdf");
     res.setHeader(
       "Content-Disposition",

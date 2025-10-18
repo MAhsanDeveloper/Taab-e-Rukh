@@ -5,7 +5,9 @@ import axios from "../lib/axios";
 const HomePageManager = () => {
   const [images, setImages] = useState([]);
   const [file, setFile] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [preview, setPreview] = useState(null);
+  const [uploading, setUploading] = useState(false);
+  const [deletingId, setDeletingId] = useState(null);
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -14,42 +16,61 @@ const HomePageManager = () => {
 
   const fetchImages = async () => {
     try {
-   const { data } = await axios.get("/hero-images");
+      const { data } = await axios.get("/hero-images");
       setImages(Array.isArray(data) ? data : []);
     } catch (err) {
       setError("Failed to fetch images");
     }
   };
 
+  const handleFileChange = (e) => {
+    const selectedFile = e.target.files[0];
+    setFile(selectedFile);
+    if (selectedFile) {
+      const reader = new FileReader();
+      reader.onloadend = () => setPreview(reader.result);
+      reader.readAsDataURL(selectedFile);
+    } else {
+      setPreview(null);
+    }
+  };
+
   const handleUpload = async () => {
     if (!file) return alert("Choose a file first");
 
-    setLoading(true);
+    setUploading(true);
     setError("");
 
     const reader = new FileReader();
     reader.readAsDataURL(file);
     reader.onloadend = async () => {
       try {
-      const { data } = await axios.post("/hero-images", {
-      image: reader.result,
-     });
+        const { data } = await axios.post("/hero-images", {
+          image: reader.result,
+        });
         setImages((prev) => [data, ...prev]);
         setFile(null);
+        setPreview(null);
       } catch (err) {
         setError(err.response?.data?.message || "Upload failed");
       } finally {
-        setLoading(false);
+        setUploading(false);
       }
     };
   };
 
   const handleDelete = async (id) => {
+    const confirmDelete = window.confirm("Are you sure you want to delete this image?");
+    if (!confirmDelete) return;
+
+    setDeletingId(id);
     try {
-    await axios.delete(`/hero-images/${id}`);
+      await axios.delete(`/hero-images/${id}`);
       setImages((prev) => prev.filter((img) => img._id !== id));
     } catch (err) {
       setError("Delete failed");
+    } finally {
+      setDeletingId(null);
     }
   };
 
@@ -62,21 +83,40 @@ const HomePageManager = () => {
       {/* Upload Section */}
       <div className="mb-6">
         {images.length < 3 ? (
-          <div className="flex gap-4 items-center">
-            <input
-              type="file"
-              accept="image/*"
-              onChange={(e) => setFile(e.target.files[0])}
-            />
+          <div className="flex gap-4 items-center flex-wrap">
+            {/* Custom file input */}
+            <label className="cursor-pointer px-4 py-2 bg-gray-200 rounded-md text-black hover:bg-gray-300 transition">
+              {file ? file.name : "Choose File"}
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleFileChange}
+                className="hidden"
+              />
+            </label>
+
             <button
               onClick={handleUpload}
-              disabled={loading}
-              className={`px-4 py-2 rounded-md text-white ${
-                loading ? "bg-gray-500 cursor-not-allowed" : "bg-black"
+              disabled={uploading || !file}
+              className={`px-4 py-2 rounded-md cursor-pointer text-white transition ${
+                uploading || !file
+                  ? "bg-gray-500 cursor-not-allowed"
+                  : "bg-black hover:bg-gray-800"
               }`}
             >
-              {loading ? "Uploading..." : "Upload"}
+              {uploading ? "Uploading..." : "Upload"}
             </button>
+
+            {/* Preview Section */}
+            {preview && (
+              <div className="relative border rounded-lg overflow-hidden w-48 h-52">
+                <img
+                  src={preview}
+                  alt="Preview"
+                  className="w-full h-full object-fill"
+                />
+              </div>
+            )}
           </div>
         ) : (
           <p className="text-red-500">Maximum 3 images allowed.</p>
@@ -85,25 +125,22 @@ const HomePageManager = () => {
 
       {/* Display Uploaded Images */}
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-        {Array.isArray(images) &&
-          images.map((img) => (
-            <div
-              key={img._id}
-              className="relative border rounded-lg overflow-hidden"
+        {images.map((img) => (
+          <div key={img._id} className="relative border rounded-lg overflow-hidden group w-full h-52">
+            <img src={img.url} alt="Hero" className="w-full h-full object-fill" />
+            <button
+              onClick={() => handleDelete(img._id)}
+              disabled={deletingId === img._id}
+              className={`absolute top-2 right-2 px-2 py-1 rounded-md cursor-pointer text-sm transition ${
+                deletingId === img._id
+                  ? "bg-gray-400 text-white cursor-not-allowed"
+                  : "bg-red-500 hover:bg-red-600 text-white"
+              }`}
             >
-              <img
-                src={img.url}
-                alt="Hero"
-                className="w-full h-48 object-fill"
-              />
-              <button
-                onClick={() => handleDelete(img._id)}
-                className="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 rounded-md text-sm"
-              >
-                Delete
-              </button>
-            </div>
-          ))}
+              {deletingId === img._id ? "Deleting..." : "Delete"}
+            </button>
+          </div>
+        ))}
       </div>
     </div>
   );
