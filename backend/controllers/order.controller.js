@@ -124,3 +124,20 @@ export const getAllOrders = async (req, res) => {
       .json({ message: "Failed to fetch orders", error: err.message });
   }
 };
+
+export const deleteOrder = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const deletedOrder = await Order.findByIdAndDelete(id);
+
+    if (!deletedOrder) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+
+    res.status(200).json({ message: "Order deleted successfully" });
+  } catch (err) {
+    console.error("Failed to delete order:", err);
+    res.status(500).json({ message: "Failed to delete order", error: err.message });
+  }
+};

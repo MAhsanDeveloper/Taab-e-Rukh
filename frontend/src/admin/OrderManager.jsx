@@ -5,6 +5,7 @@ import toast from "react-hot-toast";
 
 const OrderManager = () => {
   const [orders, setOrders] = useState([]);
+   const [deletingId, setDeletingId] = useState(null); 
 
   const fetchOrders = async () => {
     try {
@@ -29,6 +30,23 @@ const handleDownloadInvoice = (orderId) => {
 const handleDownloadPackSlip = (orderId) => {
   window.open(`${backendURL}/api/orders/${orderId}/pack-slip`, "_blank");
 };
+
+   const handleDeleteOrder = async (orderId) => {
+    const confirmDelete = window.confirm("Are you sure you want to delete this order?");
+    if (!confirmDelete) return;
+
+    setDeletingId(orderId);
+    try {
+      await axios.delete(`/orders/${orderId}`);
+      toast.success("Order deleted successfully");
+      setOrders((prev) => prev.filter((order) => order._id !== orderId));
+    } catch (err) {
+      console.error("Failed to delete order:", err);
+      toast.error("Failed to delete order");
+    } finally {
+      setDeletingId(null);
+    }
+  };
 
 
   return (
@@ -85,15 +103,33 @@ const handleDownloadPackSlip = (orderId) => {
                   <td className="p-3 space-x-2">
                     <button
                       onClick={() => handleDownloadInvoice(order._id)}
-                      className="bg-emerald-600 hover:bg-emerald-700 text-white px-2 my-2 py-2 rounded text-sm"
+                      className="bg-emerald-600 hover:bg-emerald-700 cursor-pointer text-white px-2 my-2 py-2 rounded text-sm"
                     >
                       Invoice
                     </button>
                     <button
                       onClick={() => handleDownloadPackSlip(order._id)}
-                      className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm"
+                      className="bg-blue-600 hover:bg-blue-700 cursor-pointer text-white px-3 py-1 rounded text-sm"
                     >
                       Pack Slip
+                    </button>
+                    <button
+                      onClick={() => handleDeleteOrder(order._id)}
+                      disabled={deletingId === order._id}
+                      className={`${
+                        deletingId === order._id
+                          ? "bg-red-400 cursor-not-allowed"
+                          : "bg-red-600 hover:bg-red-700"
+                      } text-white cursor-pointer px-2 py-1 mt-2 rounded text-sm flex items-center gap-2`}
+                    >
+                      {deletingId === order._id ? (
+                        <>
+                          <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                          Deleting...
+                        </>
+                      ) : (
+                        "Delete"
+                      )}
                     </button>
                   </td>
                 </tr>

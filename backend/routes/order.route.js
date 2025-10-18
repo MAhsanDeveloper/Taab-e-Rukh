@@ -1,7 +1,7 @@
 import express from "express";
 import Order from "../models/order.model.js";
 
-import { createOrder, getAllOrders } from "../controllers/order.controller.js";
+import { createOrder, getAllOrders, deleteOrder} from "../controllers/order.controller.js";
 import { generateInvoice } from "../utils/generateInvoice.js";
 import { generatePackagingSlip } from "../utils/generatePackageSlip.js";
 
@@ -9,6 +9,7 @@ const router = express.Router();
 
 router.post("/orders/create", createOrder);
 router.get("/orders", getAllOrders);
+router.delete("/:id", deleteOrder);
 
 // Generate Invoice PDF
 // Generate Invoice PDF
