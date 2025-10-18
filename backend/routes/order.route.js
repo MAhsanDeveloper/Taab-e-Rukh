@@ -12,7 +12,6 @@ router.get("/orders", getAllOrders);
 router.delete("/:id", deleteOrder);
 
 // Generate Invoice PDF
-// Generate Invoice PDF
 router.get("/:id/invoice", async (req, res) => {
   try {
     const order = await Order.findById(req.params.id)
@@ -33,7 +32,6 @@ router.get("/:id/invoice", async (req, res) => {
     res.status(500).json({ message: "Error generating invoice" });
   }
 });
-
 
 
 
