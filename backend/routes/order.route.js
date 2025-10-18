@@ -11,10 +11,25 @@ router.post("/orders/create", createOrder);
 router.get("/orders", getAllOrders);
 
 // Generate Invoice PDF
+// Generate Invoice PDF
 router.get("/:id/invoice", async (req, res) => {
   try {
-    const order = await Order.findById(req.params.id).lean();
+    const order = await Order.findById(req.params.id)
+      .populate("products.product", "name price") // always populate name & price
+      .lean(); // convert Mongoose doc to plain object
+
     if (!order) return res.status(404).json({ message: "Order not found" });
+
+    // DEBUG: Always log product info
+    console.log("🧾 [DEBUG] Order products for invoice:");
+    order.products.forEach((p, i) => {
+      console.log(
+        `Product #${i + 1}:`,
+        p.product ? p.product.name : "No product object",
+        "| Quantity:", p.quantity,
+        "| Price:", p.price ?? p.product?.price
+      );
+    });
 
     res.setHeader("Content-Type", "application/pdf");
     res.setHeader(
@@ -29,10 +44,16 @@ router.get("/:id/invoice", async (req, res) => {
   }
 });
 
+
+
+
 // Generate Packaging Slip PDF
 router.get("/:id/pack-slip", async (req, res) => {
   try {
-    const order = await Order.findById(req.params.id).lean();
+    const order = await Order.findById(req.params.id)
+      .populate("products.product", "name price")
+      .lean();
+
     if (!order) return res.status(404).json({ message: "Order not found" });
 
     res.setHeader("Content-Type", "application/pdf");

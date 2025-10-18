@@ -2,10 +2,9 @@ import PDFDocument from "pdfkit";
 
 export const generateInvoice = (order, stream) => {
   const doc = new PDFDocument({ margin: 50 });
-
   doc.pipe(stream);
 
-  // ======= HEADER =======
+  // ===== HEADER =====
   doc
     .fontSize(22)
     .font("Helvetica-Bold")
@@ -18,7 +17,7 @@ export const generateInvoice = (order, stream) => {
     .text("Invoice", { align: "center" })
     .moveDown(1);
 
-  // ======= CUSTOMER INFO =======
+  // ===== CUSTOMER INFO =====
   const shipping = order.shippingDetails || {};
   const customerName = shipping.fullName || "Guest";
   const customerEmail = shipping.email || "N/A";
@@ -40,7 +39,7 @@ export const generateInvoice = (order, stream) => {
     .text(`Payment Method: ${order.paymentMethod || "N/A"}`)
     .moveDown();
 
-  // ======= TABLE HEADER =======
+  // ===== TABLE HEADER =====
   const tableTop = doc.y;
   const itemX = 50;
   const qtyX = 280;
@@ -60,18 +59,16 @@ export const generateInvoice = (order, stream) => {
     .stroke()
     .moveDown(0.5);
 
-  // ======= TABLE BODY =======
+  // ===== TABLE BODY =====
   let positionY = tableTop + 25;
   doc.font("Helvetica");
 
   const products = order.products || [];
-  products.forEach((item) => {
-    // Get name from product object or fallback
-    const name = item.product?.name || "Unnamed product";
+  products.forEach((item, index) => {
+    const name =
+      (item.product && item.product.name) || "Unnamed product"; // fallback
 
     const quantity = item.quantity || 0;
-
-    // FIX: price should come from item.product.price (not item.price)
     const price = item.price ?? item.product?.price ?? 0;
 
     doc
@@ -83,7 +80,7 @@ export const generateInvoice = (order, stream) => {
     positionY += 30;
   });
 
-  // ======= TOTAL =======
+  // ===== TOTAL =====
   doc
     .moveTo(itemX, positionY + 10)
     .lineTo(550, positionY + 10)
@@ -96,14 +93,12 @@ export const generateInvoice = (order, stream) => {
       align: "right",
     });
 
-  // ======= FOOTER =======
+  // ===== FOOTER =====
   doc
     .moveDown(4)
     .fontSize(10)
     .font("Helvetica-Oblique")
-    .text("Thank you for shopping at Taab e Rukh!", {
-      align: "center",
-    });
+    .text("Thank you for shopping at Taab e Rukh!", { align: "center" });
 
   doc.end();
 };
