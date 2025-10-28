@@ -127,7 +127,7 @@ const BillingPage = () => {
     { name: "Cash on Delivery", disabled: false },
     { name: "JazzCash", disabled: true },
     { name: "Easypaisa", disabled: true },
-    { name: "Bank Transfer (Through FastPay)", disabled: true },
+    { name: "Bank Transfer (Through PayFast)", disabled: true },
   ];
 
   return (
@@ -221,7 +221,8 @@ const BillingPage = () => {
                     required: true,
                   },
                   {
-                    label: "Email (to receive order confirmation email, optional)",
+                    label:
+                      "Email (to receive order confirmation email, optional)",
                     name: "email",
                     type: "email",
                     required: false,
