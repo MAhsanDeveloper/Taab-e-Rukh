@@ -158,24 +158,24 @@ app.use((err, req, res, next) => {
   res.status(status).json({ message: msg });
 });
 
-// --- Serve frontend in production ---
 if (isProduction) {
   const frontendPath = path.join(__dirname, "../frontend/dist");
 
-  // Serve all static assets (JS, CSS, images) with long cache
+  // Serve hashed assets with long-term cache
   app.use(
     express.static(frontendPath, {
-      maxAge: "1y",   // hashed assets can be cached long-term
-      index: false,   // do not serve index.html here
+      maxAge: "1y",
+      index: false,
     })
   );
 
-  // All other routes serve index.html (React Router SPA)
-  app.get("/*", (req, res) => {
-    res.set("Cache-Control", "no-store"); // always fetch fresh index.html
+  // SPA fallback (React Router)
+  app.get(/.*/, (req, res) => {
+    res.set("Cache-Control", "no-store"); // always fresh index.html
     res.sendFile(path.join(frontendPath, "index.html"));
   });
 }
+
 
 
 export default app;
