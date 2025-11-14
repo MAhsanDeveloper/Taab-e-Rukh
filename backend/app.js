@@ -39,7 +39,10 @@ const allowedOrigins = [
   "http://localhost:5173",
   "https://thesgrgroup.com",
   "http://thesgrgroup.com",
+  "https://www.thesgrgroup.com",
+  "http://www.thesgrgroup.com",
 ];
+
 
 const corsOptions = {
   origin: function (origin, callback) {
