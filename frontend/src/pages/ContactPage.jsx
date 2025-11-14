@@ -13,6 +13,12 @@ const baseURL = import.meta.env.VITE_API_BASE_URL;
 
 const ContactPage = () => {
   const [contact, setContact] = useState(null);
+  const [ready, setReady] = useState(false);
+
+   useEffect(() => {
+    const t = setTimeout(() => setReady(true), 200);
+    return () => clearTimeout(t);
+  }, []);
 
   useEffect(() => {
     axios
@@ -21,7 +27,9 @@ const ContactPage = () => {
       .catch((err) => console.error("Failed to fetch contact info:", err));
   }, []);
 
-  if (!contact) return null;
+  
+  if (!ready) return null;       // keeps skeleton on screen
+  if (!contact) return null;  
 
   return (
     <section className="bg-gray-100 py-12 px-4 sm:px-6 lg:px-20">

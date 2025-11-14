@@ -25,7 +25,7 @@ const HomePage = () => {
     <>
       <Hero />
 
-      <CategoryCarousel />
+      <CategoryCarousel className="ml-8 mt-20" />
 
       {spotlight.map((cat) => (
         <SpotlightCategory key={cat} categorySlug={cat} />

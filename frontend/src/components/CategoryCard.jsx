@@ -15,7 +15,7 @@ const CategoryCard = ({ category }) => {
       `}
     >
       {/* Image section */}
-      <div className={`relative w-full rounded-xl overflow-hidden ${isAllProducts ? "h-60 sm:h-56 md:h-72" : "h-52 sm:h-48 md:h-64"}`}>
+      <div className={`relative w-full ml-8 mt-8 rounded-xl overflow-hidden ${isAllProducts ? "h-60 sm:h-56 md:h-72" : "h-52 sm:h-48 md:h-64"}`}>
         <img
           src={category.image}
           alt={category.name}

@@ -18,6 +18,7 @@ import ProductPageSkeleton from "./skeletons/ProductCardSkeleton";
 import LoginPageSkeleton from "./skeletons/LoginPageSkeleton";
 import ItemDetailsSkeleton from "./skeletons/ItemDetailsSkeleton";
 import ProfilePageSkeleton from "./skeletons/ProfilePageSkeleton";
+import PolicyPagesSkeleton from "./skeletons/PolicyPagesSkeleton";
 
 import ContactPageSkeleton from "./skeletons/ContactPageSkeleton";
 
@@ -71,10 +72,10 @@ const WrappedPurchaseSuccessPage = PageWrapper(PurchaseSuccessPage);
 const WrappedPurchaseCancelPage = PageWrapper(PurchaseCancelPage);
 const WrappedItemDetailsPage = PageWrapper(ItemDetailsPage, <ItemDetailsSkeleton />);
 const WrappedNotFound = PageWrapper(NotFound);
-const WrappedShippingPolicy = PageWrapper(ShippingPolicy);
-const WrappedPrivacyPolicy = PageWrapper(PrivacyPolicy);
-const WrappedReturnRefundPolicy = PageWrapper(ReturnRefundPolicy);
-const WrappedTermsOfService = PageWrapper(TermsOfService);
+const WrappedShippingPolicy = PageWrapper(ShippingPolicy, <PolicyPagesSkeleton />);
+const WrappedPrivacyPolicy = PageWrapper(PrivacyPolicy, <PolicyPagesSkeleton />);
+const WrappedReturnRefundPolicy = PageWrapper(ReturnRefundPolicy, <PolicyPagesSkeleton />);
+const WrappedTermsOfService = PageWrapper(TermsOfService, <PolicyPagesSkeleton />);
 
 // --- Admin Wrapped Pages ---
 const WrappedAdminLayout = PageWrapper(AdminLayout);

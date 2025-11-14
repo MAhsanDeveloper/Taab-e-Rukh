@@ -13,7 +13,7 @@ const LoginPageSkeleton = () => {
       >
         {/* Animated Loader */}
         <Loader className="animate-spin h-10 w-10 text-gray-800" />
-        <p className="text-gray-500 text-lg font-medium">Loading Login Page...</p>
+        <p className="text-gray-500 text-lg font-medium">Loading Page...</p>
 
         {/* Placeholder inputs (gray bars) */}
         <div className="space-y-4 w-full mt-4">

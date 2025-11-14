@@ -34,27 +34,37 @@ const __dirname = path.dirname(__filename);
 // trust proxy headers
 app.set("trust proxy", 1);
 
+
 const allowedOrigins = [
   "http://localhost:5173",
   "https://thesgrgroup.com",
   "http://thesgrgroup.com",
-  "https://api.thesgrgroup.com",
 ];
 
-app.use(
-  cors({
-    origin: (origin, callback) => {
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization", "X-CSRF-Token"],
-  })
-);
+const corsOptions = {
+  origin: function (origin, callback) {
+    // Allow requests with no origin (Chrome prefetch, FB preview, mobile apps, server-to-server)
+    if (!origin) return callback(null, true);
+
+    // Normalize origin (remove trailing slash)
+    const cleanOrigin = origin.replace(/\/$/, "");
+
+    // Check allowed origins
+    if (allowedOrigins.includes(cleanOrigin)) {
+      return callback(null, true);
+    }
+
+    return callback(new Error("Not allowed by CORS"));
+  },
+
+  credentials: true,
+
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+
+  allowedHeaders: ["Content-Type", "Authorization", "X-CSRF-Token"],
+};
+
+app.use(cors(corsOptions));
 
 app.use(compression());
 app.use(express.json({ limit: "10mb" }));

@@ -12,7 +12,7 @@ const hardcodedCategories = [
   { name: "Body Care", slug: "body-care" },
 ];
 
-const CategoryCarousel = () => {
+const CategoryCarousel = ({ className = "" }) => {
   const [categories, setCategories] = useState([]);
   const scrollRef = useRef(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
@@ -66,7 +66,7 @@ const CategoryCarousel = () => {
   }, []);
 
   return (
-    <div className="relative container mx-auto my-10 overflow-hidden">
+    <div className={`relative container overflow-hidden ${className}`}>
       {/* Left Chevron */}
       {canScrollLeft && (
         <button
