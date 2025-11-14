@@ -66,9 +66,6 @@ const corsOptions = {
 // Apply CORS middleware
 app.use(cors(corsOptions));
 
-// Optional: handle preflight requests for all routes
-app.options("*", cors(corsOptions));
-
 
 app.use(compression());
 app.use(express.json({ limit: "10mb" }));
