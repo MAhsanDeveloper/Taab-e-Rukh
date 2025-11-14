@@ -43,31 +43,32 @@ const allowedOrigins = [
   "http://www.thesgrgroup.com",
 ];
 
-
 const corsOptions = {
-  origin: function (origin, callback) {
-    // Allow requests with no origin (Chrome prefetch, FB preview, mobile apps, server-to-server)
+  origin: (origin, callback) => {
+    // Requests like curl or mobile apps may have no origin
     if (!origin) return callback(null, true);
 
     // Normalize origin (remove trailing slash)
     const cleanOrigin = origin.replace(/\/$/, "");
 
-    // Check allowed origins
     if (allowedOrigins.includes(cleanOrigin)) {
       return callback(null, true);
     }
 
-    return callback(new Error("Not allowed by CORS"));
+    // Instead of throwing an error, return false (will still send CORS headers with status 403)
+    return callback(null, false);
   },
-
   credentials: true,
-
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-
   allowedHeaders: ["Content-Type", "Authorization", "X-CSRF-Token"],
 };
 
+// Apply CORS middleware
 app.use(cors(corsOptions));
+
+// Optional: handle preflight requests for all routes
+app.options("*", cors(corsOptions));
+
 
 app.use(compression());
 app.use(express.json({ limit: "10mb" }));
@@ -163,10 +164,21 @@ app.use((err, req, res, next) => {
 // --- Serve frontend in production ---
 if (isProduction) {
   const frontendPath = path.join(__dirname, "../frontend/dist");
-  app.use(express.static(frontendPath));
-  app.get(/.*/, (req, res) => {
+
+  // Serve all static assets (JS, CSS, images) with long cache
+  app.use(
+    express.static(frontendPath, {
+      maxAge: "1y",   // hashed assets can be cached long-term
+      index: false,   // do not serve index.html here
+    })
+  );
+
+  // All other routes serve index.html (React Router SPA)
+  app.get("/*", (req, res) => {
+    res.set("Cache-Control", "no-store"); // always fetch fresh index.html
     res.sendFile(path.join(frontendPath, "index.html"));
   });
 }
+
 
 export default app;
