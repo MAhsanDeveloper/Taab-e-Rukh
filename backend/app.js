@@ -159,7 +159,7 @@ app.use((err, req, res, next) => {
 });
 
 if (isProduction) {
-  const frontendPath = path.join(__dirname, "../frontend/dist");
+const frontendPath = path.join(__dirname, "../public");
 
   // Serve hashed assets with long-term cache
   app.use(
