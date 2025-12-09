@@ -80,7 +80,7 @@ const CategoryCarousel = ({ className = "" }) => {
       {/* Carousel */}
       <div
         ref={scrollRef}
-        className="flex gap-4 sm:gap-6 overflow-x-auto scroll-smooth px-2 sm:px-4 py-3 hide-scrollbar max-w-full"
+        className="flex gap-6 mr-2 sm:gap-8 lg:gap-10 overflow-x-auto scroll-smooth px-2 sm:px-4 py-3 hide-scrollbar max-w-full"
       >
         {categories.map((cat) => (
           <div key={cat.slug} className="flex-shrink-0 w-[70vw] sm:w-64 md:w-72 lg:w-80">
